@@ -1,0 +1,58 @@
+﻿
+/* form labels */
+form label { color: #505E69; font-size: .85em; font-weight: bold; line-height: 1.5em; text-align: left; margin: 0 5px 0 10px; }
+form label > * { float: none !important; }
+
+/* form options */
+form .options { width: auto; float: left; border: 1px solid #E0E0E0; background-color: #F9F9F9; padding: 4px 4px 4px 2px; margin-right: 5px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
+form .options, form .options > label { font-size: .97em; font-weight: normal; color: #3a3a3a; }
+form .options > label { cursor: pointer; }
+form .options > label:hover { color: #000000; }
+form .options:hover, .options.hover { border: 1px solid #e9b924; }
+
+/* inline form */
+form.inline { padding: 0px; margin: 0px; }
+form.inline label { float: none; }
+form.inline .options { float: none; }
+
+/* textboxes */
+input[type=text], input[type=password] { font-size: 1.1em; color: #000000; background-color: #ffffff; border: 2px solid #B4B4B4; padding: 2px 0px 3px 3px; margin: 1px 2px 1px 2px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; } 
+input[type=text]:focus, input[type=text].focus, input[type=password]:focus, input[type=password].focus { border: 2px solid #e9b924; background-color: #FFFFF2; }
+
+/* textarea */
+textarea { font-family: "Helvetica Neue", "Arial", "Helvetica", "sans-serif"; font-size: 1.1em; border: 2px solid #B4B4B4; width: 555px; min-height: 70px; padding: 3px; margin: 1px; color: #000000; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
+textarea:focus, textarea.focus { border: 2px solid #e9b924; background-color: #FFFFF2; }
+
+/* placeholder */
+input[type=text].placeholder, input[type=password].placeholder, textarea.placeholder { color: #939D9D; }
+
+/* checkbox, radio */
+input[type=checkbox], input[type=radio] { cursor: pointer; margin: 0px 4px 0px 3px; vertical-align: middle; position: relative; top: -2px; }
+
+/* select */
+select { font-size: 1.1em; background-color: #fff; border: 2px solid #B4B4B4; min-width: 60px; padding: 1px 1px 1px 2px; margin: 1px 2px 1px 2px; cursor: pointer; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; max-height: 130px; }
+select:focus, select.focus { border: 2px solid #e9b924; background-color: #FFFFF2; }
+
+/* disabled */
+input[disabled], select[disabled], textarea[disabled], button[disabled] { border: 1px solid #A0A0A0; background-color: #EEEEEE; cursor: default; }
+
+/* upload */
+.upload { border-color: #666666; }
+input[type=file] { cursor: pointer; }
+
+/* maxlength */
+.maxlength { font-size: .7em; color: #777777; position: relative; top: -4px; right: -3px; }
+
+/* fieldset & legend */
+fieldset { padding: 8px 12px 20px 12px; margin: 0 0 8px 0; border: 1px solid #ccc; width: 95%; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; }
+legend { font-weight: bold; font-size: .9em; background-color: #eeeeee; border: 1px solid #bbbbbb; background: url(/images/Grad.png) 0 100% repeat-x; background-position: center; padding: 4px 9px 4px 9px; margin-bottom: 5px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
+
+/* validation */
+.field-validation-error { color: #BB0000; margin-left: 3px; }
+.input-validation-error { border: 2px solid #FF3300 !important; }
+.validation-summary-errors { border: 1px solid #EF4723; padding: 10px 10px 5px 54px; display: block; clear: both; float: left; margin: 5px 5px 8px 5px; min-height: 35px; background: #FEF8DE url(/Images/Error.gif) no-repeat 4px; border: 1px solid #EF4723; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
+
+/* buttons */
+input[type=button], input[type=submit], input[type=reset], button, a.button { font-size: .98em; background-image: url(/images/button.gif); padding: 4px 6px 4px 6px; background-position: center; background-color: #bac0c1; border: 1px solid gray; cursor: pointer; color: #1d456d; text-decoration: none; margin: 1px 3px 1px 3px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, a.button:hover { background-image: url(/images/buttonhover.gif); }
+a.button { padding: 5px 6px 5px 6px; }

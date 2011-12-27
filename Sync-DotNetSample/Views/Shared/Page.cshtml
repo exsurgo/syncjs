@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Sync JS - JavaScript Framework</title>
+    <!--Styles-->
+    <link href="/Styles/Text.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/Forms.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/Layout.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/UI.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/jQuery.UI.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/jQuery.jGrowl.css" rel="stylesheet" type="text/css" />        
+    <link href="/Styles/jQuery.ContextMenu.css" rel="stylesheet" type="text/css" />        
+    <link href="/Styles/Page.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/Site.css" rel="stylesheet" type="text/css" />
+    <link href="/Styles/shCore.css" rel="stylesheet" type="text/css" />    
+    <link href="/Styles/shCoreDefault.css" rel="stylesheet" type="text/css" />    
+    <!--Scripts-->
+    <script src="/Scripts/jQuery.js" type="text/javascript"></script>
+    <script src="/Scripts/jQuery.UI.js" type="text/javascript"></script>
+    <script src="/Scripts/jQuery.jGrowl.js" type="text/javascript"></script>
+    <script src="/Scripts/Amplify.js" type="text/javascript"></script>
+    <script src="/Scripts/PersistJS.js" type="text/javascript"></script>
+    <script src="/Scripts/Sync.js" type="text/javascript"></script>
+    <script src="/Scripts/Sync.Init.js" type="text/javascript"></script>
+    <script src="/Scripts/shCore.js" type="text/javascript"></script>    
+    <script src="/Scripts/shBrushJScript.js" type="text/javascript"></script>
+    <script src="/Scripts/shBrushXml.js" type="text/javascript"></script>
+    <script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+<body>
+    <div id="page">
+        <div id="header" class="nav">
+            <div>
+                <div id="header-lt">
+                    <h1>Sync JS</h1>
+                </div>
+                <div id="header-ct"></div>
+                <div id="header-rt"></div>
+            </div>
+        </div>
+        <div id="menu">
+            <div>
+                <ul class="menu-tabs">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/Home/Overview">Overview</a></li>
+                    <li><a href="/Sample/Index">Samples</a></li>
+                    <li><a href="/Sample/Show/Templates">Templates</a></li>
+                    <li><a href="/Sample/Show/Links">Links</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="content-top"></div>
+        <div id="content">
+            @RenderBody()
+        </div>
+        <div id="content-bottom"></div>
+        <hr/>
+    </div>
+    <div id="footer" class="nav">
+        Sync JS
+    </div>
+</body>
+</html>

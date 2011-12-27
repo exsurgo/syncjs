@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "Samples";
+}
+
+<div data-update="content" data-title="@ViewBag.Title">
+
+    <fieldset>
+        <legend>Window</legend>
+<pre class="brush: xml;">
+<div data-update="window" data-title="My Window" data-width="600"> 
+    <p>...</p>
+    <input type="button" value="Close Window" data-close="window" />
+</div>
+</pre>
+        <p>
+            <a href="/Sample/Show/Window">Update</a> - Show content in a model window
+        </p>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Replace</legend>
+        <p>
+            <a href="/Sample/Show/Replace">Update</a> - Replace an existing element
+        </p>
+        <br />
+        <div id="div-to-replace" class="before-update-style">
+            This div should be replaced.
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Insert</legend>
+        <p>
+            <a href="/Sample/Show/Insert">Update</a> - Insert element in an existing element
+        </p>
+        <br />
+        <div id="div-to-insert" class="before-update-style">
+            The new div should be inserted here
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Append & Prepend</legend>
+        <p>
+            <a href="/Sample/Show/Append">Append</a> | 
+            <a href="/Sample/Show/Prepend">Prepend</a>
+        </p>
+        <br />
+        <div id="add-to-div" class="before-update-style">
+            Already existing div
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Form Post</legend>
+        <form method="post" action="/Sample/Post">
+            <input type="text" name="Name" value="John Doe" data-focus="false"/>
+            <button type="submit">Save</button>
+        </form>
+        <br />
+        <div id="post-div" class="before-update-style">
+            This div should be replaced after the form is posted.
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Multiple Updates</legend>
+        <p>
+            <a href="/Sample/Show/Multiple">Update</a> - Two updates in one response
+        </p>
+        <br />
+        <div id="multi-update-div" class="before-update-style">
+            This div should be replaced.  And a modal window should show
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Tables - Rows & SubRows</legend>
+        <table id="my-table" class="grid">
+            <caption>
+                Parent Table
+                <a href="/Sample/Show/Row">Add Row</a>
+            </caption>
+            <tr>
+                <td><a href="/Sample/Show/SubRow">Details</a></td>
+                <td>123</td>
+                <td>1/7/2010</td>
+            </tr>
+            <tr>
+                <td><a href="/Sample/Show/SubRow">Details</a></td>
+                <td>123</td>
+                <td>1/7/2010</td>
+            </tr>            
+            <tr>
+                <td><a href="/Sample/Show/SubRow">Details</a></td>
+                <td>123</td>
+                <td>1/7/2010</td>
+            </tr>            
+            <tr>
+                <td><a href="/Sample/Show/SubRow">Details</a></td>
+                <td>123</td>
+                <td>1/7/2010</td>
+            </tr>            
+            <tr>
+                <td><a href="/Sample/Show/SubRow">Details</a></td>
+                <td>123</td>
+                <td>1/7/2010</td>
+            </tr>        
+        </table>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Inline Scripts</legend>
+        <p>
+            <a href="/Sample/Show/InlineScript">Make request with inline script</a>
+        </p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Dependency via script tag</legend>
+        <p>
+            <a href="/Sample/Show/DependencyTag">Update with dependency</a>
+        </p>
+        <br />
+        <div id="div-with-dependency-tag" class="before-update-style">
+            This div should be replaced.  Dependent scripts should be loaded via a script tag.
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Dependency via attribute</legend>
+        <p>
+            <a href="/Sample/Show/DependencyAttr">Update with dependency</a>
+        </p>
+        <br />
+        <div id="div-with-dependency-attr" class="before-update-style">
+            This div should be replaced.  Dependent scripts should be loaded via a data attribute.
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Callbacks</legend>
+        <p>
+            <a href="/Sample/Show/Callback">Make Request with callback</a>
+        </p>
+        <div id="callback-div" class="before-update-style">
+            This div should be replaced and then a callback is run
+        </div>
+    </fieldset>
+
+    <hr />
+
+</div>

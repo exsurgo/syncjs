@@ -1,0 +1,25 @@
+﻿
+.jGrowl { padding: 12px; z-index: 9999; }
+
+/* Normal Style Positions */
+.jGrowl { position: fixed; }
+.jGrowl.top-left { left: 0px; top: 0px; }
+.jGrowl.top-right { right: 0px; top: 0px; }
+.jGrowl.bottom-left { left: 0px; bottom: 0px; }
+.jGrowl.bottom-right { right: 0px; bottom: 0px; }
+.jGrowl.center { top: 0px; width: 50%; left: 25%; }
+
+/* Cross Browser Styling */
+.jGrowl .jGrowl-notification, .jGrowl .jGrowl-closer { background-color: #FDEFB9; clear: both; border: 1px solid #aaaaaa; margin-top: 4px; margin-bottom: 4px; opacity: .97 !important; filter: alpha(opacity = 97) !important; zoom: 1; padding: 18px 28px 22px 30px; font-size: 1.15em; color: #444444; font-weight: normal; text-align: center; display: none; margin-left: auto; margin-right: auto; -moz-box-shadow: 0px 0px 2px 1px #999999; -webkit-box-shadow: 0px 0px 2px 1px #999999; box-shadow: 0px 0px 2px 1px #999999; }
+.jGrowl .jGrowl-notification { min-width: 230px; max-width: 350px; float: right; }
+/* .jGrowl .jGrowl-notification .header { } */
+.jGrowl .jGrowl-notification .close { float: right; font-weight: bold; font-size: 20px; color: #888888; cursor: pointer; position: relative; top: -12px; right: -15px; }
+.jGrowl .jGrowl-closer { min-height: 15px; width: 100px; padding: 4px; margin-top: 15px !important; cursor: pointer; text-align: center; font-weight: bold; font-size: 83%; position: relative; top: 5px; }
+/* IE7 fixes */
+*:first-child+html .jGrowl .jGrowl-closer { float: right; }
+
+/* Message Types */
+.jGrowl .jGrowl-alert-success { background: #FDEFB9 url('/Images/Success.gif') no-repeat 10px; padding-left: 60px; }
+.jGrowl .jGrowl-alert-info { background: #FDEFB9 url('/Images/Info.gif') no-repeat 10px; padding-left: 60px; }
+.jGrowl .jGrowl-alert-warning { background: #FDEFB9 url('/Images/Warning.gif') no-repeat 10px; padding-left: 60px; }
+.jGrowl .jGrowl-alert-error { background: #FDEFB9 url('/Images/Error.gif') no-repeat 10px; padding-left: 60px; }

@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "About Us";
+}
+
+<div data-update="content" data-title="@ViewBag.Title">
+
+    <h2>About</h2>
+    <p>
+         @LorumIpsumGenerator.Generate(300)
+    </p>
+
+</div>

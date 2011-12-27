@@ -1,0 +1,13 @@
+﻿
+<!-- Dependent script loaded before update -->
+<!-- Contains dependent function -->
+<script src="Dependency1.js" />
+
+<div id="div-with-dependency-tag" data-update="replace" class="after-update-style">
+    This div was just loaded and a dependent script was run.
+</div>
+
+<!-- Inline script ran after dependency is loaded -->
+<script>
+    dependentFunction1();
+</script>

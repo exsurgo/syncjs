@@ -1,0 +1,6 @@
+﻿
+@* Don't render full page if Ajax request *@
+@if (!IsAjax && !ViewContext.Controller.ControllerContext.IsChildAction) 
+{
+    Layout = "~/Views/Shared/Page.cshtml";
+}

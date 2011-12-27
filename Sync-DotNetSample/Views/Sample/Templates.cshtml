@@ -1,0 +1,29 @@
+﻿
+<div data-template="task-list">
+    Count: <%= this.length %>
+    <ul>
+        <%= Sync.renderAll("task-row", this) %>
+    </ul>
+</div>
+
+<li data-template="task-row">
+    <%= this.Title %> - <%= this.Priority %>
+</li>
+
+<div data-update="content" data-title="Templates">
+    
+</div>
+        
+   
+<script>
+
+    var model = [
+        { TaskID: 1, Title: "Task 1", Priority: "High" },
+        { TaskID: 2, Title: "Task 2", Priority: "Normal" }
+    ];
+        
+    $("#content").html(
+        Sync.render("task-list", model)
+    );
+        
+</script>

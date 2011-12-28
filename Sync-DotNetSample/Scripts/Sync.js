@@ -1,14 +1,14 @@
 
 /*
-*   SyncJS - v 0.9.1.20
+*   Sync JS - v 0.9.1.21
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
 Sync = {
 
-    /********** Settings **********/
+    /********** Config **********/
 
-    settings: {
+    config: {
 
         //General 
         autoEvents: true, //Automatically hijax every link and form
@@ -64,21 +64,21 @@ Sync = {
     /********** Methods **********/
 
     //Init
-    init: function (settings) {
+    init: function (config) {
 
         //Content area
-        var content = $("#" + this.settings.contentId);
+        var content = $("#" + this.config.contentId);
 
-        //Combine default settings with provided
-        this.settings = $.extend(this.settings, settings);
+        //Combine default config with provided
+        this.config = $.extend(this.config, config);
 
         //Add page title prefix
         var title = document.title;
-        var prefix = settings.pageTitlePrefix;
+        var prefix = config.pageTitlePrefix;
         if (prefix && title.slice(0, prefix.length) != prefix) document.title = prefix + document.title;
 
         //Change standard URL to Ajax URL
-        if (this.settings.autoCorrectLinks) {
+        if (this.config.autoCorrectLinks) {
             var path = location.pathname;
             if (path != "/") {
                 content.hide();
@@ -113,7 +113,7 @@ Sync = {
         this.attachEvents("body");
 
         //Create progress indicator
-        $("body").append("<div id=\"" + this.settings.progressId + "\" class=\"" + this.settings.progressCss + "\">" + this.settings.progressText + "</div>");
+        $("body").append("<div id=\"" + this.config.progressId + "\" class=\"" + this.config.progressCss + "\">" + this.config.progressText + "</div>");
     },
 
 
@@ -123,7 +123,7 @@ Sync = {
         //Reload page with hash value
         if (url == "#" || url.charAt(0) == "~") return;
 
-        settings = this.settings;
+        config = this.config;
         sender = $(sender);
 
         //Response level metadata
@@ -132,7 +132,7 @@ Sync = {
         var callbacks = [];
 
         //On request event
-        settings.onRequest(url, sender, formData);
+        config.onRequest(url, sender, formData);
 
         //No requests for .7 sec
         var doc = $(document);
@@ -179,12 +179,12 @@ Sync = {
 
                 //TODO: Handle text/javascript response
 
-                var content = $("#" + settings.contentId);
-                var topContent = $("#" + settings.topContentId);
-                var bottomContent = $("#" + settings.bottomContentId);
+                var content = $("#" + config.contentId);
+                var topContent = $("#" + config.topContentId);
+                var bottomContent = $("#" + config.bottomContentId);
 
                 //On success event
-                settings.onSuccess(result);
+                config.onSuccess(result);
 
                 //Close window on post
                 if (method == "POST") $(sender).closest(".ui-dialog > div").dialog("destroy").remove();
@@ -202,7 +202,7 @@ Sync = {
                 $(result).filter("[data-template]").each(function () {
                     if (!window.__templates) window.__templates = {};
                     //window.__templates[] = this.outerHTML;
-                    settings.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
+                    config.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
                 });
 
                 //Iterate through updates
@@ -249,7 +249,7 @@ Sync = {
                     }
 
                     //On before update
-                    settings.onBeforeUpdate(update, meta);
+                    config.onBeforeUpdate(update, meta);
 
                     //Hide update
                     update.hide();
@@ -277,7 +277,7 @@ Sync = {
                                 else window.location.hash = "";
                             }
                             //Page Title
-                            if (meta.title) document.title = settings.pageTitlePrefix + meta.title;
+                            if (meta.title) document.title = config.pageTitlePrefix + meta.title;
                             //Top content
                             if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
                             else topContent.empty();
@@ -372,13 +372,13 @@ Sync = {
                                 if (tr.length == 0) content.html(update).find(".close-button").remove();
                                 //Add row
                                 else {
-                                    if (!tr.next().hasClass(settings.subRowCss)) {
+                                    if (!tr.next().hasClass(config.subRowCss)) {
                                         var cols = tr.find("> td").length;
-                                        tr.after("<tr class='" + settings.subRowCss + "'><td colspan='" + cols + "'></td></tr>");
+                                        tr.after("<tr class='" + config.subRowCss + "'><td colspan='" + cols + "'></td></tr>");
                                     }
                                     //Selected row
-                                    $("." + settings.rowSelectCss).removeClass(settings.rowSelectCss);
-                                    $(tr).closest("tr").addClass(settings.rowSelectCss);
+                                    $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
+                                    $(tr).closest("tr").addClass(config.rowSelectCss);
                                     //Add update
                                     var zone = tr.next().find("td:first");
                                     zone.prepend(update);
@@ -407,9 +407,9 @@ Sync = {
                                 else rows.first().before(update);
                             }
                             //Select row
-                            $("." + settings.rowSelectCss).removeClass(settings.rowSelectCss);
+                            $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
                             var row = table.find("#" + id);
-                            row.addClass(settings.rowSelectCss);
+                            row.addClass(config.rowSelectCss);
                             //Hide empty
                             //TODO: Remove this
                             table.next(".empty:first").hide();
@@ -461,7 +461,7 @@ Sync = {
                     }
 
                     //On after update
-                    settings.onAfterUpdate(update, meta);
+                    config.onAfterUpdate(update, meta);
 
                     //Show update
                     update.show();
@@ -503,7 +503,7 @@ Sync = {
                 Sync.toggleSender(sender, true);
 
                 //On complete
-                settings.onComplete(navKey);
+                config.onComplete(navKey);
 
             }, //End Success event
 
@@ -517,7 +517,7 @@ Sync = {
                 Sync.toggleProgress(false);
 
                 //Call error event
-                settings.onError(error);
+                config.onError(error);
             }
 
         }); //End begin request
@@ -529,7 +529,7 @@ Sync = {
     //Attach events to view
     attachEvents: function (context) {
 
-        var settings = Sync.settings;
+        var config = Sync.config;
 
         //Scroll
         //TODO: Need to test this
@@ -538,7 +538,7 @@ Sync = {
         });
 
         //Link click
-        $(settings.autoEvents ? "a:not([href=#],[href^=#],[href^=javascript],[href^=mailto],[data-ajax=false],[data-submit])" : "a:[data-ajax=true]", context).each(function () {
+        $(config.autoEvents ? "a:not([href=#],[href^=#],[href^=javascript],[href^=mailto],[data-ajax=false],[data-submit])" : "a:[data-ajax=true]", context).each(function () {
             var link = $(this);
             var url = link.attr("href");
             //Ensure isn't external link
@@ -551,7 +551,7 @@ Sync = {
             //Remove any existing click events
             link.unbind("click");
             //Modify links to include hash
-            if (settings.autoCorrectLinks && url != undefined && url[0] == "/") {
+            if (config.autoCorrectLinks && url != undefined && url[0] == "/") {
                 url = "#" + url.substr(1);
                 link.attr("href", url);
             }
@@ -572,7 +572,7 @@ Sync = {
         });
 
         //Form submit
-        $(settings.autoEvents ? "form:not([data-ajax=false])" : "form:[data-ajax=true]", context).unbind("submit").submit(function (e) {
+        $(config.autoEvents ? "form:not([data-ajax=false])" : "form:[data-ajax=true]", context).unbind("submit").submit(function (e) {
             var form = $(this);
             //Return if no ajax
             if (form.attr("data-ajax") == "false") return;
@@ -583,7 +583,7 @@ Sync = {
             //Required for TinyMCE
             if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
             //Serialize form data, exclude filtered items
-            var data = form.find(":input").not(settings.submitFilter).serialize();
+            var data = form.find(":input").not(config.submitFilter).serialize();
             //Disable form
             Sync.toggleSender(form, false);
             //Post request
@@ -592,7 +592,7 @@ Sync = {
         });
 
         //Submit button click
-        $(settings.autoEvents ? ":submit([data-ajax=false])" : ":submit[data-ajax=true]", context).unbind("click").click(function (e) {
+        $(config.autoEvents ? ":submit([data-ajax=false])" : ":submit[data-ajax=true]", context).unbind("click").click(function (e) {
             var form = $(this).parents("form:first");
             //Return if no ajax
             if (form.attr("data-ajax") == "false") return;
@@ -635,7 +635,7 @@ Sync = {
     //Show/Hide progress
     toggleProgress: function (show) {
 
-        var progress = $("#" + Sync.settings.progressId);
+        var progress = $("#" + Sync.config.progressId);
 
         //Show
         if (show) {
@@ -720,7 +720,7 @@ Sync = {
         //Get template html
         //var str = $("#" + template).html();
         //var str = window.__templates[template];
-        var str = settings.storageProvider.get(template);
+        var str = config.storageProvider.get(template);
         //Check cache
         var _tmplCache = {};
         var func = _tmplCache[str];
@@ -766,12 +766,12 @@ Sync = {
         $(scripts).each(function () {
             var src = this;
             //Append 'scriptPath' setting if available
-            var path = settings.scriptPath;
+            var path = config.scriptPath;
             if (path) {
                 if (!path.match(/\/$/)) path += "/";
                 src = path + src;
             }
-            //Call with ajax to access settings
+            //Call with ajax to access config
             //TODO: Allow multiple scripts to be requested at once
             $.ajax({
                 type: "GET",

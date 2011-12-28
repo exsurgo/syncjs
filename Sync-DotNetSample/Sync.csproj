@@ -78,6 +78,9 @@
     <Content Include="Scripts\shBrushJScript.js" />
     <Content Include="Scripts\shBrushXml.js" />
     <Content Include="Scripts\shCore.js" />
+    <Content Include="Scripts\Sync.Providers.js" />
+    <Content Include="Scripts\Sync.Routes.js" />
+    <Content Include="Scripts\Sync.Updaters.js" />
     <Content Include="Styles\Forms.css" />
     <Content Include="Styles\jQuery.ContextMenu.css" />
     <Content Include="Styles\jQuery.jGrowl.css" />

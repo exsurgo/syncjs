@@ -5,7 +5,7 @@ html, body { height: 100%; padding: 0px; margin: 0px; background-color: #ffffff;
 #page { height: auto; min-height: 100%; margin: 0 auto; padding: 0px; background-color: #ffffff; }
 
 /* header */
-#header { height: 55px; background: #E7E7E7 url(/Images/Grad.png); color: #3A3A3A; padding-top: 3px; border-bottom: 1px solid #888888; margin-bottom: 5px; }
+#header { height: 55px; background: #E7E7E7 url(/Images/Grad.png); color: #3A3A3A; padding-top: 3px; border-bottom: 1px solid #cccccc; margin-bottom: 5px; }
 #header > div { width: 980px; margin: 0 auto; }
 #header h1 { color: #aaaaaa; font-size: 1.8em; }
 #header-lt { width: 30%; float: left; padding-top: 5px; }

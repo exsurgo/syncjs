@@ -5,7 +5,7 @@ $(function () {
     //Initialize dynamic updates
     Sync.init({
 
-        //General settings
+        //General config
         scriptPath: "/Scripts",
 
         //Request event
@@ -24,9 +24,7 @@ $(function () {
         },
 
         //Complete event
-        onComplete: function (navKey) {
-             SyntaxHighlighter.all();
-        },
+        onComplete: function (navKey) { },
 
         //Error event
         onError: function (result) {
@@ -35,20 +33,6 @@ $(function () {
 
         //Storage provider
         storageProvider: {
-            //PersistJS
-            //            store: function (key, data) {
-            //                var store = new Persist.Store("local-store");
-            //                store.set(key, data);
-            //            },
-            //            get: function (key) {
-            //                var store = new Persist.Store("local-store");
-            //                store.get(key);
-            //            },
-            //            remove: function (key) {
-            //                var store = new Persist.Store("local-store");
-            //                store.remove(key);
-            //            }
-            //            //Amplify
             store: function (key, data) {
                 amplify.store(key, data);
             },
@@ -66,7 +50,7 @@ $(function () {
             //Task controller
             { regex: /$Task(s)?\//, scripts: ["/Scripts/Controllers/TaskController.js"] },
             //Milestone controller
-            {regex: /$Milestone(s)?\//, scripts: ["/Scripts/Controllers/MilestoneController.js"] }
+            { regex: /$Milestone(s)?\//, scripts: ["/Scripts/Controllers/MilestoneController.js"] }
         ]
 
 
@@ -74,7 +58,7 @@ $(function () {
 
     //Initialize body
     InitView("body");
-    SyntaxHighlighter.all();
+    
 });
 
 
@@ -82,7 +66,8 @@ $(function () {
 function InitView(context) {
 
     //Code syntax highlighting
-    SyntaxHighlighter.all();
+    SyntaxHighlighter.defaults["toolbar"] = false;
+    SyntaxHighlighter.highlight(document.body);
     
 }
 

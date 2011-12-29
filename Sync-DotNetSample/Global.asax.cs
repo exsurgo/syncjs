@@ -5,8 +5,9 @@ namespace Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        public static void RegisterRoutes(RouteCollection routes)
+        protected void Application_Start()
         {
+            RouteCollection routes = RouteTable.Routes;
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             //Sample
@@ -19,15 +20,9 @@ namespace Web
             //Default
             routes.MapRoute(
                 "Default", // Route name
-                "{controller}/{action}/{id}", // URL with parameters
-                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+                "{folder}/{view}/{id}", // URL with parameters
+                new { controller = "App", action = "Get", folder = "Main", view = "Home", id = UrlParameter.Optional } // Parameter defaults
             );
-
-        }
-
-        protected void Application_Start()
-        {
-            RegisterRoutes(RouteTable.Routes);
         }
     }
 }

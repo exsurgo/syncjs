@@ -1,0 +1,64 @@
+﻿
+<div data-template="task-list">
+    Count: <b><%= this.length %></b>
+    <ul>
+        <%= Sync.renderAll("task-row", this) %>
+    </ul>
+</div>
+
+<li data-template="task-row">
+    <h6><%= this.Title %></h6> - <%= this.Priority %>
+</li>
+        
+<script>
+
+    //Data
+    var model = [
+        { TaskID: 1, Title: "Task 1", Priority: "High" },
+        { TaskID: 2, Title: "Task 2", Priority: "Normal" },
+        { TaskID: 3, Title: "Task 2", Priority: "Low" }
+    ];
+
+    //Render template
+    var output = Sync.render("task-list", model);
+
+    //Output html
+    $("#template-output").html(output);
+        
+</script>
+
+<div data-update="content" data-title="Templates">
+    
+    <h3>Template Example</h3>
+    <pre class="brush: xml;">
+        <div data-template="task-list">
+            Count: <%= this.length %>
+            <ul>
+                <%= Sync.renderAll("task-row", this) %>
+            </ul>
+        </div>
+
+        <li data-template="task-row">
+            <%= this.Title %> - <%= this.Priority %>
+        </li>
+    </pre>
+    <br/>
+    <pre class="brush: js;">
+        //Data
+        var model = [
+            { TaskID: 1, Title: "Task 1", Priority: "High" },
+            { TaskID: 2, Title: "Task 2", Priority: "Normal" }
+        ];
+    
+        //Render template
+        var output = Sync.render("task-list", model);
+    
+        //Output html
+        $("#template-output").html(output);  
+    </pre>
+    <br/>
+    <p id="template-output">
+    
+    </p>
+
+</div>

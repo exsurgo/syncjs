@@ -3,3 +3,6 @@
 .before-update-style { border: 2px dashed orange; padding: 4px; margin: 4px; }
 .after-update-style { border: 2px dashed green; padding: 4px; margin: 4px; }
 
+/* syntax highlighter */
+.syntaxhighlighter { border: 2px dashed #eeeeee; }
+

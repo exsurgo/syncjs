@@ -52,11 +52,8 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\Controller.cs" />
-    <Compile Include="Components\LoremIpsumGenerator.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SampleController.cs" />
-    <Compile Include="Components\TransferResult.cs" />
+    <Compile Include="Controllers\ViewController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -106,61 +103,65 @@
     <Content Include="Web.config" />
     <Content Include="Styles\Site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Overview.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Main\Overview.cshtml" />
+    <Content Include="Views\Main\Home.cshtml" />
     <Content Include="Views\Shared\Page.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Index.cshtml" />
+    <Content Include="Views\Main\Dependencies.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Window.cshtml" />
+    <Content Include="Views\Updates\Window.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Replace.cshtml" />
+    <Content Include="Views\Updates\Replace.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Insert.cshtml" />
+    <Content Include="Views\Updates\Insert.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Multiple.cshtml" />
+    <Content Include="Views\Updates\Multiple.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\SubRow.cshtml" />
+    <Content Include="Views\Updates\SubRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Row.cshtml" />
+    <Content Include="Views\Updates\Row.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Links.cshtml" />
+    <Content Include="Views\Updates\Prepend.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Prepend.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Sample\Append.cshtml" />
+    <Content Include="Views\Updates\Append.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Templates.cshtml" />
+    <Content Include="Views\Main\Templates.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\DependencyTag.cshtml" />
+    <Content Include="Views\Dependencies\DependencyTag.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Post.cshtml" />
+    <Content Include="Views\Basics\Post.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\InlineScript.cshtml" />
+    <Content Include="Views\Dependencies\InlineScript.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\Callback.cshtml" />
+    <Content Include="Views\Dependencies\Callback.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Sample\DependencyAttr.cshtml" />
+    <Content Include="Views\Dependencies\DependencyAttr.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Main\Updates.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Main\Basics.cshtml" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

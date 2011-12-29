@@ -49,7 +49,7 @@ p { clear: both; display: block; margin: 0; padding: 6px 0 6px 0; overflow: auto
 
 /* hr - vertical spacer */
 hr { color: #ffffff; height: 0px; margin: 0px; padding: 6px; visibility: hidden; clear: both; width: auto; display: block; }
-hr.line { border-top: 1px solid #c5c5c5; height: 0px; margin: 30px 0 30px 0; padding: 0px; visibility: visible; width: 97% }
+hr.line { border-top: 1px solid #c5c5c5; height: 0px; margin: 50px 0 50px 0; padding: 0px; visibility: visible; width: 99% }
 
 /* clear */
 .clearfix:after { content: "\0020"; display: block; height: 0; clear: both; visibility: hidden; overflow: hidden; }

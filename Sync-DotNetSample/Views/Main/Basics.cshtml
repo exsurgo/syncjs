@@ -1,0 +1,71 @@
+﻿
+<div data-update="content" data-title="Basics">
+
+    <!--Relative Links-->
+    <h2>Relative Links</h2>
+    <pre class="brush: xml;">
+        <a href="/Main/Overview">Click Me</a>
+    </pre>
+    <p>All relative links should have event attached automatically (hijaxed).</p>
+    <a href="/Main/Overview">Click Me</a>
+
+    <hr class="line"/>   
+
+    <!--External Links-->
+    <h2>External Links</h2>
+    <pre class="brush: xml;">
+        <a href="http://google.com">Click Me</a>
+    </pre>
+    <p>All external links should be ignored by the plugin.  They should also open in a new window. (target="_blank")</p>
+    <a href="http://google.com">Click Me</a>
+    <hr/>
+    <p>
+        Note that all links can be hijaxed, or only selective ones via data-ajax="true".  
+        Also note that links are automatically converted to "ajax links" with hash URLs.
+    </p>
+
+    <hr class="line"/>
+
+    <!--Relative Links - New Window-->
+    <h2>Relative Links - New Window</h2>
+    <p>All relative links with target="_blank" should open in new window.</p>
+    <pre class="brush: xml;">
+        <a href="/Main/Overview" target="_blank">Click Me</a>
+    </pre>
+    <a href="/Main/Overview" target="_blank">Click Me</a>
+    
+    <hr class="line"/>
+
+    <!--Redirect-->
+    <h2>Redirect</h2>
+    <p>You can also manually redirect to a page.</p>
+    <pre class="brush: xml;">
+        <a href="javascript:Sync.redirect('http://google.com');">Click Me</a>
+    </pre>
+    <a href="javascript:Sync.redirect('http://google.com');">Click Me</a>
+    
+    <hr class="line"/>
+
+    <!--Form Posts-->
+    <h2>Form Posts</h2>
+    <pre class="brush: xml;">
+        <form method="post" action="/Basics/Post">
+            <input type="text" name="Name" value="John Doe" />
+            <button type="submit">Save</button>
+        </form>
+    </pre>
+    <pre class="brush: xml;">
+        <div id="post-div" data-update="replace" class="after-update-style">
+            The form was posted.  The value sent was @ViewBag.Name
+        </div>     
+    </pre>
+    <form method="post" action="/Basics/Post" class="box col7">
+        <input type="text" name="Name" value="John Doe" data-focus="false"/>
+        <button type="submit">Save</button>
+    </form>
+    <hr />
+    <div id="post-div" class="before-update-style">
+        This div should be replaced after the form is posted.
+    </div>
+
+</div>

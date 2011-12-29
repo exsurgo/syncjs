@@ -1,11 +1,7 @@
-
 *_ReSharper*
-/bin/
 */bin/*
 */obj/*
 *.csproj.user
 *.suo
 *.sln
-SyncJS.docx
-SyncJS.pptx
 *ReSharper.user

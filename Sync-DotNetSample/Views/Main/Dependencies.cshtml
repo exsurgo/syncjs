@@ -1,0 +1,45 @@
+﻿
+<div data-update="content" data-title="Dependencies">
+  
+    <fieldset>
+        <legend>Inline Scripts</legend>
+        <p>
+            <a href="/Sample/Show/InlineScript">Make request with inline script</a>
+        </p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Dependency via script tag</legend>
+        <p>
+            <a href="/Sample/Show/DependencyTag">Update with dependency</a>
+        </p>
+        <br />
+        <div id="div-with-dependency-tag" class="before-update-style">
+            This div should be replaced.  Dependent scripts should be loaded via a script tag.
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Dependency via attribute</legend>
+        <p>
+            <a href="/Sample/Show/DependencyAttr">Update with dependency</a>
+        </p>
+        <br />
+        <div id="div-with-dependency-attr" class="before-update-style">
+            This div should be replaced.  Dependent scripts should be loaded via a data attribute.
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Callbacks</legend>
+        <p>
+            <a href="/Sample/Show/Callback">Make Request with callback</a>
+        </p>
+        <div id="callback-div" class="before-update-style">
+            This div should be replaced and then a callback is run
+        </div>
+    </fieldset>
+
+    <hr />
+
+</div>

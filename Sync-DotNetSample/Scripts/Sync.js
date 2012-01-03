@@ -759,7 +759,7 @@ Sync = {
         $(scripts).each(function () {
             var src = $.trim(this);
             //Append 'scriptPath' setting if available
-            var path = config.scriptPath;
+            var path = Sync.config.scriptPath;
             if (path) {
                 if (!path.match(/\/$/)) path += "/";
                 src = path + src;

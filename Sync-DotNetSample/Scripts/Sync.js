@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.21
+*   Sync JS - v 0.9.1.28
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
@@ -33,7 +33,7 @@ Sync = {
         onBeforeUpdate: function () { }, //Just before content is updated in the DOM
         onAfterUpdate: function () { }, //Just after content is updated in the DOM
         onComplete: function () { }, //The request and updated have been successfully completed
-        onError: function () { }, //Request resulted in an error 
+        onError: function () { }, //Request resulted in an error
 
         //Window provider
         windowProvider: {
@@ -110,7 +110,7 @@ Sync = {
         });
 
         //Attach events to body
-        this.attachEvents("body");
+        this.initUpdate("body");
 
         //Create progress indicator
         $("body").append("<div id=\"" + this.config.progressId + "\" class=\"" + this.config.progressCss + "\">" + this.config.progressText + "</div>");
@@ -129,7 +129,6 @@ Sync = {
         //Response level metadata
         var navKey;
         var isInvalid;
-        var callbacks = [];
 
         //On request event
         config.onRequest(url, sender, formData);
@@ -189,18 +188,22 @@ Sync = {
                 //Close window on post
                 if (method == "POST") $(sender).closest(".ui-dialog > div").dialog("destroy").remove();
 
-                //Load any script dependencies via script tags
+                //Load any script dependencies via script tags 
+                //Temporarily replace script tag names with 'tempscript'
+                //Otherwise the src will be requested early
                 var scripts = [];
-                $(result).filter("script[src]").each(function () {
-                    //Get src attribute
-                    scripts.push($(this).attr("src"));
-                });
+                result = result.replace(/<script /i, "<tempscript ");
+                $(result).filter("tempscript[src]").each(function () {
+                    //Store src to request later
+                    scripts.push(this.getAttribute("src"));
+                }).remove();
+                result = result.replace(/<scripttemp /i, "<tempscript ");
                 Sync.loadScripts(scripts);
 
                 //Store any client templates
                 //TODO: Store in local storage
                 $(result).filter("[data-template]").each(function () {
-                    if (!window.__templates) window.__templates = {};
+                    //if (!window.__templates) window.__templates = {};
                     //window.__templates[] = this.outerHTML;
                     config.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
                 });
@@ -214,20 +217,9 @@ Sync = {
                     var meta = update.data();
                     meta.update = meta.update.toLowerCase();
 
-                    //Load dependent scripts via data-load
-                    //Download scripts from scriptLocation
-                    if (meta.load) {
-                        var scripts = [];
-                        $(meta.load.split(",")).each(function () {
-                            scripts.push($.trim(this));
-                        });
-                        Sync.loadScripts(scripts);
-                    };
-
                     //Remember metadata for later
                     if (meta.nav != undefined) navKey = meta.nav;
                     if (meta.isInvalid) isInvalid = true;
-                    if (meta.callback) callbacks.push({ callback: meta.callback, update: update });
 
                     //Update actions
                     if (meta.hide) $(meta.hide).hide();
@@ -257,11 +249,11 @@ Sync = {
                     //Make updates
                     switch (meta.update) {
 
-                        // Content                                                                                                                                                                            
+                        // Content 
                         /*  
                         *   title: string 
                         *   address: string 
-                        *   nav: [string|null|false]                                                     
+                        *   nav: [string|null|false]
                         *   top: selector 
                         *   bottom: selector        
                         */ 
@@ -290,11 +282,11 @@ Sync = {
                             if (!meta.scroll) $(window).scrollTop(0);
                             break;
 
-                        // Window                                                                                                                                                                                                                                                                                                                    
+                        // Window                                                                                                                                                                                                                                                                                                                                
                         /*
-                        *   title: string                                                                                                                                                                                     
-                        *   modal: bool                                                                                                                                                                                                                           
-                        *   width: int                                                                                                                                                                                                                               
+                        *   title: string
+                        *   modal: bool 
+                        *   width: int
                         *   height: int
                         *   maxWidth: int
                         *   maxHeight: int
@@ -330,7 +322,7 @@ Sync = {
                                         if (meta.nopad) winContent.css("padding", 0);
                                         //Icon
                                         if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
-                                        var x = winTitle.find(".ui-dialog.title");
+
                                         //Recenter on window resize
                                         $(window).bind("resize." + id, function () {
                                             win.position({ at: "center", my: "center", of: window });
@@ -356,7 +348,7 @@ Sync = {
                             }
                             break;
 
-                        // Table SubRow                                                                                                              
+                        // Table SubRow                                                                                                                          
                         /*
                         *   target: selector
                         */ 
@@ -388,14 +380,15 @@ Sync = {
                             }
                             break;
 
-                        // Table Row                                                                                                                                                                                                                                                                                                           
+                        // Table Row                                                                                                                                                                                                                                                                                                                       
                         /*
                         *   target: selector
                         */ 
                         case "row":
                             //Get self or first table
                             if (!meta.target) meta.target = "#content";
-                            var table = $(meta.target).parent().find("table:first");
+                            var table = $(meta.target);
+                            if (table[0].tagName != "TABLE") table = $("table:first");
                             //Add tbody
                             if (!table.find("tbody").length) table.append("<tbody></tbody>");
                             //Replace existing row
@@ -415,12 +408,12 @@ Sync = {
                             table.next(".empty:first").hide();
                             break;
 
-                        //Replace                                                                                                                                                                                                                                                                           
+                        //Replace                                                                                                                                                                                                                                                                                       
                         case "replace":
                             $("#" + id).replaceWith(update);
                             break;
 
-                        // Insert                                                                                                                                                                                                                                                                           
+                        // Insert                                                                                                                                                                                                                                                                                       
                         /*
                         *   target: selector
                         */ 
@@ -429,7 +422,7 @@ Sync = {
                             target.html(update);
                             break;
 
-                        // Prepend                                                                                                                                                                  
+                        // Prepend                                                                                                                                                                              
                         /*
                         *   target: selector
                         */ 
@@ -439,7 +432,7 @@ Sync = {
                             else $(meta.target).prepend(update);
                             break;
 
-                        // Append                                                                                                                                                                   
+                        // Append                                                                                                                                                                               
                         /*
                         *   target: selector
                         */ 
@@ -449,12 +442,12 @@ Sync = {
                             else $(meta.target).append(update);
                             break;
 
-                        //Top                                                                                                                                                                                                                                     
+                        //Top                                                                                                                                                                                                                                                 
                         case "top":
                             topContent.empty().prepend(update);
                             break;
 
-                        //Bottom                                                                                                                                                                                                                                      
+                        //Bottom                                                                                                                                                                                                                                                  
                         case "bottom":
                             bottomContent.empty().prepend(update);
                             break;
@@ -467,36 +460,16 @@ Sync = {
                     update.show();
 
                     //Events
-                    Sync.attachEvents(update);
+                    Sync.initUpdate(update);
 
                 });
 
                 //Hide progress
                 Sync.toggleProgress(false);
 
-                //Sender success event
-                if (!isInvalid) {
-                    var e = sender.attr("data-on-success");
-                    if (!e) e = sender.find(":submit:first").attr("data-on-success");
-                    if (e) (new Function(e)).call(this);
-                }
-
                 //Run inline scripts
                 $(result).filter("script:not([src])").each(function () {
                     $.globalEval($(this).html());
-                });
-
-                //Run callbacks
-                $(callbacks).each(function () {
-                    //Get the function object by string name
-                    //Account for namespaces if name has "."
-                    var parts = this.callback.split(".");
-                    var obj = window;
-                    for (var i = 0; i < parts.length; ++i) {
-                        obj = obj[parts[i]];
-                    }
-                    //Run method, use updated content for "this" value
-                    obj.call(this.update);
                 });
 
                 //Enable sender
@@ -526,8 +499,8 @@ Sync = {
 
     /********** Helpers **********/
 
-    //Attach events to view
-    attachEvents: function (context) {
+    //Initialize any events or prerequisites 
+    initUpdate: function (context) {
 
         var config = Sync.config;
 
@@ -629,6 +602,26 @@ Sync = {
         var el = $("[data-focus=true]", context);
         if (el.length > 0) setTimeout(function () { el.first().focus(); }, 100);
         else setTimeout(function () { $(":input:first:not([data-focus=false])", context).focus(); }, 100);
+
+        //Load dependent scripts
+        $(context).find("[data-load]").andSelf().filter("[data-load]").each(function () {
+            var scripts = this.getAttribute("data-load").split(",");
+            Sync.loadScripts(scripts);
+        });
+
+        //Run callbacks
+        $(context).find("[data-callback]").andSelf().filter("[data-callback]").each(function () {
+            //Get the function object by string name
+            //Account for namespaces if name has "."
+            var el = $(this),
+                parts = el.attr("data-callback").split("."),
+                obj = window;
+            for (var i = 0; i < parts.length; ++i) {
+                obj = obj[parts[i]];
+            }
+            //Run method, use updated content for "this" value
+            obj.call(el);
+        });
     },
 
 
@@ -666,7 +659,7 @@ Sync = {
 
         switch (type.toLowerCase()) {
 
-            //Update                                                                                                                                                   
+            //Update 
             case "update":
                 var update = el.closest("[data-update]");
                 //Remove
@@ -676,12 +669,12 @@ Sync = {
                 if (subrow.find("td:first > *:first").length == 0) subrow.remove();
                 break;
 
-            //Window                                                                                                                                                  
+            //Window 
             case "window":
                 el.closest(".ui-dialog").dialog("destroy").remove();
                 break;
 
-            //Row                                                                               
+            //Row 
             case "row":
                 var grid = el.closest(".grid");
                 var row;
@@ -695,7 +688,7 @@ Sync = {
                 grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
                 break;
 
-            //Parent                                                                                                                                                 
+            //Parent
             case "parent":
                 el.parent().remove();
                 break;
@@ -764,7 +757,7 @@ Sync = {
     //Load dependent scripts
     loadScripts: function (scripts) {
         $(scripts).each(function () {
-            var src = this;
+            var src = $.trim(this);
             //Append 'scriptPath' setting if available
             var path = config.scriptPath;
             if (path) {

@@ -1,12 +1,12 @@
 ﻿
 Sync.Updaters = [
-    
+
     //SubRow
-    { 
+    {
         name: "subrow",
-        updater: function (view, data) {
-            
+        updater: function(view, data) {
+
         }
     }
 
-]
+];

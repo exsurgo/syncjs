@@ -6,7 +6,7 @@
     <pre class="brush: xml;">
         <div data-update="window" data-title="My Window" data-width="600"> 
             <p>...</p>
-            <input type="button" value="Close Window" data-close="window" />
+            <button data-close="window">Close Window</button>
         </div>
     </pre>
     <p>
@@ -18,7 +18,7 @@
     <!--Replace-->
     <h3>Replace</h3>
     <pre class="brush: xml;">
-        <div data-update="replace" id="div-to-replace" class="after-update-style">
+        <div data-update="replace" id="div-to-replace">
             This element replaced the previous element.
         </div> 
     </pre>
@@ -35,7 +35,7 @@
     <!--Insert-->
     <h3>Insert</h3>
     <pre class="brush: xml;">
-        <div data-update="insert" data-target="#div-to-insert" class="after-update-style">
+        <div data-update="insert" data-target="#div-to-insert">
             This is the new element.
         </div> 
     </pre>
@@ -52,7 +52,7 @@
     <!--Append & Prepend-->
     <h3>Append & Prepend</h3>
     <pre class="brush: xml;">
-        <div data-update="append" data-target="#add-to-div" class="after-update-style">
+        <div data-update="append" data-target="#add-to-div">
             This element was appended.
         </div>
 
@@ -74,7 +74,7 @@
     <!--Multiple Updates-->
     <h3>Multiple Updates</h3>
     <pre class="brush: xml;">
-        <div id="multi-update-div" data-update="replace" class="after-update-style">
+        <div id="multi-update-div" data-update="replace">
             This element was updated first
         </div>
 

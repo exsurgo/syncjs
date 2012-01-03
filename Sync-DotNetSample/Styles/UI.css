@@ -26,7 +26,7 @@ tr.subrow > td { padding: 4px 6px 5px 20px !important; background: #DBDBDB url('
 tr.subrow .grid { border: 1px solid #C7C7C7; }
 tr.subrow > td > * { margin: 3px 0 5px 0 !important; background-color: #ffffff; border: 1px solid #B4B4B4; width: 100%; overflow: auto; }
 /* caption */
-.grid > caption { background-color: #f3f3f3; border: 1px solid #D7D7D7; background: url(/Images/Grad.png) 0 100% repeat-x; background-position: center; padding: 5px 7px 6px 7px; color: #bbbbbb; text-align: left; overflow: auto; }
+.grid > caption { background-color: #f3f3f3; border: 1px solid #D7D7D7; background: url(/Images/Grad.png) 0 100% repeat-x; background-position: center; padding: 5px 7px 6px 7px; color: #666666; text-align: left; overflow: auto; }
 .grid > caption h1, .grid > caption h2, .grid > caption h3, .grid > caption h4, .grid > caption h5, .grid > caption h6, .grid > caption b, .grid > caption em { font-weight: bold; font-size: .9em; font-style: normal; line-height: 1.4em; padding-right: 15px; color: #444444; }
 .grid > caption a { margin: 0px 2px 0px 2px; }
 .grid > caption table { width: 100%; }

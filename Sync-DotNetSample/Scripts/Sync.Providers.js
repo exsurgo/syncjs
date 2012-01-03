@@ -1,6 +1,6 @@
 ﻿
 //Local storage provider
-Sync.providers = {
+Sync.Providers = {
 
     storageProvider: {
         //Store

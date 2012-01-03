@@ -14,6 +14,14 @@ namespace Web.Controllers
             return View(folder, view);
         }
 
+        //POST: /Post
+        public ActionResult Post(string postValue)
+        {
+            ViewBag.PostValue = postValue;
+            System.Threading.Thread.Sleep(1000);
+            return View("Basics", "Post");
+        }
+
         #region Helpers
 
         private new ActionResult View(string viewFolder, string viewName, object model = null)

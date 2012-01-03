@@ -52,8 +52,7 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\SampleController.cs" />
-    <Compile Include="Controllers\ViewController.cs" />
+    <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -71,7 +70,6 @@
     <Content Include="Scripts\Amplify.js" />
     <Content Include="Scripts\Callback.js" />
     <Content Include="Scripts\Dependency1.js" />
-    <Content Include="Scripts\PersistJS.js" />
     <Content Include="Scripts\shBrushJScript.js" />
     <Content Include="Scripts\shBrushXml.js" />
     <Content Include="Scripts\shCore.js" />
@@ -103,7 +101,6 @@
     <Content Include="Web.config" />
     <Content Include="Styles\Site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Main\Overview.cshtml" />
     <Content Include="Views\Main\Home.cshtml" />
     <Content Include="Views\Shared\Page.cshtml" />
   </ItemGroup>

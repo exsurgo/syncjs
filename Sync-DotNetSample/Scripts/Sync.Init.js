@@ -5,9 +5,6 @@ $(function () {
     //Initialize dynamic updates
     Sync.init({
 
-        //General config
-        scriptPath: "/Scripts",
-
         //Request event
         onRequest: function (url, sender, formData) { },
 
@@ -40,7 +37,7 @@ $(function () {
                 return amplify.store(key);
             },
             remove: function (key) {
-
+                amplify.store(key, null);
             }
         },
 
@@ -68,6 +65,7 @@ function InitView(context) {
     //Code syntax highlighting
     SyntaxHighlighter.defaults["toolbar"] = false;
     SyntaxHighlighter.highlight(document.body);
+    $("code:contains(scriptt)").text("script");
     
 }
 

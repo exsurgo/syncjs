@@ -10,11 +10,11 @@ namespace Web
             RouteCollection routes = RouteTable.Routes;
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            //Sample
+            //Post
             routes.MapRoute(
-                "Sample", // Route name
-                "Sample/Show/{view}", // URL with parameters
-                new { controller = "Sample", action = "Show" } // Parameter defaults
+                "Post", // Route name
+                "Post", // URL with parameters
+                new { controller = "App", action = "Post" } // Parameter defaults
             );
 
             //Default

@@ -1,12 +1,12 @@
 ﻿
-<div data-template="task-list">
+<div data-template="todo-list">
     Count: <b><%= this.length %></b>
     <ul>
-        <%= Sync.renderAll("task-row", this) %>
+        <%= Sync.renderAll("todo-row", this) %>
     </ul>
 </div>
 
-<li data-template="task-row">
+<li data-template="todo-row">
     <h6><%= this.Title %></h6> - <%= this.Priority %>
 </li>
         
@@ -14,13 +14,13 @@
 
         //Data
         var data = [
-            { TaskID: 1, Title: "Task 1", Priority: "High" },
-            { TaskID: 2, Title: "Task 2", Priority: "Normal" },
-            { TaskID: 3, Title: "Task 2", Priority: "Low" }
+            { TodoID: 1, Title: "Todo 1", Priority: "High" },
+            { TodoID: 2, Title: "Todo 2", Priority: "Normal" },
+            { TodoID: 3, Title: "Todo 3", Priority: "Low" }
         ];
 
         //Render template
-        var output = Sync.render("task-list", data);
+        var output = Sync.render("todo-list", data);
 
         //Output html
         $("#template-output").html(output);   

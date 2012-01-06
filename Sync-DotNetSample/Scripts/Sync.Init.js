@@ -31,16 +31,16 @@ $(function () {
         //Storage provider
         storageProvider: {
             store: function (key, data) {
-                amplify.store(key, data);
+                amplify.store.sessionStorage(key, data);
             },
             get: function (key) {
-                return amplify.store(key);
+                return amplify.store.sessionStorage(key);
             },
             remove: function (key) {
-                amplify.store(key, null);
+                amplify.store.sessionStorage(key, null);
             },
             exists: function (key) {
-                var store = amplify.store();
+                var store = amplify.store.sessionStorage();
                 return store[key] != undefined;
             }
         },
@@ -48,8 +48,8 @@ $(function () {
         //Routes
         routes:
         [
-        //Task controller
-            {regex: /$Task(s)?\//, scripts: ["/Scripts/Controllers/TaskController.js"] },
+        //Todo controller
+            {regex: /$Todo(s)?\//, scripts: ["/Scripts/Controllers/TodoController.js"] },
         //Milestone controller
             {regex: /$Milestone(s)?\//, scripts: ["/Scripts/Controllers/MilestoneController.js"] }
         ]

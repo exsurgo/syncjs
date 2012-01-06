@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AppController.cs" />
-    <Compile Include="Controllers\TasksController.cs" />
+    <Compile Include="Controllers\TodosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -77,7 +77,7 @@
     <Content Include="Scripts\Sync.Providers.js" />
     <Content Include="Scripts\Sync.Routes.js" />
     <Content Include="Scripts\Sync.Updaters.js" />
-    <Content Include="Scripts\TotoController.js" />
+    <Content Include="Scripts\TodoController.js" />
     <Content Include="Styles\Forms.css" />
     <Content Include="Styles\jQuery.ContextMenu.css" />
     <Content Include="Styles\jQuery.jGrowl.css" />
@@ -171,7 +171,7 @@
     <Content Include="Views\Templates\Basic.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Templates\Tasks.cshtml" />
+    <Content Include="Views\Templates\Todos.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

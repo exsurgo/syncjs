@@ -3,14 +3,14 @@
     
     <h3>Basic Example</h3>
     <pre class="brush: xml;">
-        <div data-template="task-list">
+        <div data-template="todo-list">
             Count: <%= this.length %>
             <ul>
-                <%= Sync.renderAll("task-row", this) %>
+                <%= Sync.renderAll("todo-row", this) %>
             </ul>
         </div>
 
-        <li data-template="task-row">
+        <li data-template="todo-row">
             <%= this.Title %> - <%= this.Priority %>
         </li>
     </pre>
@@ -18,13 +18,13 @@
     <pre class="brush: js;">
         //Data
         var data = [
-            { TaskID: 1, Title: "Task 1", Priority: "High" },
-            { TaskID: 2, Title: "Task 2", Priority: "Normal" },
-            { TaskID: 3, Title: "Task 2", Priority: "Low" }
+            { TodoID: 1, Title: "Todo 1", Priority: "High" },
+            { TodoID: 2, Title: "Todo 2", Priority: "Normal" },
+            { TodoID: 3, Title: "Todo 2", Priority: "Low" }
         ];
     
         //Render template
-        var output = Sync.render("task-list", data);
+        var output = Sync.render("todo-list", data);
     
         //Output html
         $("#template-output").html(output);  
@@ -33,7 +33,7 @@
     <p id="template-output" class="before-update-style">
         Template will be rendered here
     </p>
-    <a href="/Templates/Basic">View Task List</a>
+    <a href="/Templates/Basic">View Todo List</a>
 
     <hr class="line"/>
 
@@ -41,6 +41,6 @@
     <p id="remote-data-div" class="before-update-style">
         Template will be rendered here
     </p>
-    <a href="/Tasks">View Task List</a>
+    <a href="/Todos">View Todo List</a>
 
 </div>

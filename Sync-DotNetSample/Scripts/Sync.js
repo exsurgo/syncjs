@@ -132,14 +132,6 @@ Sync = {
         //On request event
         config.onRequest(url, sender, formData);
 
-        //No requests for .7 sec
-        var doc = $(document);
-        if (doc.data("_updater_hold") != null) return;
-        else {
-            doc.data("_updater_hold", true);
-            setTimeout(new function () { $(document).removeData('_updater_hold'); }, 700);
-        }
-
         //Confirm request
         /*
         *   data-confirm="true"
@@ -306,11 +298,6 @@ Sync = {
         return html;
     },
 
-    //Determine if template if available
-    templateExists: function (id) {
-
-    },
-
     //Load dependent scripts
     loadScripts: function (scripts) {
         $(scripts).each(function () {
@@ -418,7 +405,7 @@ Sync = {
             if (this.regex.test(url)) {
 
                 //Request templates
-                if (!config.storageProvider.exists(this.templateId)) request(this.templateUrl);
+                if (!config.storageProvider.exists(this.templateId)) Sync.request(this.templateUrl);
                 var template = config.storageProvider.get(this.templateId);
                 
                 //Render template with data and convert to jquery object
@@ -668,6 +655,9 @@ Sync = {
 
         //Link click
         $(config.autoEvents ? "a:not([href=#],[href^=#],[href^=javascript],[href^=mailto],[data-ajax=false],[data-submit])" : "a:[data-ajax=true]", context).each(function () {
+            //Hold user action for .7 seconds
+            if (!preventAction()) 
+            //Get link
             var link = $(this);
             var url = link.attr("href");
             //Ensure isn't external link
@@ -814,7 +804,20 @@ Sync = {
         }
         //TODO: Disable other sender types
     }
-
+    
+	//Prevent a user action for .7 seconds
+	//Returns bool for if user can proceed
+	preventAction: function() {
+		//Hold user action for .7 seconds
+		var doc = $(document);
+		if (doc.data("_action_hold") != null) return false;
+		else {
+			doc.data("_action_hold", true);
+			setTimeout(new function () { $(document).removeData("_action_hold"); }, 700);
+		}	
+		return true;
+	}
+	
 };
 
 

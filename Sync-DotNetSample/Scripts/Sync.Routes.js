@@ -1,11 +1,11 @@
 ﻿
 Sync.routes = [
 
-    //Task list
+    //Todo list
     {
-        regex: /^\/Tasks$/i,
-        templateId: "task-list",
-        templateUrl: "/Templates/Tasks"
+        regex: /^\/Todos$/i,
+        templateId: "todo-list",
+        templateUrl: "/Templates/Todos"
     },
 
 ];

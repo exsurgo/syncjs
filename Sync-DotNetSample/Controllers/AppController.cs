@@ -22,17 +22,17 @@ namespace Web.Controllers
             return View("Basics", "Post");
         }
 
-        //GET:  /Task/List
-        public ActionResult Tasks()
+        //GET:  /Todo/List
+        public ActionResult Todos()
         {
-            var tasks = new[]
+            var todos = new[]
                         {
-                            new {TaskID = 1, Title = "Task 1", Priority = "High"},
-                            new {TaskID = 2, Title = "Task 2", Priority = "Normal"},
-                            new {TaskID = 3, Title = "Task 2", Priority = "Low"}
+                            new { TodoID = 1, Title = "Todo 1", Priority = "High" },
+                            new { TodoID = 2, Title = "Todo 2", Priority = "Normal" },
+                            new { TodoID = 3, Title = "Todo 2", Priority = "Low" }
                         };
 
-            return Json(tasks);
+            return Json(todos);
         }
 
         #region Helpers

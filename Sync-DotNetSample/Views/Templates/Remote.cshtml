@@ -1,12 +1,12 @@
 ﻿
-<div data-template="task-list">
+<div data-template="todo-list">
     Count: <b><%= this.length %></b>
     <ul>
-        <%= Sync.renderAll("task-row", this) %>
+        <%= Sync.renderAll("todo-row", this) %>
     </ul>
 </div>
 
-<li data-template="task-row">
+<li data-template="todo-row">
     <h6><%= this.Title %></h6> - <%= this.Priority %>
 </li>
 
@@ -14,10 +14,10 @@
 
     //Request data
     $.ajax({
-        url: "/Tasks",
+        url: "/Todos",
         success: function (data) {
             //Render result
-            var output = Sync.render("task-list", data);
+            var output = Sync.render("todo-list", data);
             $("#template-output").html(output);
         }
     });        

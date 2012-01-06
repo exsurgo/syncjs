@@ -1,17 +1,11 @@
 ﻿
-Sync.Routes = [
-
-    //Tasks
-    {
-        route: /$Tasks\//i,
-        load: [ "/Scripts/Controllers/TaskController.js" ]
-    },
+Sync.routes = [
 
     //Task list
     {
-        route: /$Tasks\//i,
-        dataUrl: "/Tasks",
-        template: "/Templates/Tasks"
+        regex: /^\/Tasks$/i,
+        templateId: "task-list",
+        templateUrl: "/Templates/Tasks"
     },
 
 ];

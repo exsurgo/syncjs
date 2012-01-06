@@ -1,5 +1,5 @@
 ﻿
-<div data-template="task-list" id="task-list">
+<div data-template="task-list" data-update="insert" data-target="#remote-data-div">
     Count: <b><%= this.length %></b>
     <ul>
         <%= Sync.renderAll("task-row", this) %>

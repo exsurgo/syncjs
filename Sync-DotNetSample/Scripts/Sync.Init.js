@@ -38,16 +38,20 @@ $(function () {
             },
             remove: function (key) {
                 amplify.store(key, null);
+            },
+            exists: function (key) {
+                var store = amplify.store();
+                return store[key] != undefined;
             }
         },
 
         //Routes
         routes:
         [
-            //Task controller
-            { regex: /$Task(s)?\//, scripts: ["/Scripts/Controllers/TaskController.js"] },
-            //Milestone controller
-            { regex: /$Milestone(s)?\//, scripts: ["/Scripts/Controllers/MilestoneController.js"] }
+        //Task controller
+            {regex: /$Task(s)?\//, scripts: ["/Scripts/Controllers/TaskController.js"] },
+        //Milestone controller
+            {regex: /$Milestone(s)?\//, scripts: ["/Scripts/Controllers/MilestoneController.js"] }
         ]
 
 
@@ -55,7 +59,7 @@ $(function () {
 
     //Initialize body
     InitView("body");
-    
+
 });
 
 

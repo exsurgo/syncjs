@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.28
+*   Sync JS - v 0.9.1.3
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
@@ -50,7 +50,8 @@ Sync = {
         storageProvider: {
             store: function (key, data) { },
             get: function (key) { },
-            remove: function (key) { }
+            remove: function (key) { },
+            exists: function (key) { }
         },
 
         //Custom update types
@@ -176,307 +177,19 @@ Sync = {
 
                 //On success event
                 config.onSuccess(result);
-                
+
                 //Close window on post
                 if (method == "POST") $(sender).closest(".ui-dialog > div").dialog("destroy").remove();
-                
+
                 //Get return type (HTML, JSON, etc)
                 var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
-                
+
                 //Text/HTML response
-                if ((/html/i).test(contentType)) {
-                    
-                }
-                
+                if ((/html/i).test(contentType)) Sync.handleHtml(result, sender, url);
+
                 //JSON Response
-                else if ((/json/i).test(contentType)) {
-                    
-                }
-                
-                var content = $("#" + config.contentId);
-                var topContent = $("#" + config.topContentId);
-                var bottomContent = $("#" + config.bottomContentId);
+                else if ((/json/i).test(contentType)) Sync.handleJson(result, sender, url);
 
-                //Load any script dependencies via script tags 
-                //Temporarily replace script tag names with 'tempscript'
-                //Otherwise the src will be requested early
-                var scripts = [];
-                result = result.replace(/<script /i, "<tempscript ");
-                $(result).filter("tempscript[src]").each(function () {
-                    //Store src to request later
-                    scripts.push(this.getAttribute("src"));
-                }).remove();
-                result = result.replace(/<scripttemp /i, "<tempscript ");
-                Sync.loadScripts(scripts);
-
-                //Store any client templates
-                //TODO: Store in local storage
-                $(result).filter("[data-template]").each(function () {
-                    //if (!window.__templates) window.__templates = {};
-                    //window.__templates[] = this.outerHTML;
-                    config.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
-                });
-
-                //Update returned elements
-                $(result).filter("[data-update]").each(function () {
-
-                    var update = $(this);
-
-                    //Read metadata
-                    var meta = update.data();
-                    meta.update = meta.update.toLowerCase();
-
-                    //Remember metadata for later
-                    if (meta.nav != undefined) navKey = meta.nav;
-
-                    //Update actions
-                    if (meta.hide) $(meta.hide).hide();
-                    if (meta.show) $(meta.show).show();
-                    if (meta.empty) $(meta.empty).show();
-                    if (meta.remove) $(meta.remove).show();
-
-                    //Close
-                    if (meta.closeUpdate) Sync.close("update", meta.closeUpdate);
-                    if (meta.closeWindow) Sync.close("window", meta.closeWindow);
-                    if (meta.closeRow) Sync.close("row", meta.closeRow);
-                    if (meta.closeParent) Sync.close("parent", meta.closeParent);
-
-                    //Ensure id
-                    var id = update.attr("id");
-                    if (id == "" || id == undefined) {
-                        id = ("el-" + Math.random()).replace(".", "");
-                        update.attr("id", id);
-                    }
-
-                    //On before update
-                    config.onBeforeUpdate(update, meta);
-
-                    //Hide update
-                    update.hide();
-
-                    //Make updates
-                    switch (meta.update) {
-
-                        // Content   
-                        /*  
-                        *   title: string 
-                        *   address: string 
-                        *   nav: [string|null|false]
-                        *   top: selector 
-                        *   bottom: selector        
-                        */ 
-                        case "content":
-                            //Address
-                            if (meta.address && meta.address != "") url = meta.address;
-                            if (url.charAt(0) == "/") url = url.substr(1);
-                            $(window).data("_updater_address", url);
-                            if (window.location.hash.substr(1) != url) {
-                                if (url != "/") {
-                                    window.location.hash = url;
-                                }
-                                else window.location.hash = "";
-                            }
-                            //Page Title
-                            if (meta.title) document.title = config.pageTitlePrefix + meta.title;
-                            //Top content
-                            if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
-                            else topContent.empty();
-                            //Bottom content
-                            if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
-                            else bottomContent.empty();
-                            //Content
-                            content.empty().append(update);
-                            //Scroll to top by default
-                            if (!meta.scroll) $(window).scrollTop(0);
-                            break;
-
-                        // Window                                                                                                                                                                                                                                                                                                                                  
-                        /*
-                        *   title: string
-                        *   modal: bool 
-                        *   width: int
-                        *   height: int
-                        *   maxWidth: int
-                        *   maxHeight: int
-                        *   minWidth: int
-                        *   minHeight: int
-                        *   nopad: bool
-                        *   overflow: bool
-                        *   icon: string
-                        */ 
-                        case "window":
-                            //Show in content area if empty
-                            if (content.children().length == 0) content.html(update);
-                            //Show window
-                            else {
-                                //Close existing window
-                                $("#" + id).dialog("destroy").remove();
-                                //Window params
-                                var params = $.extend(meta,
-                                {
-                                    modal: meta.modal == false ? false : true,
-                                    resizable: false,
-                                    width: meta.width ? meta.width : "auto",
-                                    height: meta.height ? meta.height : "auto",
-                                    open: function () {
-                                        var win = $(this).parent(".ui-dialog");
-                                        update.removeAttr("id");
-                                        win.attr("id", id);
-                                        var winTitle = win.find(".ui-dialog-titlebar");
-                                        var winContent = win.find(".ui-dialog-content");
-                                        //Overflow
-                                        if (meta.overflow) win.find(".ui-dialog-content").andSelf().css("overflow", "visible");
-                                        //No padding
-                                        if (meta.nopad) winContent.css("padding", 0);
-                                        //Icon
-                                        if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
-
-                                        //Recenter on window resize
-                                        $(window).bind("resize." + id, function () {
-                                            win.position({ at: "center", my: "center", of: window });
-                                        });
-                                        //Recenter on delay
-                                        setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
-                                    },
-                                    close: function () {
-                                        //Unbind window resize handler
-                                        $(window).unbind("resize." + id);
-                                        //Remove window
-                                        $(this).remove();
-                                    },
-                                    drag: function () {
-                                        //Unbind window resize handler
-                                        $(window).unbind("resize." + id);
-                                        //Remove recenter
-                                        $(this).parents(".ui-dialog:first");
-                                    }
-                                });
-                                //Show window
-                                update.dialog(params);
-                            }
-                            break;
-
-                        // Table SubRow                                                                                                                            
-                        /*
-                        *   target: selector
-                        */ 
-                        case "subrow":
-                            //Replace if exists
-                            var sub = $("#" + id);
-                            if (sub.length) sub.replaceWith(update);
-                            //Add new
-                            else {
-                                //Get target row, subrow goes after
-                                var tr = meta.target ? $(meta.target) : $(sender).parents("tr:first");
-                                //Show in content area if not found
-                                if (tr.length == 0) content.html(update).find(".close-button").remove();
-                                //Add row
-                                else {
-                                    if (!tr.next().hasClass(config.subRowCss)) {
-                                        var cols = tr.find("> td").length;
-                                        tr.after("<tr class='" + config.subRowCss + "'><td colspan='" + cols + "'></td></tr>");
-                                    }
-                                    //Selected row
-                                    $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
-                                    $(tr).closest("tr").addClass(config.rowSelectCss);
-                                    //Add update
-                                    var zone = tr.next().find("td:first");
-                                    zone.prepend(update);
-                                    //IE8 Rendering Fix
-                                    if ($.browser.msie && $.browser.version == "8.0") zone.find("table").hide().slideDown(1);
-                                }
-                            }
-                            break;
-
-                        // Table Row                                                                                                                                                                                                                                                                                                                         
-                        /*
-                        *   target: selector
-                        */ 
-                        case "row":
-                            //Get self or first table
-                            if (!meta.target) meta.target = "#content";
-                            var table = $(meta.target);
-                            if (table[0].tagName != "TABLE") table = $("table:first");
-                            //Add tbody
-                            if (!table.find("tbody").length) table.append("<tbody></tbody>");
-                            //Replace existing row
-                            if (table.find("#" + id).length) table.find("#" + id).replaceWith(update);
-                            //Add new row
-                            else {
-                                var rows = table.find("tbody > tr:not(:has(th))");
-                                if (meta.position == "bottom") rows.last().after(update);
-                                else rows.first().before(update);
-                            }
-                            //Select row
-                            $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
-                            var row = table.find("#" + id);
-                            row.addClass(config.rowSelectCss);
-                            //Hide empty
-                            //TODO: Remove this
-                            table.next(".empty:first").hide();
-                            break;
-
-                        //Replace                                                                                                                                                                                                                                                                                         
-                        case "replace":
-                            $("#" + id).replaceWith(update);
-                            break;
-
-                        // Insert                                                                                                                                                                                                                                                                                         
-                        /*
-                        *   target: selector
-                        */ 
-                        case "insert":
-                            var target = $(meta.target);
-                            target.html(update);
-                            break;
-
-                        // Prepend                                                                                                                                                                                
-                        /*
-                        *   target: selector
-                        */ 
-                        case "prepend":
-                            var existing = $("#" + id);
-                            if (existing.length) existing.replaceWith(update);
-                            else $(meta.target).prepend(update);
-                            break;
-
-                        // Append                                                                                                                                                                                 
-                        /*
-                        *   target: selector
-                        */ 
-                        case "append":
-                            var existing = $("#" + id);
-                            if (existing.length) existing.replaceWith(update);
-                            else $(meta.target).append(update);
-                            break;
-
-                        //Top                                                                                                                                                                                                                                                   
-                        case "top":
-                            topContent.empty().prepend(update);
-                            break;
-
-                        //Bottom                                                                                                                                                                                                                                                    
-                        case "bottom":
-                            bottomContent.empty().prepend(update);
-                            break;
-                    }
-
-                    //On after update
-                    config.onAfterUpdate(update, meta);
-
-                    //Show update
-                    update.show();
-
-                    //Events
-                    Sync.initView(update);
-
-                });
-                
-                //Run inline scripts
-                $(result).filter("script:not([src])").each(function () {
-                    $.globalEval($(this).html());
-                });
-                
                 //Hide progress
                 Sync.toggleProgress(false);
 
@@ -504,7 +217,7 @@ Sync = {
         }); //End begin request
 
     },
-    
+
     //Close element
     close: function (type, selector) {
 
@@ -513,7 +226,7 @@ Sync = {
 
         switch (type.toLowerCase()) {
 
-            //Update  
+            //Update            
             case "update":
                 var update = el.closest("[data-update]");
                 //Remove
@@ -523,12 +236,12 @@ Sync = {
                 if (subrow.find("td:first > *:first").length == 0) subrow.remove();
                 break;
 
-            //Window  
+            //Window            
             case "window":
                 el.closest(".ui-dialog").dialog("destroy").remove();
                 break;
 
-            //Row  
+            //Row            
             case "row":
                 var grid = el.closest(".grid");
                 var row;
@@ -542,7 +255,7 @@ Sync = {
                 grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
                 break;
 
-            //Parent 
+            //Parent           
             case "parent":
                 el.parent().remove();
                 break;
@@ -592,7 +305,12 @@ Sync = {
         });
         return html;
     },
-    
+
+    //Determine if template if available
+    templateExists: function (id) {
+
+    },
+
     //Load dependent scripts
     loadScripts: function (scripts) {
         $(scripts).each(function () {
@@ -618,15 +336,325 @@ Sync = {
     /********** Helpers **********/
 
     //Handle html update
-    handleHtml: function (result) {
-        
+    handleHtml: function (result, sender, url) {
+
+        //Load any script dependencies via script tags 
+        //Temporarily replace script tag names with 'tempscript'
+        //Otherwise the src will be requested early
+        var scripts = [];
+        result = result.replace(/<script /i, "<tempscript ");
+        $(result).filter("tempscript[src]").each(function () {
+            //Store src to request later
+            scripts.push(this.getAttribute("src"));
+        }).remove();
+        result = result.replace(/<scripttemp /i, "<tempscript ");
+        Sync.loadScripts(scripts);
+
+        //Store any client templates
+        $(result).filter("[data-template]").each(function () {
+            //if (!window.__templates) window.__templates = {};
+            //window.__templates[] = this.outerHTML;
+            config.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
+        });
+
+        //Update returned elements
+        $(result).filter("[data-update]:not([data-template])").each(function () {
+
+            var update = $(this);
+
+            //Read metadata
+            var meta = update.data();
+            meta.update = meta.update.toLowerCase();
+
+            //Remember metadata for later
+            //if (meta.nav != undefined) navKey = meta.nav;
+
+            //Update actions
+            if (meta.hide) $(meta.hide).hide();
+            if (meta.show) $(meta.show).show();
+            if (meta.empty) $(meta.empty).show();
+            if (meta.remove) $(meta.remove).show();
+
+            //Close
+            if (meta.closeUpdate) Sync.close("update", meta.closeUpdate);
+            if (meta.closeWindow) Sync.close("window", meta.closeWindow);
+            if (meta.closeRow) Sync.close("row", meta.closeRow);
+            if (meta.closeParent) Sync.close("parent", meta.closeParent);
+
+            //On before update
+            config.onBeforeUpdate(update, meta);
+
+            //Hide update
+            update.hide();
+
+            //Update element in the DOM
+            Sync.updateElement(update, meta, sender, url);
+
+            //On after update
+            config.onAfterUpdate(update, meta);
+
+            //Show update
+            update.show();
+
+            //Events
+            Sync.initView(update);
+
+        });
+
+        //Run inline scripts
+        $(result).filter("script:not([src])").each(function () {
+            $.globalEval($(this).html());
+        });
+
     },
-    
+
     //Handle json update
-    handleJson: function (result) {
-        
+    handleJson: function (result, sender, url) {
+
+        //Check routes to match url with needed template
+        $(Sync.routes).each(function () {
+
+            //If route matches, then request template
+            if (this.regex.test(url)) {
+
+                //Request templates
+                if (!config.storageProvider.exists(this.templateId)) request(this.templateUrl);
+                var template = config.storageProvider.get(this.templateId);
+                
+                //Render template with data and convert to jquery object
+                var update = $(Sync.render(this.templateId, result));
+
+                //Update output
+                Sync.updateElement(update, update.data(), sender, url);
+            }
+
+        });
+
     },
-    
+
+    //Update html element
+    updateElement: function (update, meta, sender, url) {
+
+        //Ensure id
+        var id = update.attr("id");
+        if (id == "" || id == undefined) {
+            id = ("el-" + Math.random()).replace(".", "");
+            update.attr("id", id);
+        }
+
+        //Make updates
+        switch (meta.update) {
+
+            // Content              
+            /*  
+            *   title: string 
+            *   address: string 
+            *   nav: [string|null|false]
+            *   top: selector 
+            *   bottom: selector        
+            */ 
+            case "content":
+                //Address
+                if (meta.address && meta.address != "") url = meta.address;
+                if (url.charAt(0) == "/") url = url.substr(1);
+                $(window).data("_updater_address", url);
+                if (window.location.hash.substr(1) != url) {
+                    if (url != "/") {
+                        window.location.hash = url;
+                    }
+                    else window.location.hash = "";
+                }
+                //Page Title
+                if (meta.title) document.title = config.pageTitlePrefix + meta.title;
+                //Top content
+                var topContent = $("#" + config.topContentId);
+                if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
+                else topContent.empty();
+                //Bottom content
+                var bottomContent = $("#" + config.bottomContentId);
+                if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
+                else bottomContent.empty();
+                //Content
+                $("#" + config.contentId).empty().append(update);
+                //Scroll to top by default
+                if (!meta.scroll) $(window).scrollTop(0);
+                break;
+
+            // Window                                                                                                                                                                                                                                                                                                                                             
+            /*
+            *   title: string
+            *   modal: bool 
+            *   width: int
+            *   height: int
+            *   maxWidth: int
+            *   maxHeight: int
+            *   minWidth: int
+            *   minHeight: int
+            *   nopad: bool
+            *   overflow: bool
+            *   icon: string
+            */ 
+            case "window":
+                //Show in content area if empty
+                if (content.children().length == 0) content.html(update);
+                //Show window
+                else {
+                    //Close existing window
+                    $("#" + id).dialog("destroy").remove();
+                    //Window params
+                    var params = $.extend(meta,
+                    {
+                        modal: meta.modal == false ? false : true,
+                        resizable: false,
+                        width: meta.width ? meta.width : "auto",
+                        height: meta.height ? meta.height : "auto",
+                        open: function () {
+                            var win = $(this).parent(".ui-dialog");
+                            update.removeAttr("id");
+                            win.attr("id", id);
+                            var winTitle = win.find(".ui-dialog-titlebar");
+                            var winContent = win.find(".ui-dialog-content");
+                            //Overflow
+                            if (meta.overflow) win.find(".ui-dialog-content").andSelf().css("overflow", "visible");
+                            //No padding
+                            if (meta.nopad) winContent.css("padding", 0);
+                            //Icon
+                            if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
+
+                            //Recenter on window resize
+                            $(window).bind("resize." + id, function () {
+                                win.position({ at: "center", my: "center", of: window });
+                            });
+                            //Recenter on delay
+                            setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
+                        },
+                        close: function () {
+                            //Unbind window resize handler
+                            $(window).unbind("resize." + id);
+                            //Remove window
+                            $(this).remove();
+                        },
+                        drag: function () {
+                            //Unbind window resize handler
+                            $(window).unbind("resize." + id);
+                            //Remove recenter
+                            $(this).parents(".ui-dialog:first");
+                        }
+                    });
+                    //Show window
+                    update.dialog(params);
+                }
+                break;
+
+            // Table SubRow                                                                                                                                       
+            /*
+            *   target: selector
+            */ 
+            case "subrow":
+                //Replace if exists
+                var sub = $("#" + id);
+                if (sub.length) sub.replaceWith(update);
+                //Add new
+                else {
+                    //Get target row, subrow goes after
+                    var tr = meta.target ? $(meta.target) : $(sender).parents("tr:first");
+                    //Show in content area if not found
+                    if (tr.length == 0) content.html(update).find(".close-button").remove();
+                    //Add row
+                    else {
+                        if (!tr.next().hasClass(config.subRowCss)) {
+                            var cols = tr.find("> td").length;
+                            tr.after("<tr class='" + config.subRowCss + "'><td colspan='" + cols + "'></td></tr>");
+                        }
+                        //Selected row
+                        $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
+                        $(tr).closest("tr").addClass(config.rowSelectCss);
+                        //Add update
+                        var zone = tr.next().find("td:first");
+                        zone.prepend(update);
+                        //IE8 Rendering Fix
+                        if ($.browser.msie && $.browser.version == "8.0") zone.find("table").hide().slideDown(1);
+                    }
+                }
+                break;
+
+            // Table Row                                                                                                                                                                                                                                                                                                                                    
+            /*
+            *   target: selector
+            */ 
+            case "row":
+                //Get self or first table
+                if (!meta.target) meta.target = "#content";
+                var table = $(meta.target);
+                if (table[0].tagName != "TABLE") table = $("table:first");
+                //Add tbody
+                if (!table.find("tbody").length) table.append("<tbody></tbody>");
+                //Replace existing row
+                if (table.find("#" + id).length) table.find("#" + id).replaceWith(update);
+                //Add new row
+                else {
+                    var rows = table.find("tbody > tr:not(:has(th))");
+                    if (meta.position == "bottom") rows.last().after(update);
+                    else rows.first().before(update);
+                }
+                //Select row
+                $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
+                var row = table.find("#" + id);
+                row.addClass(config.rowSelectCss);
+                //Hide empty
+                //TODO: Remove this
+                table.next(".empty:first").hide();
+                break;
+
+            //Replace                                                                                                                                                                                                                                                                                                    
+            case "replace":
+                $("#" + id).replaceWith(update);
+                break;
+
+            // Insert                                                                                                                                                                                                                                                                                                    
+            /*
+            *   target: selector
+            */ 
+            case "insert":
+                var target = $(meta.target);
+                target.html(update);
+                break;
+
+            // Prepend                                                                                                                                                                                           
+            /*
+            *   target: selector
+            */ 
+            case "prepend":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(update);
+                else $(meta.target).prepend(update);
+                break;
+
+            // Append                                                                                                                                                                                            
+            /*
+            *   target: selector
+            */ 
+            case "append":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(update);
+                else $(meta.target).append(update);
+                break;
+
+            //Top                                                                                                                                                                                                                                                              
+            case "top":
+                var topContent = $("#" + config.topContentId);
+                topContent.empty().prepend(update);
+                break;
+
+            //Bottom                                                                                                                                                                                                                                                               
+            case "bottom":
+                var bottomContent = $("#" + config.bottomContentId);
+                bottomContent.empty().prepend(update);
+                break;
+        }
+
+    },
+
     //Initialize any events or prerequisites 
     initView: function (context) {
 
@@ -786,7 +814,7 @@ Sync = {
         }
         //TODO: Disable other sender types
     }
-    
+
 };
 
 

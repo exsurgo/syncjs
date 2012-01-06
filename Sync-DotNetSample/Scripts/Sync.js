@@ -655,8 +655,6 @@ Sync = {
 
         //Link click
         $(config.autoEvents ? "a:not([href=#],[href^=#],[href^=javascript],[href^=mailto],[data-ajax=false],[data-submit])" : "a:[data-ajax=true]", context).each(function () {
-            //Hold user action for .7 seconds
-            if (!preventAction()) 
             //Get link
             var link = $(this);
             var url = link.attr("href");
@@ -678,8 +676,11 @@ Sync = {
             if (link.attr("target") == "_blank") return;
             //Click
             link.click(function (e) {
-                e.preventDefault();
-                //Modify link
+                //Prevent default
+				e.preventDefault();
+                //Prevent duplicate requests
+				if (preventAction()) return false;
+				//Modify link
                 if (url[0] == "#") url = "/" + url.substr(1);
                 //Update details
                 var details = link.attr("data-details");
@@ -692,11 +693,14 @@ Sync = {
 
         //Form submit
         $(config.autoEvents ? "form:not([data-ajax=false])" : "form:[data-ajax=true]", context).unbind("submit").submit(function (e) {
-            var form = $(this);
-            //Return if no ajax
-            if (form.attr("data-ajax") == "false") return;
             //Prevent default
             e.preventDefault();
+			//Prevent duplicate requests
+			if (preventAction()) return false;
+			//Get form
+			var form = $(this);
+            //Return if no ajax
+            if (form.attr("data-ajax") == "false") return;
             //Ensure unique ids
             form.attr("id", ("form-" + Math.random()).replace(".", ""));
             //Required for TinyMCE
@@ -712,11 +716,11 @@ Sync = {
 
         //Submit button click
         $(config.autoEvents ? ":submit([data-ajax=false])" : ":submit[data-ajax=true]", context).unbind("click").click(function (e) {
-            var form = $(this).parents("form:first");
+            //Prevent default
+            e.preventDefault();            
+			var form = $(this).parents("form:first");
             //Return if no ajax
             if (form.attr("data-ajax") == "false") return;
-            //Prevent default
-            e.preventDefault();
             //Submit form
             form.submit();
             return false;
@@ -806,16 +810,15 @@ Sync = {
     }
     
 	//Prevent a user action for .7 seconds
-	//Returns bool for if user can proceed
+	//Prevents user from making duplicate requests
 	preventAction: function() {
-		//Hold user action for .7 seconds
 		var doc = $(document);
-		if (doc.data("_action_hold") != null) return false;
+		if (doc.data("_action_hold") != null) return true;
 		else {
 			doc.data("_action_hold", true);
 			setTimeout(new function () { $(document).removeData("_action_hold"); }, 700);
 		}	
-		return true;
+		return false;
 	}
 	
 };

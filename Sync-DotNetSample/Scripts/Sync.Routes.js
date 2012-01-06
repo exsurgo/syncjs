@@ -1,16 +1,17 @@
 ﻿
 Sync.Routes = [
 
-    //Task controller
+    //Tasks
     {
-        regex: /$Task(s)?\//i,
-        scripts: ["/Scripts/Controllers/TaskController.js"]
+        route: /$Tasks\//i,
+        load: [ "/Scripts/Controllers/TaskController.js" ]
     },
 
-    //Milestone controller
+    //Task list
     {
-        regex: /$Milestone(s)?\//i,
-        scripts: ["/Scripts/Controllers/MilestoneController.js"]
-    }
+        route: /$Tasks\//i,
+        dataUrl: "/Tasks",
+        template: "/Templates/Tasks"
+    },
 
 ];

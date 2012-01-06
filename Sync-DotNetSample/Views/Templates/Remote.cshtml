@@ -1,0 +1,25 @@
+﻿
+<div data-template="task-list">
+    Count: <b><%= this.length %></b>
+    <ul>
+        <%= Sync.renderAll("task-row", this) %>
+    </ul>
+</div>
+
+<li data-template="task-row">
+    <h6><%= this.Title %></h6> - <%= this.Priority %>
+</li>
+
+<script>
+
+    //Request data
+    $.ajax({
+        url: "/Tasks",
+        success: function (data) {
+            //Render result
+            var output = Sync.render("task-list", data);
+            $("#template-output").html(output);
+        }
+    });        
+
+</script>

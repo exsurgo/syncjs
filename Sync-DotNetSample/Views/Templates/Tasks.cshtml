@@ -1,0 +1,11 @@
+﻿
+<div data-template="task-list" id="task-list">
+    Count: <b><%= this.length %></b>
+    <ul>
+        <%= Sync.renderAll("task-row", this) %>
+    </ul>
+</div>
+
+<li data-template="task-row" id="task-list<%= this.ID %>">
+    <h6><%= this.Title %></h6> - <%= this.Priority %>
+</li>

@@ -19,8 +19,7 @@ Sync.Providers = {
 
     //Template provider
     templateProvider: {
-        render: function (template, data) { },
-        renderAll: function (templates, data) { }
+        render: function (template, data) { }
     },
 
     //Window provider

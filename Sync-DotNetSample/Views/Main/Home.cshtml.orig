@@ -1,0 +1,38 @@
+﻿
+<div data-update="content" data-title="Home" data-address="/">
+
+    <h2>Benefits</h2>
+    <p>
+        Sync JS offers a markup-driven approach to web application development.  The basic web has always used this approach, thus making it very easy
+        to create basic websites.  Click a link, and the browser automatically makes a request 
+    </p>
+    
+    <p>
+        <ul class="checklist">
+            <li>Simple, Markup-driven behaviors</li>
+            <li>Based on conventions, but highly configurable</li>
+            <li>Reduce code counts and development efforts</li>
+            <li>Low learning curve</li>
+            <li>HTML5 compliant</li>
+            <li>Build single-page, full-Ajax applications</li>
+            <li>Back/Front button support</li>
+            <li>Deep-linking, new tab/window support</li>
+            <li>Unobtrusive JavaScript</li>
+            <li>Web server agnostic</li>
+            <li>Built on jQuery</li>
+        </ul>
+    </p>
+
+    <hr class="line"/>
+
+    <h3>Hello World</h3>
+    
+    <div class="syntaxhighlighter  xml ie"><table border="0" cellSpacing="0" cellPadding="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="xml plain">&lt;</code><code class="xml keyword">html</code><code class="xml plain">&gt;</code></div><div class="line number2 index1 alt1"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">head</code><code class="xml plain">&gt;</code></div><div class="line number3 index2 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">script</code> <code class="xml color1">src</code><code class="xml plain">=</code><code class="xml string">"/Scripts/jQuery.js"</code><code class="xml plain">&gt;&lt;/</code><code class="xml keyword">script</code><code class="xml plain">&gt;</code></div><div class="line number4 index3 alt1"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">script</code> <code class="xml color1">src</code><code class="xml plain">=</code><code class="xml string">"/Scripts/Sync.js"</code><code class="xml plain">&gt;&lt;/</code><code class="xml keyword">script</code><code class="xml plain">&gt;</code></div><div class="line number5 index4 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">script</code> <code class="xml color1">src</code><code class="xml plain">=</code><code class="xml string">"/Scripts/Sync.Init.js"</code><code class="xml plain">&gt;&lt;/</code><code class="xml keyword">script</code><code class="xml plain">&gt;</code></div><div class="line number6 index5 alt1"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;/</code><code class="xml keyword">head</code><code class="xml plain">&gt;</code></div><div class="line number7 index6 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">body</code><code class="xml plain">&gt;</code></div><div class="line number8 index7 alt1"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">div</code> <code class="xml color1">id</code><code class="xml plain">=</code><code class="xml string">"content"</code><code class="xml plain">&gt;</code></div><div class="line number9 index8 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">Replace this content&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </code></div><div class="line number10 index9 alt1"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;/</code><code class="xml keyword">div</code><code class="xml plain">&gt;</code></div><div class="line number11 index10 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;/</code><code class="xml keyword">body</code><code class="xml plain">&gt;</code></div><div class="line number12 index11 alt1"><code class="xml plain">&lt;/</code><code class="xml keyword">html</code><code class="xml plain">&gt;</code></div></div></td></tr></tbody></table></div>
+
+    <pre class="brush: xml">
+        <div data-update="content">
+            Hello World!
+        </div>
+    </pre>
+
+</div>

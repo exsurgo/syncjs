@@ -52,8 +52,12 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="Controllers\AppController.cs" />
-    <Compile Include="Controllers\TasksController.cs" />
+=======
+    <Compile Include="Controllers\SampleController.cs" />
+    <Compile Include="Controllers\ViewController.cs" />
+>>>>>>> Revising navigation, change html layouts.
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -77,7 +81,6 @@
     <Content Include="Scripts\Sync.Providers.js" />
     <Content Include="Scripts\Sync.Routes.js" />
     <Content Include="Scripts\Sync.Updaters.js" />
-    <Content Include="Scripts\TotoController.js" />
     <Content Include="Styles\Forms.css" />
     <Content Include="Styles\jQuery.ContextMenu.css" />
     <Content Include="Styles\jQuery.jGrowl.css" />
@@ -103,7 +106,10 @@
     <Content Include="Web.config" />
     <Content Include="Styles\Site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
+<<<<<<< HEAD
+=======
     <Content Include="Views\Main\Overview.cshtml" />
+>>>>>>> Revising navigation, change html layouts.
     <Content Include="Views\Main\Home.cshtml" />
     <Content Include="Views\Shared\Page.cshtml" />
   </ItemGroup>
@@ -161,18 +167,7 @@
   <ItemGroup>
     <Content Include="Views\Main\Basics.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Main\Basics.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Templates\Remote.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Templates\Basic.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Templates\Tasks.cshtml" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

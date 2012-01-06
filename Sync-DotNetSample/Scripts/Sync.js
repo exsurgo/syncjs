@@ -110,12 +110,11 @@ Sync = {
         });
 
         //Attach events to body
-        this.initUpdate("body");
+        this.initView("body");
 
         //Create progress indicator
         $("body").append("<div id=\"" + this.config.progressId + "\" class=\"" + this.config.progressCss + "\">" + this.config.progressText + "</div>");
     },
-
 
     //Request
     request: function (url, sender, formData) {
@@ -128,7 +127,6 @@ Sync = {
 
         //Response level metadata
         var navKey;
-        var isInvalid;
 
         //On request event
         config.onRequest(url, sender, formData);
@@ -174,19 +172,30 @@ Sync = {
             cache: false,
 
             //Success event
-            success: function (result) {
-
-                //TODO: Handle text/javascript response
-
-                var content = $("#" + config.contentId);
-                var topContent = $("#" + config.topContentId);
-                var bottomContent = $("#" + config.bottomContentId);
+            success: function (result, status, xhr) {
 
                 //On success event
                 config.onSuccess(result);
-
+                
                 //Close window on post
                 if (method == "POST") $(sender).closest(".ui-dialog > div").dialog("destroy").remove();
+                
+                //Get return type (HTML, JSON, etc)
+                var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
+                
+                //Text/HTML response
+                if ((/html/i).test(contentType)) {
+                    
+                }
+                
+                //JSON Response
+                else if ((/json/i).test(contentType)) {
+                    
+                }
+                
+                var content = $("#" + config.contentId);
+                var topContent = $("#" + config.topContentId);
+                var bottomContent = $("#" + config.bottomContentId);
 
                 //Load any script dependencies via script tags 
                 //Temporarily replace script tag names with 'tempscript'
@@ -208,7 +217,7 @@ Sync = {
                     config.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
                 });
 
-                //Iterate through updates
+                //Update returned elements
                 $(result).filter("[data-update]").each(function () {
 
                     var update = $(this);
@@ -219,7 +228,6 @@ Sync = {
 
                     //Remember metadata for later
                     if (meta.nav != undefined) navKey = meta.nav;
-                    if (meta.isInvalid) isInvalid = true;
 
                     //Update actions
                     if (meta.hide) $(meta.hide).hide();
@@ -249,7 +257,7 @@ Sync = {
                     //Make updates
                     switch (meta.update) {
 
-                        // Content 
+                        // Content   
                         /*  
                         *   title: string 
                         *   address: string 
@@ -282,7 +290,7 @@ Sync = {
                             if (!meta.scroll) $(window).scrollTop(0);
                             break;
 
-                        // Window                                                                                                                                                                                                                                                                                                                                
+                        // Window                                                                                                                                                                                                                                                                                                                                  
                         /*
                         *   title: string
                         *   modal: bool 
@@ -348,7 +356,7 @@ Sync = {
                             }
                             break;
 
-                        // Table SubRow                                                                                                                          
+                        // Table SubRow                                                                                                                            
                         /*
                         *   target: selector
                         */ 
@@ -380,7 +388,7 @@ Sync = {
                             }
                             break;
 
-                        // Table Row                                                                                                                                                                                                                                                                                                                       
+                        // Table Row                                                                                                                                                                                                                                                                                                                         
                         /*
                         *   target: selector
                         */ 
@@ -408,12 +416,12 @@ Sync = {
                             table.next(".empty:first").hide();
                             break;
 
-                        //Replace                                                                                                                                                                                                                                                                                       
+                        //Replace                                                                                                                                                                                                                                                                                         
                         case "replace":
                             $("#" + id).replaceWith(update);
                             break;
 
-                        // Insert                                                                                                                                                                                                                                                                                       
+                        // Insert                                                                                                                                                                                                                                                                                         
                         /*
                         *   target: selector
                         */ 
@@ -422,7 +430,7 @@ Sync = {
                             target.html(update);
                             break;
 
-                        // Prepend                                                                                                                                                                              
+                        // Prepend                                                                                                                                                                                
                         /*
                         *   target: selector
                         */ 
@@ -432,7 +440,7 @@ Sync = {
                             else $(meta.target).prepend(update);
                             break;
 
-                        // Append                                                                                                                                                                               
+                        // Append                                                                                                                                                                                 
                         /*
                         *   target: selector
                         */ 
@@ -442,12 +450,12 @@ Sync = {
                             else $(meta.target).append(update);
                             break;
 
-                        //Top                                                                                                                                                                                                                                                 
+                        //Top                                                                                                                                                                                                                                                   
                         case "top":
                             topContent.empty().prepend(update);
                             break;
 
-                        //Bottom                                                                                                                                                                                                                                                  
+                        //Bottom                                                                                                                                                                                                                                                    
                         case "bottom":
                             bottomContent.empty().prepend(update);
                             break;
@@ -460,17 +468,17 @@ Sync = {
                     update.show();
 
                     //Events
-                    Sync.initUpdate(update);
+                    Sync.initView(update);
 
                 });
-
-                //Hide progress
-                Sync.toggleProgress(false);
-
+                
                 //Run inline scripts
                 $(result).filter("script:not([src])").each(function () {
                     $.globalEval($(this).html());
                 });
+                
+                //Hide progress
+                Sync.toggleProgress(false);
 
                 //Enable sender
                 Sync.toggleSender(sender, true);
@@ -496,11 +504,131 @@ Sync = {
         }); //End begin request
 
     },
+    
+    //Close element
+    close: function (type, selector) {
+
+        var el = $(selector);
+        if (!el.length) return;
+
+        switch (type.toLowerCase()) {
+
+            //Update  
+            case "update":
+                var update = el.closest("[data-update]");
+                //Remove
+                var subrow = update.closest(".subrow");
+                update.remove();
+                //Close SubRow if empty
+                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
+                break;
+
+            //Window  
+            case "window":
+                el.closest(".ui-dialog").dialog("destroy").remove();
+                break;
+
+            //Row  
+            case "row":
+                var grid = el.closest(".grid");
+                var row;
+                if (el.length && el[0].tagName == "TR") row = el;
+                else row = el.closest("tr").andSelf.remove();
+                //Close
+                if (row.next().hasClass("subrow")) row.next().remove();
+                row.remove();
+                //Re-strip
+                grid.find("tr").removeClass("rowalt");
+                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
+                break;
+
+            //Parent 
+            case "parent":
+                el.parent().remove();
+                break;
+        }
+
+    },
+
+    //Redirect
+    redirect: function (url) {
+        Sync.toggleProgress(true);
+        window.location = url;
+    },
+
+    //Render a template for an object
+    render: function (template, model) {
+        //Get template html
+        //var str = $("#" + template).html();
+        //var str = window.__templates[template];
+        var str = config.storageProvider.get(template);
+        //Check cache
+        var _tmplCache = {};
+        var func = _tmplCache[str];
+        //Check 
+        if (!func) {
+            //Parse template
+            str = str
+                .replace(/[\r\t\n]/g, " ")
+                .split("<%").join("\t")
+                .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+                .replace(/\t=(.*?)%>/g, "',$1,'")
+                .split("\t").join("');")
+                .split("%>").join("p.push('")
+                .split("\r").join("\\'");
+            //Create template function
+            var strFunc = "var p=[],print=function(){p.push.apply(p,arguments);};p.push('" + str + "');return p.join('');";
+            func = new Function(strFunc);
+            _tmplCache[str] = func;
+        }
+        return func.call(model);
+    },
+
+    //Render templates for an array
+    renderAll: function (template, models) {
+        var html = "";
+        $(models).each(function () {
+            html += Sync.render(template, this);
+        });
+        return html;
+    },
+    
+    //Load dependent scripts
+    loadScripts: function (scripts) {
+        $(scripts).each(function () {
+            var src = $.trim(this);
+            //Append 'scriptPath' setting if available
+            var path = Sync.config.scriptPath;
+            if (path) {
+                if (!path.match(/\/$/)) path += "/";
+                src = path + src;
+            }
+            //Call with ajax to access config
+            //TODO: Allow multiple scripts to be requested at once
+            $.ajax({
+                type: "GET",
+                url: src,
+                dataType: "script",
+                cache: true, //Enable caching
+                async: false //Can't be async, must be loaded first
+            });
+        });
+    },
 
     /********** Helpers **********/
 
+    //Handle html update
+    handleHtml: function (result) {
+        
+    },
+    
+    //Handle json update
+    handleJson: function (result) {
+        
+    },
+    
     //Initialize any events or prerequisites 
-    initUpdate: function (context) {
+    initView: function (context) {
 
         var config = Sync.config;
 
@@ -624,7 +752,6 @@ Sync = {
         });
     },
 
-
     //Show/Hide progress
     toggleProgress: function (show) {
 
@@ -650,53 +777,6 @@ Sync = {
 
     },
 
-
-    //Close element
-    close: function (type, selector) {
-
-        var el = $(selector);
-        if (!el.length) return;
-
-        switch (type.toLowerCase()) {
-
-            //Update 
-            case "update":
-                var update = el.closest("[data-update]");
-                //Remove
-                var subrow = update.closest(".subrow");
-                update.remove();
-                //Close SubRow if empty
-                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
-                break;
-
-            //Window 
-            case "window":
-                el.closest(".ui-dialog").dialog("destroy").remove();
-                break;
-
-            //Row 
-            case "row":
-                var grid = el.closest(".grid");
-                var row;
-                if (el.length && el[0].tagName == "TR") row = el;
-                else row = el.closest("tr").andSelf.remove();
-                //Close
-                if (row.next().hasClass("subrow")) row.next().remove();
-                row.remove();
-                //Re-strip
-                grid.find("tr").removeClass("rowalt");
-                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
-                break;
-
-            //Parent
-            case "parent":
-                el.parent().remove();
-                break;
-        }
-
-    },
-
-
     //Disable/Enable sender
     toggleSender: function (sender, enabled) {
         //Form
@@ -705,77 +785,8 @@ Sync = {
             else sender.find("input,textarea,select,button,:password").attr("disabled", "disabled");
         }
         //TODO: Disable other sender types
-    },
-
-
-    //Render a template for an object
-    render: function (template, model) {
-        //Get template html
-        //var str = $("#" + template).html();
-        //var str = window.__templates[template];
-        var str = config.storageProvider.get(template);
-        //Check cache
-        var _tmplCache = {};
-        var func = _tmplCache[str];
-        //Check 
-        if (!func) {
-            //Parse template
-            str = str
-                .replace(/[\r\t\n]/g, " ")
-                .split("<%").join("\t")
-                .replace(/((^|%>)[^\t]*)'/g, "$1\r")
-                .replace(/\t=(.*?)%>/g, "',$1,'")
-                .split("\t").join("');")
-                .split("%>").join("p.push('")
-                .split("\r").join("\\'");
-            //Create template function
-            var strFunc = "var p=[],print=function(){p.push.apply(p,arguments);};p.push('" + str + "');return p.join('');";
-            func = new Function(strFunc);
-            _tmplCache[str] = func;
-        }
-        return func.call(model);
-    },
-
-
-    //Redirect
-    redirect: function (url) {
-        Sync.toggleProgress(true);
-        window.location = url;
-    },
-
-
-    //Render templates for an array
-    renderAll: function (template, models) {
-        var html = "";
-        $(models).each(function () {
-            html += Sync.render(template, this);
-        });
-        return html;
-    },
-
-
-    //Load dependent scripts
-    loadScripts: function (scripts) {
-        $(scripts).each(function () {
-            var src = $.trim(this);
-            //Append 'scriptPath' setting if available
-            var path = Sync.config.scriptPath;
-            if (path) {
-                if (!path.match(/\/$/)) path += "/";
-                src = path + src;
-            }
-            //Call with ajax to access config
-            //TODO: Allow multiple scripts to be requested at once
-            $.ajax({
-                type: "GET",
-                url: src,
-                dataType: "script",
-                cache: true, //Enable caching
-                async: false //Can't be async, must be loaded first
-            });
-        });
     }
-
+    
 };
 
 

@@ -22,6 +22,19 @@ namespace Web.Controllers
             return View("Basics", "Post");
         }
 
+        //GET:  /Task/List
+        public ActionResult Tasks()
+        {
+            var tasks = new[]
+                        {
+                            new {TaskID = 1, Title = "Task 1", Priority = "High"},
+                            new {TaskID = 2, Title = "Task 2", Priority = "Normal"},
+                            new {TaskID = 3, Title = "Task 2", Priority = "Low"}
+                        };
+
+            return Json(tasks);
+        }
+
         #region Helpers
 
         private new ActionResult View(string viewFolder, string viewName, object model = null)

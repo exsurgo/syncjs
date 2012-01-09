@@ -1,7 +1,0 @@
-﻿
-ul.context-menu { top: -1000px; left: -1000px; position: absolute; z-index: 999; float: left; margin: 0; padding: 2px; height: auto; width: auto; border: solid 1px #acacac; background-color: #F9F9F9; -moz-box-shadow: 0px 0px 4px 1px #cccccc; -webkit-box-shadow: 0px 0px 4px 1px #cccccc; box-shadow: 0px 0px 4px 1px #cccccc; }
-ul.context-menu > li { list-style: none none outside; float: none; margin: 0; border-width: 0; text-align: left; text-decoration: none; text-indent: 0; vertical-align: top; overflow: hidden; padding: 2px 6px 3px 6px; white-space: nowrap; }
-ul.context-menu > li > a:hover, ul.context-menu > li > a:hover * { text-decoration: none; }
-ul.context-menu > li.separate { border-bottom: 1px solid #dddddd; position: relative; top: -4px; height: 4px; }
-ul.context-menu > li.hover { background-color: #ECF4FB; background-position: 0 100%; border: 1px solid #D6D6D6; padding: 1px 5px 2px 5px; margin: 0; cursor: pointer; }
-ul.context-menu > li.disabled { cursor: default; background-color: Transparent; border: none; padding: 2px 6px 3px 6px; }

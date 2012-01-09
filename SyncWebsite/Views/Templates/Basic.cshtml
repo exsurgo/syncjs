@@ -1,0 +1,25 @@
+﻿
+<div data-template="todo-list-basic">
+    Count: <b><%= this.length %></b>
+    <ul>
+        <% for(i in this) { %>
+            <li><%= this[i].Title %> - <%= this[i].Priority %></li>
+        <% } %>
+    </ul>
+</div>
+        
+<script>
+
+        //Data
+        var data = [
+            { Title: "Todo 1", Priority: "High" },
+            { Title: "Todo 2", Priority: "Normal" }
+        ];
+
+        //Render template
+        var output = Sync.render("todo-list-basic", data);
+
+        //Output html
+        $("#template-output").html(output);   
+
+</script>

@@ -1,0 +1,181 @@
+﻿
+<div data-update="content" data-title="Update types">
+
+    <!--Content-->
+    <h3>Content</h3>
+    <p>
+        The standard update type is the content update.   You can also update the page title and address with this update.
+    </p>
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="content" data-title="Content Update" data-address="/Update/Content" class="center">
+            <h1>Main Content Updated!</h1>
+            <h6>The main content area, page title and address has been updated.</h6>
+        </div>
+    </pre>
+    <p>
+        <a href="/Updates/Content">Update</a> - Show in main content area
+    </p>
+
+    <hr class="line" />
+
+    <!--Window-->
+    <h3>Window</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="window" data-title="My Window" data-width="600"> 
+            <p>...</p>
+            <button data-close="window">Close Window</button>
+        </div>
+    </pre>
+    <p>
+        <a href="/Updates/Window">Update</a> - Show content in a model window
+    </p>
+
+    <hr class="line" />
+    
+    <!--Replace-->
+    <h3>Replace</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="replace" id="div-to-replace">
+            This element replaced the previous element.
+        </div> 
+    </pre>
+    <p>
+        <a href="/Updates/Replace">Update</a> - Replace an existing element
+    </p>
+    <br />
+    <div id="div-to-replace" class="before-update-style">
+        This div should be replaced.
+    </div>
+    
+    <hr class="line" />
+       
+    <!--Insert-->
+    <h3>Insert</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="insert" data-target="#div-to-insert">
+            This is the new element.
+        </div> 
+    </pre>
+    <p>
+        <a href="/Updates/Insert">Update</a> - Insert element in an existing element
+    </p>
+    <br />
+    <div id="div-to-insert" class="before-update-style">
+        The new div should be inserted here
+    </div>
+
+    <hr class="line" />
+    
+    <!--Append & Prepend-->
+    <h3>Append & Prepend</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="append" data-target="#add-to-div">
+            This element was appended.
+        </div>
+
+        <div data-update="prepend" data-target="#add-to-div" class="after-update-style">
+            This element was prepended.
+        </div>
+    </pre>
+    <p>
+        <a href="/Updates/Append">Append</a> | 
+        <a href="/Updates/Prepend">Prepend</a>
+    </p>
+    <br />
+    <div id="add-to-div" class="before-update-style">
+        Already existing div
+    </div>
+
+    <hr class="line" />
+
+    <!--Multiple Updates-->
+    <h3>Multiple Updates</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div id="multi-update-div" data-update="replace">
+            This element was updated first
+        </div>
+
+        <div data-update="window" data-title="Multiple Updates">
+            This element was updated next  
+        </div>  
+    </pre>
+    <p>
+        <a href="/Updates/Multiple">Update</a> - Two updates in one response
+    </p>
+    <br />
+    <div id="multi-update-div" class="before-update-style">
+        This div should be replaced.  And a modal window should show
+    </div>
+
+    <hr class="line" />
+
+    <!-- Table Row -->
+    <h3>Table Row</h3>
+    <hr />
+    <label>Server Response</label>
+    <div class="syntaxhighlighter  xml ie"><table border="0" cellSpacing="0" cellPadding="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"></div><div class="line number2 index1 alt1"><code class="xml spaces">&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">tr</code> <code class="xml color1">data-update</code><code class="xml plain">=</code><code class="xml string">"row"</code> <code class="xml color1">data-target</code><code class="xml plain">=</code><code class="xml string">"#my-table"</code><code class="xml plain">&gt;</code></div><div class="line number3 index2 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">td</code><code class="xml plain">&gt;...&lt;/</code><code class="xml keyword">td</code><code class="xml plain">&gt;</code></div><div class="line number4 index3 alt1"><code class="xml spaces">&nbsp;&nbsp;</code><code class="xml plain">&lt;/</code><code class="xml keyword">tr</code><code class="xml plain">&gt;</code></div></div></td></tr></tbody></table></div>
+    <table id="my-table" class="grid">
+        <caption>
+            <a href="/Updates/Row">Add Row</a>
+        </caption>          
+        <tr>
+            <td>Details</td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>            
+        <tr>
+            <td>Details</td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>            
+        <tr>
+            <td>Details</td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>        
+    </table>
+
+    <hr class="line" />
+
+    <!--Sub Row-->
+    <h3>SubRow</h3>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div data-update="subrow">
+            ...
+        </div>  
+    </pre>
+    <table id="my-table" class="grid">        
+        <caption>Parent Table</caption>
+        <tr>
+            <td><a href="/Updates/SubRow">Details</a></td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>            
+        <tr>
+            <td><a href="/Updates/SubRow">Details</a></td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>            
+        <tr>
+            <td><a href="/Updates/SubRow">Details</a></td>
+            <td>123</td>
+            <td>1/7/2010</td>
+        </tr>        
+    </table>
+
+</div>
+
+

@@ -1,0 +1,109 @@
+﻿
+<div data-update="content" data-title="Templates">
+    
+    <p>
+        Sync JS also provides client-side templating which allows you to merge an HTML template with data and render it in the browser.
+        The framework include a light-weight built in template engine, but also allows you to plugin another via a template provider.
+    </p>
+    <hr />
+    <hr />
+
+    <h3>Basic Example</h3>
+    <hr />
+    <label>Template</label>
+    <pre class="brush: xml;">
+        <div data-template="todo-list-basic">
+            Count: <b><%= this.length %></b>
+            <ul>
+                <% for(i in this) { %>
+                    <li><%= this[i].Title %> - <%= this[i].Priority %></li>
+                <% } %>
+            </ul>
+        </div>
+    </pre>
+    <label>Render template with array</label>
+    <pre class="brush: js;">
+        //Data
+        var data = [
+            { Title: "Todo 1", Priority: "High" },
+            { Title: "Todo 2", Priority: "Normal" }
+        ];
+    
+        //Render template
+        var output = Sync.render("todo-list-basic", data);
+    
+        //Output html
+        $("#template-output").html(output);  
+    </pre>
+    <br/>
+    <p id="template-output" class="before-update-style">
+        Template will be rendered here
+    </p>
+    <a href="/Templates/Basic">View Todo List</a>
+
+    <hr class="line"/>
+
+    <h3>Remote Data</h3>
+    <p>
+        Normally, you'll probably be requesting JSON from a web service.  Using route matching, you can automatically 
+        render the returned data with the appropriate templates.
+    </p>
+    <label>JSON Server Response</label>
+    <pre class="brush: js;">
+        [
+            { Title: "Todo 1", Priority: "High" },
+            { Title: "Todo 2", Priority: "Normal" }
+        ];
+    </pre>
+    <label>Route Configuration</label>
+    <pre class="brush: js;">
+        Sync.routes = [
+            //Todo list route
+            {
+                regex: /^\/Todos$/i,
+                templateId: "todo-list",
+                templateUrl: "/Templates/Todos"
+            },
+        ];
+    </pre>
+    <label>Template</label>
+    <pre class="brush: xml;">
+        <div data-template="todo-list" data-update="insert" data-target="#remote-data-div">
+            Count: <b><%= this.length %></b>
+            <ul>
+                <%= Sync.renderAll("todo-row", this) %>
+            </ul>
+        </div>
+
+        <li data-template="todo-row">
+            <h6><%= this.Title %></h6> - <%= this.Priority %>
+        </li>
+    </pre>
+    <p id="remote-data-div" class="before-update-style">
+        Template will be rendered here
+    </p>
+    <a href="/Todos">View Todo List</a>
+
+    <hr class="line"/>
+
+    <h3>Customizable Delimiters</h3>
+    <p>
+        The default template delimiters are <span><</span>% %<span>></span>.  They can be customized to <# #>, <- ->, or even {{ }}.
+    </p>
+    <label>Config</label>
+    <pre class="brush: js;">
+        Sync.init({
+            templateDelimiters: ["<%", "%>"],
+            ...
+    </pre>
+    <label>Template</label>
+    <pre class="brush: xml;">
+        <div data-template="todo-list" data-update="insert" data-target="#remote-data-div">
+            Count: <b>{{= this.length }}</b>
+            <ul>
+                {{= Sync.renderAll("todo-row", this) }}
+            </ul>
+        </div>
+    </pre>
+
+</div>

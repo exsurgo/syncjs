@@ -1,0 +1,115 @@
+﻿
+<div data-update="content" data-title="Basics">
+
+    <!--Relative Links-->
+    <h2>Links</h2>
+    <p>
+        All relative links are automatically hijaxed.  When clicked, a request is made, and a partial HTML update is returned.
+    </p>
+    <p>
+        Note that all links can be hijaxed, or only selective ones via data-ajax="true".  
+        Also note that links are automatically converted to "ajax links" with hash URLs.
+    </p>   
+    <pre class="brush: xml;">
+        <a href="/Main/Home">Click Me</a>
+    </pre>
+    <a href="/Main/Home">Click Me</a>
+
+    <hr class="line"/>   
+
+    <!--External Links-->
+    <h2>External Links</h2>
+    <p>
+        External links are not hijaxed.  They also open in a new window. (target="_blank")
+    </p>
+    <pre class="brush: xml;">
+        <a href="http://google.com">Click Me</a>
+    </pre>
+    <a href="http://google.com">Click Me</a>
+    <hr/>
+
+    <hr class="line"/>
+
+    <!--Relative Links - New Window-->
+    <h2>Relative Links - New Window</h2>
+    <p>
+        All relative links with target="_blank" should open in new window.
+    </p>
+    <pre class="brush: xml;">
+        <a href="/Main/Home" target="_blank">Click Me</a>
+    </pre>
+    <a href="/Main/Home" target="_blank">Click Me</a>
+    
+    <hr class="line"/>
+
+    <!--Redirect-->
+    <h2>Redirect</h2>
+    <p>
+        You can also manually redirect to a page.
+    </p>
+    <pre class="brush: xml;">
+        <a href="javascript:Sync.redirect('http://google.com');">Click Me</a>
+    </pre>
+    <a href="javascript:Sync.redirect('http://google.com');">Click Me</a>
+    
+    <hr class="line"/>
+
+    <!--Form Posts-->
+    <h2>Form Posts</h2>
+    <p>
+        Forms are also automatically hijaxed.  Forms are also temporarily disabled to prevent double submits.
+    </p>
+    <label>Hijaxed form</label>
+    <pre class="brush: xml;">
+        <form method="post" action="/Post">
+            <input type="text" name="PostValue" value="Hello World!" />
+            <button type="submit">Save</button>
+        </form>
+    </pre>
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div id="post-div" data-update="replace">
+            The form was posted.  The value sent was @ViewBag.PostValue
+        </div>
+    </pre>
+    <form method="post" action="/Post" class="box col7">
+        <input type="text" name="PostValue" value="Hello World!" data-focus="false"/>
+        <button type="submit">Save</button>
+    </form>
+    <hr />
+    <div id="post-div" class="before-update-style">
+        This div should be replaced after the form is posted.
+    </div>
+
+    <hr class="line" />
+
+    <!--Confirmations-->
+    <h2>Confirmations</h2>
+    <p>
+        You can also confirm a user action using the data-confirm attribute.
+    </p>
+    <pre class="brush: xml;">
+        <!--Generic-->
+        <a href="/Main/Home" data-confirm="true">Click Me</a>
+        
+        <!--Verb-->
+        <a href="/Main/Home" data-confirm="return">Click Me</a>
+
+        <!--Specific-->
+        <a href="/Main/Home" data-confirm="Are you really, really sure??">Click Me</a>
+    </pre>
+    <a href="/Main/Home" data-confirm="true">Click Me</a> |
+    <a href="/Main/Home" data-confirm="return">Click Me</a> |
+    <a href="/Main/Home" data-confirm="Are you really, really sure??">Click Me</a>
+
+    <hr class="line" />
+
+    <!--Progress-->
+    <h2>Progress Indicator</h2>
+    <p>
+        The framework also handles displaying the progress indicator to the user.  The indicators style can be customized via the config.
+    </p>
+    <a href="javascript:Sync.toggleProgress(true);">Show Progress</a> | 
+    <a href="javascript:Sync.toggleProgress(false);">Hide Progress</a>
+
+</div>

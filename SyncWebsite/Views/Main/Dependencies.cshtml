@@ -1,0 +1,113 @@
+﻿
+<div data-update="content" data-title="Dependencies">
+  
+    <p>
+        Sync JS also allows you to dynamically load and execute dependent scripts as needed.  Only load what's needed, when needed.  
+        You can associate scripts with HTML content, and also execute callbacks when the content is loaded.
+    </p>
+    <hr />
+    <hr />
+
+    <!--Inline Script-->
+    <h2>Inline Scripts</h2>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <scriptt>alert("The request returned a script tag which was executed.")</scriptt>
+    </pre>
+    <p>
+        <a href="/Dependencies/InlineScript">Make request with inline script</a>
+    </p>
+
+    <hr class="line"/>
+
+    <!--Dependency via Script Tag-->
+    <h2>Dependency via Script Tag</h2>
+    <p>
+        Scripts can be loaded via the standard script tag like so.  Note that the script location can be set in the config "scriptPath" so that
+        all scripts are requested from the same location.   So instead of "/Content/Scripts/Dependency1.js", you can just set the value
+        of scriptPath to "/Content/Scripts/" in the config, and use "Dependency1.js" in the tag.
+    </p>
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <!-- Dependent script loaded before update -->
+        <scriptt src="Dependency1.js" />
+
+        <div id="div-with-dependency-tag" data-update="replace">
+            This div was just loaded and a dependent script was run.
+        </div>
+
+        <!-- Inline script ran after dependency is loaded -->
+        <scriptt>
+            dependentFunction1();
+        </scriptt>
+    </pre>
+    <p>
+        <a href="/Dependencies/DependencyTag">Update with dependency</a>
+    </p>
+    <br />
+    <div id="div-with-dependency-tag" class="before-update-style">
+        This div should be replaced.  Dependent scripts should be loaded via a script tag.
+    </div>
+    
+    <hr class="line"/>
+
+    <!--Dependency via attributes-->
+    <h2>Dependency via attribute</h2>
+    <hr />
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div id="div-with-dependency-attr" data-update="replace" data-load="Dependency2.js">
+            This div was just loaded and a dependent script was run.
+        </div>
+
+        <!-- Inline script ran after dependency is loaded -->
+        <scriptt>
+            dependentFunction2();
+        </scriptt>    
+    </pre>
+    <p>
+        <a href="/Dependencies/DependencyAttr">Update with dependency</a>
+    </p>
+    <br />
+    <div id="div-with-dependency-attr" class="before-update-style">
+        This div should be replaced.  Dependent scripts should be loaded via a data attribute.
+    </div>
+
+    <hr class="line"/>
+
+    <h2>Callbacks</h2>
+    <p>
+        Once scripts are loaded on demand, a callback can also be executed via the data-callback attribute.  
+        The call back can be a global function or namespaced.  Also note that the context (this keyword) is
+        a jQuery object representing the HTML update.
+    </p>
+    <label>Server Response</label>
+    <pre class="brush: xml;">
+        <div id="callback-div" data-update="replace" data-load="Callback.js" data-callback="CallbackController.init">
+            This div was just loaded and a callback was ran.  
+        </div>
+    </pre>
+    <label>Lazy-Loaded Script File - Callback.js</label>
+    <pre class="brush: js;">
+        var CallbackController = {
+    
+            //Callback function
+            init: function () {
+                alert("The dependency Callback.js was loaded and the function 'init' has been run.");
+                //The 'this' keyword refers to the updates jquery object
+                this.append("<b>This element was added by the callback.</b>");
+            }
+
+        }
+    </pre>
+    <p>
+        <a href="/Dependencies/Callback">Make Request with callback</a>
+    </p>
+    <div id="callback-div" class="before-update-style">
+        This div should be replaced and then a callback is run
+    </div>
+
+    <hr />
+
+</div>

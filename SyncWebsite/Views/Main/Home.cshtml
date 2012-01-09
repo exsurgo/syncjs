@@ -1,0 +1,99 @@
+﻿
+<div data-update="content" data-title="Home" data-address="/">
+
+    <h2>What does it do?</h2>
+    <p>
+        Sync JS automatically updates HTML, Scripts, data, and other resources within dynamic web pages.
+        Unlike other JS frameworks, Sync JS attempts to significantly reduce the amount of JavaScript needed
+        to create dynamic web applications.
+    </p>
+    <p>
+        The framework uses a markup-driven approach to drive the behaviors of an application.  
+        For instance, when I link is clicked, the framework automatically makes a request to the server
+        and updates the returned HTML or JSON depending on associated metadata.   
+    </p>
+    <hr />
+
+    <div class="col12">
+        <ul class="checklist">
+            <li>Simple, Markup-driven behaviors</li>
+            <li>Lightweight - 12K compressed</li>
+            <li>Build single-page applications</li>
+            <li>Reduce overall code counts</li>
+            <li>Low learning curve</li>
+            <li>HTML5 compliant</li>
+            <li>Back/Front button support</li>
+            <li>Deep-linking, new tab/window support</li>
+            <li>Web server agnostic</li>
+            <li>Built on jQuery</li>
+            <li>Client-side Templates</li>
+            <li>Local storage integration</li>
+        </ul>
+    </div>
+
+    <div class="col12 pt4">
+        <img src="/Images/ComponentDiagram.jpg" />
+    </div>
+    <hr />
+
+    <hr class="line"/>
+
+    <h3>Hello World</h3>
+    <p>
+        In the most basic example, when the Sync JS dependencies are included and the Sync.init() method is called, 
+        the page is automatically ajaxified.   Below, when the link is clicked, the request is automatically made
+        and the returned HTML from the server is automatically updated depending on the metadata.
+    </p>
+    <label>Page Layout</label>
+    <pre class="brush: xml;">
+        <htmll>    
+            <headd>       
+                ...
+                <!--Dependent Scripts--> 
+                <scriptt src="/Scripts/jQuery.js"></scriptt>        
+                <scriptt src="/Scripts/Sync.js"></scriptt>        
+                <scriptt src="/Scripts/Sync.Init.js"></scriptt> 
+                ...   
+            </headd>    
+            <bodyy>  
+                ...      
+                <!--Links are automatically hijaxed-->
+                <a href="/Main/HelloWorld">Say Hello</a>
+                <!--The main content area-->
+                <div data-content="true">            
+                    Replace this content               
+                </div>
+                ...    
+            </bodyy>
+        </htmll>
+    </pre>
+    <label>Server Response</label>
+    <pre class="brush: xml">
+        <div data-update="content" data-title="Hello World!">
+            Hello World!
+        </div>
+    </pre>
+    <hr />
+    <div class="center">
+        <a href="/Main/HelloWorld">
+            <h1>Say Hello</h1>
+        </a>
+    </div>
+    <hr class="line" />
+
+    <h2>Live Examples</h2>
+    <hr />
+    <div class="col10">
+        <a href="http://workplex.com">
+            <img src="/Images/WorkPlex.png" class="frame"/>
+        </a>
+    </div>
+    <div class="col12">
+        <a href="http://workplex.com"><h3>WorkPlex</h3></a>
+        <p>
+            WorkPlex is a team collaboration platform with features such as shared workspaces, task management, time tracking, messaging,
+            activity streams and file sharing. The platform is a single-page application built on the Sync JS framework.
+        </p>
+    </div>
+
+</div>

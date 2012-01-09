@@ -1,0 +1,35 @@
+﻿
+html, body { height: 100%; padding: 0px; margin: 0px; background-color: #ffffff; }
+
+/* page layout */
+#page { height: auto; min-height: 100%; margin: 0 auto; padding: 0px; background-color: #ffffff; }
+
+/* header */
+#header { height: 55px; background: #E7E7E7 url(/Images/Grad.png); color: #3A3A3A; padding-top: 3px; border-bottom: 1px solid #cccccc; margin-bottom: 5px; }
+#header > div { width: 980px; margin: 0 auto; }
+#header h1 { color: #888888; font-size: 1.8em; }
+#header-lt { background: url(/Images/Logo.png) no-repeat 5px 5px; width: 20%; float: left; padding-top: 5px; padding-left: 50px; }
+#header-lt > span { font-size: .75em; color: #bbbbbb; position: relative; top: -15px; }
+#header-ct { color: #999999; font-size: 1.1em; padding-top: 15px; width: 55%; float: left; text-align: center; }
+#header-rt { width: 20%; float: right; text-align: right; font-size: .92em; }
+#header-rt a { font-weight: bold; position: relative; top: -20px; }
+
+/* content */
+#content  { width: 960px; margin: 0 auto; padding: 12px 8px 10px 8px; }
+#content-top { width: 960px; margin: 0 auto; padding: 10px 8px 0px 8px; }
+*:first-child+html #content-top { height: 0px; }
+#master > hr { border-color: #ffffff; background-color: #ffffff; height: 32px !important; visibility: hidden; }
+
+/* footer */
+#footer { overflow: hidden; position: relative; margin-top: -27px; height: 20px; clear: both; margin-left: auto; margin-right: auto; font-size: .85em; background-color: #eeeeee; text-align: center; border: 1px solid #cccccc; vertical-align: middle; padding: 2px 0px 3px 0px; color: #797979; }
+
+/* tab menu */
+#menu { overflow: hidden; border-bottom: 3px double #cccccc; text-align: left;  }
+#menu > div { width: 960px; margin: 0 auto; padding: 6px 10px 0px 10px; }
+#menu span { float: left; margin-top: 4px; }
+#menu ul.menu-tabs { float: left; margin: 0 0 0 10px; }
+#menu ul.menu-tabs > li { float: left; list-style-type: none; background-color: #f3f3f3; background-image: url(/Images/Grad.png); background-position: center; margin: 0px 4px -2px 4px; padding: 5px 0px 3px 0px; border: 1px solid #bbb; border-bottom: 2px solid #f3f3f3; border-top-right-radius: 4px; -moz-border-radius-topright: 4px; -webkit-border-top-right-radius: 4px; border-top-left-radius: 4px; -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px; }
+#menu ul.menu-tabs > li > a { padding: 8px 10px 9px 10px; text-decoration: none; font-size: 1.1em; }
+#menu ul.menu-tabs > li:hover { background: #fff; background-image: none; text-decoration: none; cursor: pointer; }
+#menu ul.menu-tabs > li.active { border-bottom: 1px solid #3297c2; background-color: #2084BF; background-image: none; }
+#menu li.active > a { color: #fff; text-decoration: none; }

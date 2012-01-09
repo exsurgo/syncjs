@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.45
+*   Sync JS - v 0.9.1.48
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
@@ -34,25 +34,6 @@ var Sync = Sync || (function () {
         onAfterUpdate: function () { }, //Just after content is updated in the DOM
         onComplete: function () { }, //The request and updated have been successfully completed
         onError: function () { }, //Request resulted in an error
-
-        //Window provider
-        windowProvider: {
-            showWindow: function (id, content, data) { },
-            closeWindow: function (id) { }
-        },
-
-        //Client template provider
-        templateProvider: {
-            render: function (template, data) { }
-        },
-
-        //Local storage provider
-        storageProvider: {
-            store: function (key, data) { },
-            get: function (key) { },
-            remove: function (key) { },
-            exists: function (key) { }
-        }
 
     };
 

@@ -161,9 +161,6 @@
     <Content Include="Views\Templates\Todos.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Templates\Delimeters.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Updates\Content.cshtml" />
   </ItemGroup>
   <ItemGroup>

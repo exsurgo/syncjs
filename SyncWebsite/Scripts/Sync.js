@@ -14,7 +14,7 @@ var Sync = Sync || (function () {
         //General 
         autoEvents: true, //Automatically hijax every link and form
         autoCorrectLinks: true, //Change standard URL's to ajax (#) URL's
-        contentId: "content", //The main content area where content is rendered
+        contentSelector: "[data-content=true]:first", //The main content area where content is rendered
         topContentId: "content-top", //The content area right above the main content
         bottomContentId: "content-bottom", //The content area right below the main content
         pageTitlePrefix: "", //Prepend to title of each page
@@ -73,11 +73,11 @@ var Sync = Sync || (function () {
     //Initialize the page and config settings
     this.init = function (config) {
 
-        //Content area
-        var content = $("#" + this.config.contentId);
-
         //Combine default config with provided
-        this.config = $.extend(this.config, config);
+        this.config = $.extend(Sync.config, config);
+
+        //Content area
+        var content = $(Sync.config.contentSelector);
 
         //Add page title prefix
         var title = document.title;
@@ -615,7 +615,7 @@ var Sync = Sync || (function () {
                 if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
                 else bottomContent.empty();
                 //Content
-                $("#" + config.contentId).empty().append(element);
+                $(config.contentSelector).empty().append(element);
                 //Scroll to top by default
                 if (!meta.scroll) $(window).scrollTop(0);
                 break;
@@ -636,7 +636,7 @@ var Sync = Sync || (function () {
             */ 
             case "window":
                 //Show in content area if empty
-                if ($("#" + config.contentId).children().length == 0) content.html(element);
+                if ($(config.contentSelector).children().length == 0) content.html(element);
                 //Show window
                 else {
                     //Close existing window

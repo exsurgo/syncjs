@@ -11,7 +11,7 @@ Sync.updaters = {
             //Get target row, subrow goes after
             var tr = meta.target ? $(meta.target) : $(sender).parents("tr:first");
             //Show in content area if not found
-            if (tr.length == 0) $("#" + Sync.config.contentId).html(element).find(".close-button").remove();
+            if (tr.length == 0) $(Sync.config.contentSelector).html(element).find(".close-button").remove();
                 //Add row
             else {
                 if (!tr.next().hasClass("subrow")) {

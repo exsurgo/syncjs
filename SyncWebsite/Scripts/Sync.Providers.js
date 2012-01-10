@@ -20,12 +20,19 @@ Sync.providers = {
 
     //Template provider
     templateProvider: {
-        render: function (template, data) { }
+        render: undefined //function (template, data) { }
     },
 
     //Window provider
     windowProvider: {
         showWindow: function (id, content, data) { },
         closeWindow: function (id) { }
+    },
+
+    //Loading indicator provider
+    loadingProvider: {
+        showLoading: function () { },
+        hideLoading: function () { }
     }
+    
 }

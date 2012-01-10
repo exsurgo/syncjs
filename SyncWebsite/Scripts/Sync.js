@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.48
+*   Sync JS - v 0.9.1.49
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
@@ -28,12 +28,15 @@ var Sync = Sync || (function () {
         progressCss: "progress", //Progress indicator CSS style
 
         //Global events
-        onRequest: function () { }, //A request is made
-        onSuccess: function () { }, //A response is received
+        onPageLoaded: function() { }, //The page just loaded
+        onLinkClick: function () { }, //An ajaxified link is just clicked
+        onFormSubmit: function () { }, //An ajaxified form is just submitted
+        onRequest: function () { }, //A request is just made
+        onSuccess: function () { }, //A response is just received
         onBeforeUpdate: function () { }, //Just before content is updated in the DOM
         onAfterUpdate: function () { }, //Just after content is updated in the DOM
         onComplete: function () { }, //The request and updated have been successfully completed
-        onError: function () { }, //Request resulted in an error
+        onError: function () { } //Request resulted in an error
 
     };
 
@@ -216,6 +219,8 @@ var Sync = Sync || (function () {
             //Template delimiters
             var left = config.templateDelimiters[0];
             var right = config.templateDelimiters[1];
+            //Fix html encoding
+            str = str.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             //Parse template
             str = str
                 .replace(/[\r\t\n]/g, " ")

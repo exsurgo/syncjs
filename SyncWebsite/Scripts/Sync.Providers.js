@@ -2,7 +2,7 @@
 Sync.providers = {
 
     //Storage provider - Amplify.js
-    storageProvider: {
+    storage: {
         store: function (key, data) {
             amplify.store.sessionStorage(key, data);
         },
@@ -19,20 +19,22 @@ Sync.providers = {
     },
 
     //Template provider
-    templateProvider: {
+    template: {
         render: undefined //function (template, data) { }
     },
 
     //Window provider
-    windowProvider: {
-        showWindow: function (id, content, data) { },
-        closeWindow: function (id) { }
+    window: {
+        show: function (id, content, data) {
+            
+        },
+        close: function (id) { }
     },
 
     //Loading indicator provider
-    loadingProvider: {
-        showLoading: function () { },
-        hideLoading: function () { }
+    laoding: {
+        show: function () { },
+        hide: function () { }
     }
     
 }

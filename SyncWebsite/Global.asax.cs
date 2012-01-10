@@ -28,7 +28,7 @@ namespace Web
             routes.MapRoute(
                 "Default", // Route name
                 "{folder}/{view}/{id}", // URL with parameters
-                new { controller = "App", action = "Get", folder = "Main", view = "Home", id = UrlParameter.Optional } // Parameter defaults
+                new { controller = "App", action = "Get", folder = "Main", view = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
         }
     }

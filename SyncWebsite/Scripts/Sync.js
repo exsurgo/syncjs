@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.49
+*   Sync JS - v 0.9.1.52
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
@@ -28,7 +28,7 @@ var Sync = Sync || (function () {
         progressCss: "progress", //Progress indicator CSS style
 
         //Global events
-        onPageLoaded: function() { }, //The page just loaded
+        onPageLoaded: function () { }, //The page just loaded
         onLinkClick: function () { }, //An ajaxified link is just clicked
         onFormSubmit: function () { }, //An ajaxified form is just submitted
         onRequest: function () { }, //A request is just made
@@ -58,7 +58,11 @@ var Sync = Sync || (function () {
     this.init = function (config) {
 
         //Combine default config with provided
-        this.config = $.extend(Sync.config, config);
+        $.extend(Sync.config, config);
+
+        //Add providers to the core object
+        //So "Sync.provider.call" rather than "Sync.providers.provider.call"
+        $.extend(Sync, Sync.providers);
 
         //Content area
         var content = $(Sync.config.contentSelector);
@@ -116,9 +120,6 @@ var Sync = Sync || (function () {
 
         //Convert sender to jquery
         sender = $(sender);
-
-        //Response level metadata
-        var navKey;
 
         //On request event
         config.onRequest(url, sender, formData);
@@ -180,7 +181,7 @@ var Sync = Sync || (function () {
                 toggleSender(sender, true);
 
                 //On complete
-                config.onComplete(navKey);
+                config.onComplete();
 
             }, //End Success event
 
@@ -215,7 +216,7 @@ var Sync = Sync || (function () {
         //Check 
         if (!func) {
             //Get template from storage
-            var str = providers.storageProvider.get(template);
+            var str = storage.get(template);
             //Template delimiters
             var left = config.templateDelimiters[0];
             var right = config.templateDelimiters[1];
@@ -293,7 +294,52 @@ var Sync = Sync || (function () {
         }
 
     };
+    
+    //Close element
+    function closeElement(type, selector) {
 
+        var el = $(selector);
+        if (!el.length) return;
+
+        switch (type.toLowerCase()) {
+
+            //Update                                             
+            case "update":
+                var update = el.closest("[data-update]");
+                //Remove
+                var subrow = update.closest(".subrow");
+                update.remove();
+                //Close SubRow if empty
+                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
+                break;
+
+            //Window                                             
+            case "window":
+                el.closest(".ui-dialog").dialog("destroy").remove();
+                break;
+
+            //Row                                             
+            case "row":
+                var grid = el.closest(".grid");
+                var row;
+                if (el.length && el[0].tagName == "TR") row = el;
+                else row = el.closest("tr").andSelf.remove();
+                //Close
+                if (row.next().hasClass("subrow")) row.next().remove();
+                row.remove();
+                //Re-strip
+                grid.find("tr").removeClass("rowalt");
+                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
+                break;
+
+            //Parent                                            
+            case "parent":
+                el.parent().remove();
+                break;
+        }
+
+    }
+    
     //Must return for static access
     return this;
 
@@ -316,7 +362,7 @@ var Sync = Sync || (function () {
 
         //Store any client templates
         $(result).filter("[data-template]").each(function () {
-            providers.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
+            storage.store(this.getAttribute("data-template"), this.outerHTML);
         });
 
         //Update returned elements
@@ -380,7 +426,7 @@ var Sync = Sync || (function () {
             if (this.regex.test(url)) {
 
                 //Request templates from URL
-                if (!providers.storageProvider.exists(this.templateId)) {
+                if (!storage.exists(this.templateId)) {
                     $.ajax({
                         type: "get",
                         url: this.templateUrl,
@@ -388,14 +434,14 @@ var Sync = Sync || (function () {
                         success: function (templates) {
                             //Store any client templates
                             $(templates).filter("[data-template]").each(function () {
-                                providers.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
+                               storage.store(this.getAttribute("data-template"), this.outerHTML);
                             });
                         }
                     });
                 }
 
                 //Render template with data, convert to jquery then output
-                if (providers.storageProvider.exists(this.templateId)) {
+                if (storage.exists(this.templateId)) {
                     var update = $(render(this.templateId, result));
                     updateElement(update, update.data(), sender, url);
                 }
@@ -571,7 +617,7 @@ var Sync = Sync || (function () {
         //Check standard updates
         switch (meta.update) {
 
-            // Content                                           
+            // Content                                             
             /*  
             *   title: string 
             *   address: string 
@@ -606,7 +652,7 @@ var Sync = Sync || (function () {
                 if (!meta.scroll) $(window).scrollTop(0);
                 break;
 
-            // Window                                                                                                                                                                                                                                                                                                                                                                          
+            // Window                                                                                                                                                                                                                                                                                                                                                                            
             /*
             *   title: string
             *   modal: bool 
@@ -672,7 +718,7 @@ var Sync = Sync || (function () {
                 }
                 break;
 
-            // Table Row                                                                                                                                                                                                                                                                                                                                                                 
+            // Table Row                                                                                                                                                                                                                                                                                                                                                                   
             /*
             *   target: selector
             */ 
@@ -700,12 +746,12 @@ var Sync = Sync || (function () {
                 table.next(".empty:first").hide();
                 break;
 
-            //Replace                                                                                                                                                                                                                                                                                                                                 
+            //Replace                                                                                                                                                                                                                                                                                                                                   
             case "replace":
                 $("#" + id).replaceWith(element);
                 break;
 
-            // Insert                                                                                                                                                                                                                                                                                                                                 
+            // Insert                                                                                                                                                                                                                                                                                                                                   
             /*
             *   target: selector
             */ 
@@ -714,7 +760,7 @@ var Sync = Sync || (function () {
                 target.html(element);
                 break;
 
-            // Prepend                                                                                                                                                                                                                        
+            // Prepend                                                                                                                                                                                                                          
             /*
             *   target: selector
             */ 
@@ -724,7 +770,7 @@ var Sync = Sync || (function () {
                 else $(meta.target).prepend(element);
                 break;
 
-            // Append                                                                                                                                                                                                                         
+            // Append                                                                                                                                                                                                                           
             /*
             *   target: selector
             */ 
@@ -734,61 +780,16 @@ var Sync = Sync || (function () {
                 else $(meta.target).append(element);
                 break;
 
-            //Top                                                                                                                                                                                                                                                                                           
+            //Top                                                                                                                                                                                                                                                                                             
             case "top":
                 var topContent = $("#" + config.topContentId);
                 topContent.empty().prepend(element);
                 break;
 
-            //Bottom                                                                                                                                                                                                                                                                                            
+            //Bottom                                                                                                                                                                                                                                                                                              
             case "bottom":
                 var bottomContent = $("#" + config.bottomContentId);
                 bottomContent.empty().prepend(element);
-                break;
-        }
-
-    }
-
-    //Close element
-    function closeElement(type, selector) {
-
-        var el = $(selector);
-        if (!el.length) return;
-
-        switch (type.toLowerCase()) {
-
-            //Update                                          
-            case "update":
-                var update = el.closest("[data-update]");
-                //Remove
-                var subrow = update.closest(".subrow");
-                update.remove();
-                //Close SubRow if empty
-                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
-                break;
-
-            //Window                                          
-            case "window":
-                el.closest(".ui-dialog").dialog("destroy").remove();
-                break;
-
-            //Row                                          
-            case "row":
-                var grid = el.closest(".grid");
-                var row;
-                if (el.length && el[0].tagName == "TR") row = el;
-                else row = el.closest("tr").andSelf.remove();
-                //Close
-                if (row.next().hasClass("subrow")) row.next().remove();
-                row.remove();
-                //Re-strip
-                grid.find("tr").removeClass("rowalt");
-                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
-                break;
-
-            //Parent                                         
-            case "parent":
-                el.parent().remove();
                 break;
         }
 

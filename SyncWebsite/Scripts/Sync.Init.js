@@ -21,7 +21,7 @@ $(function () {
         },
 
         //Complete event
-        onComplete: function (navKey) { },
+        onComplete: function () { },
 
         //Error event
         onError: function (result) {

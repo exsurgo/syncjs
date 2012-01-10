@@ -1,0 +1,71 @@
+﻿
+<div data-update="content" data-title="Providers">
+
+    <p>
+        Sync JS uses a providers to provide a common set of services such as modal windows, 
+        local storage, a loading indicator and a templating engine.  This allows for alternate 
+        implementations of these services to be easily plugged in.
+    </p>
+    <hr/>
+    
+    <label>Sync.Providers.js</label>
+    <pre class="brush: js;">
+        Sync.providers = {
+            
+            //Storage provider
+            storage: {
+                store: function (key, data) { },
+                get: function (key) { },
+                remove: function (key) { },
+                exists: function (key) { }
+            },
+
+            //Template provider
+            template: {
+                render:function (template, data) { }
+            },
+
+            //Window provider
+            window: {
+                show: function (id, content, data) { },
+                close: function (id) { }
+            },
+
+            //Loading indicator provider
+            loading: {
+                show: function () { },
+                hide: function () { }
+            }
+        };
+    </pre>
+
+    <hr class="line"/>
+
+    <h2>Storage Provider</h2>
+    <p>
+        The following example uses <a href="http://amplifyjs.com">AmplifyJS</a> to provide the session storage implementation.  
+        You can easily use alternate implementations as needed such as <a href="http://www.jstorage.info">jStorage</a>,
+        <a href="http://pablotron.org/software/persist-js">PersistJS</a>, or pure HTML5 local storage.
+    </p>
+    <hr/>
+    <pre class="brush: js;">
+            //Storage provider - Amplify.js
+            storage: {
+                store: function (key, data) {
+                    amplify.store.sessionStorage(key, data);
+                },
+                get: function (key) {
+                    return amplify.store.sessionStorage(key);
+                },
+                remove: function (key) {
+                    amplify.store.sessionStorage(key, null);
+                },
+                exists: function (key) {
+                    var store = amplify.store.sessionStorage();
+                    return store[key] != undefined;
+                }
+            },
+    </pre>
+    
+
+</div>

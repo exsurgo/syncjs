@@ -416,41 +416,208 @@ var Sync = Sync || (function () {
 
     }
 
-    //Handle json update
-    function handleJson(result, sender, url) {
+    //Update html element
+    function updateElement(element, meta, sender, url) {
 
-        //Check routes to match url with needed template
-        $(routes).each(function () {
+        //Ensure id
+        var id = element.attr("id");
+        if (id == "" || id == undefined) {
+            id = ("el-" + Math.random()).replace(".", "");
+            element.attr("id", id);
+        }
 
-            //If route matches, then request template
-            if (this.regex.test(url)) {
+        //Match update type by lowercase
+        meta.update = meta.update.toLowerCase();
 
-                //Request templates from URL
-                if (!storage.exists(this.templateId)) {
-                    $.ajax({
-                        type: "get",
-                        url: this.templateUrl,
-                        async: false,
-                        success: function (templates) {
-                            //Store any client templates
-                            $(templates).filter("[data-template]").each(function () {
-                               storage.store(this.getAttribute("data-template"), this.outerHTML);
+        //Check custom updates
+        for (var updater in updaters) {
+            if (updater.toLowerCase() == meta.update) {
+                updaters[updater](element, meta, sender, url);
+                return;
+            }
+        }
+
+        //Check standard updates
+        switch (meta.update) {
+
+            // Content                                              
+            /*  
+            *   title: string 
+            *   address: string 
+            *   nav: [string|null|false]
+            *   top: selector 
+            *   bottom: selector        
+            */ 
+            case "content":
+                //Address
+                if (meta.address && meta.address != "") url = meta.address;
+                if (url.charAt(0) == "/") url = url.substr(1);
+                $(window).data("_updater_address", url);
+                if (window.location.hash.substr(1) != url) {
+                    if (url != "/") {
+                        window.location.hash = url;
+                    }
+                    else window.location.hash = "";
+                }
+                //Page Title
+                if (meta.title) document.title = config.pageTitlePrefix + meta.title;
+                //Top content
+                var topContent = $("#" + config.topContentId);
+                if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
+                else topContent.empty();
+                //Bottom content
+                var bottomContent = $("#" + config.bottomContentId);
+                if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
+                else bottomContent.empty();
+                //Content
+                $(config.contentSelector).empty().append(element);
+                //Scroll to top by default
+                if (!meta.scroll) $(window).scrollTop(0);
+                break;
+
+            // Window                                                                                                                                                                                                                                                                                                                                                                             
+            /*
+            *   title: string
+            *   modal: bool 
+            *   width: int
+            *   height: int
+            *   maxWidth: int
+            *   maxHeight: int
+            *   minWidth: int
+            *   minHeight: int
+            *   nopad: bool
+            *   overflow: bool
+            *   icon: string
+            */ 
+            case "window":
+                //Show in content area if empty
+                if ($(config.contentSelector).children().length == 0) content.html(element);
+                //Show window
+                else {
+                    //Close existing window
+                    $("#" + id).dialog("destroy").remove();
+                    //Window params
+                    var params = $.extend(meta,
+                    {
+                        modal: meta.modal == false ? false : true,
+                        resizable: false,
+                        width: meta.width ? meta.width : "auto",
+                        height: meta.height ? meta.height : "auto",
+                        open: function () {
+                            var win = $(this).parent(".ui-dialog");
+                            element.removeAttr("id");
+                            win.attr("id", id);
+                            var winTitle = win.find(".ui-dialog-titlebar");
+                            var winContent = win.find(".ui-dialog-content");
+                            //Overflow
+                            if (meta.overflow) win.find(".ui-dialog-content").andSelf().css("overflow", "visible");
+                            //No padding
+                            if (meta.nopad) winContent.css("padding", 0);
+                            //Icon
+                            if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
+
+                            //Recenter on window resize
+                            $(window).bind("resize." + id, function () {
+                                win.position({ at: "center", my: "center", of: window });
                             });
+                            //Recenter on delay
+                            setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
+                        },
+                        close: function () {
+                            //Unbind window resize handler
+                            $(window).unbind("resize." + id);
+                            //Remove window
+                            $(this).remove();
+                        },
+                        drag: function () {
+                            //Unbind window resize handler
+                            $(window).unbind("resize." + id);
+                            //Remove recenter
+                            $(this).parents(".ui-dialog:first");
                         }
                     });
+                    //Show window
+                    element.dialog(params);
                 }
+                break;
 
-                //Render template with data, convert to jquery then output
-                if (storage.exists(this.templateId)) {
-                    var update = $(render(this.templateId, result));
-                    updateElement(update, update.data(), sender, url);
+            // Table Row                                                                                                                                                                                                                                                                                                                                                                    
+            /*
+            *   target: selector
+            */ 
+            case "row":
+                //Get self or first table
+                if (!meta.target) meta.target = "#content";
+                var table = $(meta.target);
+                if (table[0].tagName != "TABLE") table = $("table:first");
+                //Add tbody
+                if (!table.find("tbody").length) table.append("<tbody></tbody>");
+                //Replace existing row
+                if (table.find("#" + id).length) table.find("#" + id).replaceWith(element);
+                //Add new row
+                else {
+                    var rows = table.find("tbody > tr:not(:has(th))");
+                    if (meta.position == "bottom") rows.last().after(element);
+                    else rows.first().before(element);
                 }
-            }
+                //Select row
+                $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
+                var row = table.find("#" + id);
+                row.addClass(config.rowSelectCss);
+                //Hide empty
+                //TODO: Remove this
+                table.next(".empty:first").hide();
+                break;
 
-        });
+            //Replace                                                                                                                                                                                                                                                                                                                                    
+            case "replace":
+                $("#" + id).replaceWith(element);
+                break;
+
+            // Insert                                                                                                                                                                                                                                                                                                                                    
+            /*
+            *   target: selector
+            */ 
+            case "insert":
+                var target = $(meta.target);
+                target.html(element);
+                break;
+
+            // Prepend                                                                                                                                                                                                                           
+            /*
+            *   target: selector
+            */ 
+            case "prepend":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(element);
+                else $(meta.target).prepend(element);
+                break;
+
+            // Append                                                                                                                                                                                                                            
+            /*
+            *   target: selector
+            */ 
+            case "append":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(element);
+                else $(meta.target).append(element);
+                break;
+
+            //Top                                                                                                                                                                                                                                                                                              
+            case "top":
+                var topContent = $("#" + config.topContentId);
+                topContent.empty().prepend(element);
+                break;
+
+            //Bottom                                                                                                                                                                                                                                                                                               
+            case "bottom":
+                var bottomContent = $("#" + config.bottomContentId);
+                bottomContent.empty().prepend(element);
+                break;
+        }
 
     }
-
+    
     //Initialize any events or prerequisites 
     function initView(context) {
 
@@ -593,208 +760,41 @@ var Sync = Sync || (function () {
         });
     }
 
-    //Update html element
-    function updateElement(element, meta, sender, url) {
+    //Handle json update
+    function handleJson(result, sender, url) {
 
-        //Ensure id
-        var id = element.attr("id");
-        if (id == "" || id == undefined) {
-            id = ("el-" + Math.random()).replace(".", "");
-            element.attr("id", id);
-        }
+        //Check routes to match url with needed template
+        $(routes).each(function () {
 
-        //Match update type by lowercase
-        meta.update = meta.update.toLowerCase();
+            //If route matches, then request template
+            if (this.regex.test(url)) {
 
-        //Check custom updates
-        for (var updater in updaters) {
-            if (updater.toLowerCase() == meta.update) {
-                updaters[updater](element, meta, sender, url);
-                return;
-            }
-        }
-
-        //Check standard updates
-        switch (meta.update) {
-
-            // Content                                             
-            /*  
-            *   title: string 
-            *   address: string 
-            *   nav: [string|null|false]
-            *   top: selector 
-            *   bottom: selector        
-            */ 
-            case "content":
-                //Address
-                if (meta.address && meta.address != "") url = meta.address;
-                if (url.charAt(0) == "/") url = url.substr(1);
-                $(window).data("_updater_address", url);
-                if (window.location.hash.substr(1) != url) {
-                    if (url != "/") {
-                        window.location.hash = url;
-                    }
-                    else window.location.hash = "";
-                }
-                //Page Title
-                if (meta.title) document.title = config.pageTitlePrefix + meta.title;
-                //Top content
-                var topContent = $("#" + config.topContentId);
-                if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
-                else topContent.empty();
-                //Bottom content
-                var bottomContent = $("#" + config.bottomContentId);
-                if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
-                else bottomContent.empty();
-                //Content
-                $(config.contentSelector).empty().append(element);
-                //Scroll to top by default
-                if (!meta.scroll) $(window).scrollTop(0);
-                break;
-
-            // Window                                                                                                                                                                                                                                                                                                                                                                            
-            /*
-            *   title: string
-            *   modal: bool 
-            *   width: int
-            *   height: int
-            *   maxWidth: int
-            *   maxHeight: int
-            *   minWidth: int
-            *   minHeight: int
-            *   nopad: bool
-            *   overflow: bool
-            *   icon: string
-            */ 
-            case "window":
-                //Show in content area if empty
-                if ($(config.contentSelector).children().length == 0) content.html(element);
-                //Show window
-                else {
-                    //Close existing window
-                    $("#" + id).dialog("destroy").remove();
-                    //Window params
-                    var params = $.extend(meta,
-                    {
-                        modal: meta.modal == false ? false : true,
-                        resizable: false,
-                        width: meta.width ? meta.width : "auto",
-                        height: meta.height ? meta.height : "auto",
-                        open: function () {
-                            var win = $(this).parent(".ui-dialog");
-                            element.removeAttr("id");
-                            win.attr("id", id);
-                            var winTitle = win.find(".ui-dialog-titlebar");
-                            var winContent = win.find(".ui-dialog-content");
-                            //Overflow
-                            if (meta.overflow) win.find(".ui-dialog-content").andSelf().css("overflow", "visible");
-                            //No padding
-                            if (meta.nopad) winContent.css("padding", 0);
-                            //Icon
-                            if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
-
-                            //Recenter on window resize
-                            $(window).bind("resize." + id, function () {
-                                win.position({ at: "center", my: "center", of: window });
+                //Request templates from URL
+                if (!storage.exists(this.templateId)) {
+                    $.ajax({
+                        type: "get",
+                        url: this.templateUrl,
+                        async: false,
+                        success: function (templates) {
+                            //Store any client templates
+                            $(templates).filter("[data-template]").each(function () {
+                                storage.store(this.getAttribute("data-template"), this.outerHTML);
                             });
-                            //Recenter on delay
-                            setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
-                        },
-                        close: function () {
-                            //Unbind window resize handler
-                            $(window).unbind("resize." + id);
-                            //Remove window
-                            $(this).remove();
-                        },
-                        drag: function () {
-                            //Unbind window resize handler
-                            $(window).unbind("resize." + id);
-                            //Remove recenter
-                            $(this).parents(".ui-dialog:first");
                         }
                     });
-                    //Show window
-                    element.dialog(params);
                 }
-                break;
 
-            // Table Row                                                                                                                                                                                                                                                                                                                                                                   
-            /*
-            *   target: selector
-            */ 
-            case "row":
-                //Get self or first table
-                if (!meta.target) meta.target = "#content";
-                var table = $(meta.target);
-                if (table[0].tagName != "TABLE") table = $("table:first");
-                //Add tbody
-                if (!table.find("tbody").length) table.append("<tbody></tbody>");
-                //Replace existing row
-                if (table.find("#" + id).length) table.find("#" + id).replaceWith(element);
-                //Add new row
-                else {
-                    var rows = table.find("tbody > tr:not(:has(th))");
-                    if (meta.position == "bottom") rows.last().after(element);
-                    else rows.first().before(element);
+                //Render template with data, convert to jquery then output
+                if (storage.exists(this.templateId)) {
+                    var update = $(render(this.templateId, result));
+                    updateElement(update, update.data(), sender, url);
                 }
-                //Select row
-                $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
-                var row = table.find("#" + id);
-                row.addClass(config.rowSelectCss);
-                //Hide empty
-                //TODO: Remove this
-                table.next(".empty:first").hide();
-                break;
+            }
 
-            //Replace                                                                                                                                                                                                                                                                                                                                   
-            case "replace":
-                $("#" + id).replaceWith(element);
-                break;
-
-            // Insert                                                                                                                                                                                                                                                                                                                                   
-            /*
-            *   target: selector
-            */ 
-            case "insert":
-                var target = $(meta.target);
-                target.html(element);
-                break;
-
-            // Prepend                                                                                                                                                                                                                          
-            /*
-            *   target: selector
-            */ 
-            case "prepend":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(meta.target).prepend(element);
-                break;
-
-            // Append                                                                                                                                                                                                                           
-            /*
-            *   target: selector
-            */ 
-            case "append":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(meta.target).append(element);
-                break;
-
-            //Top                                                                                                                                                                                                                                                                                             
-            case "top":
-                var topContent = $("#" + config.topContentId);
-                topContent.empty().prepend(element);
-                break;
-
-            //Bottom                                                                                                                                                                                                                                                                                              
-            case "bottom":
-                var bottomContent = $("#" + config.bottomContentId);
-                bottomContent.empty().prepend(element);
-                break;
-        }
+        });
 
     }
-
+    
     //Disable/Enable sender
     function toggleSender(sender, enabled) {
         //Form

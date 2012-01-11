@@ -27,7 +27,7 @@
 
             //Window provider
             window: {
-                show: function (id, content, data) { },
+                show: function (id, content, metadata) { },
                 close: function (id) { }
             },
 
@@ -47,7 +47,11 @@
         You can easily use alternate implementations as needed such as <a href="http://www.jstorage.info">jStorage</a>,
         <a href="http://pablotron.org/software/persist-js">PersistJS</a>, or pure HTML5 local storage.
     </p>
+    <p>
+        The storage commands can then be easily called... <em>Sync.storage.store("myKey", data);</em>
+    </p>
     <hr/>
+    <label>Storage Provider</label>
     <pre class="brush: js;">
             //Storage provider - Amplify.js
             storage: {

@@ -1,20 +1,21 @@
 
 /*
-*   Sync JS - v 0.9.1.45
+*   Sync JS - v 0.9.1.56
+*   This file contains the core functionality
 *   Dependencies: jQuery UI, HashChange plugin
 */
 
-var Sync = Sync || (function () {
+(function (sync) {
 
     /********* Config *********/
 
     //Configuration
-    this.config = {
+    var config = {
 
         //General 
         autoEvents: true, //Automatically hijax every link and form
         autoCorrectLinks: true, //Change standard URL's to ajax (#) URL's
-        contentId: "content", //The main content area where content is rendered
+        contentSelector: "[data-content=true]:first", //The main content area where content is rendered
         topContentId: "content-top", //The content area right above the main content
         bottomContentId: "content-bottom", //The content area right below the main content
         pageTitlePrefix: "", //Prepend to title of each page
@@ -22,62 +23,39 @@ var Sync = Sync || (function () {
         scriptPath: "/Scripts", //Path to download dependent scripts from
         templateDelimiters: ["<%", "%>"], //Delimiters for embedded scripts in templates
 
-        //Progress indicator
-        progressId: "progress", //Progress indicator id
-        progressText: "One Moment...", //Progress indicator text
-        progressCss: "progress", //Progress indicator CSS style
-
         //Global events
-        onRequest: function () { }, //A request is made
-        onSuccess: function () { }, //A response is received
+        onPageLoad: function () { }, //The page just loaded
+        onLinkClick: function () { }, //An ajaxified link is just clicked
+        onFormSubmit: function () { }, //An ajaxified form is just submitted
+        onRequest: function () { }, //A request is just made
+        onSuccess: function () { }, //A response is just received
         onBeforeUpdate: function () { }, //Just before content is updated in the DOM
         onAfterUpdate: function () { }, //Just after content is updated in the DOM
         onComplete: function () { }, //The request and updated have been successfully completed
-        onError: function () { }, //Request resulted in an error
-
-        //Window provider
-        windowProvider: {
-            showWindow: function (id, content, data) { },
-            closeWindow: function (id) { }
-        },
-
-        //Client template provider
-        templateProvider: {
-            render: function (template, data) { }
-        },
-
-        //Local storage provider
-        storageProvider: {
-            store: function (key, data) { },
-            get: function (key) { },
-            remove: function (key) { },
-            exists: function (key) { }
-        }
+        onError: function () { } //Request resulted in an error
 
     };
+    sync.config = config;
 
     //Global events
-    this.events = {};
+    sync.events = {};
 
     //Custom updaters
-    this.updaters = {};
+    sync.updaters = {};
 
     //Routes
-    this.routes = {};
+    sync.routes = {};
 
     //Providers
-    this.providers = {};
+    sync.providers = {};
 
-    /********* Public Methods *********/
+    /********* Page Load *********/
 
-    //Initialize the page and config settings
-    this.init = function (config) {
+    $(function () {
 
-        //Content area
-        var content = $("#" + this.config.contentId);
-
-        //Combine default config with provided
-        this.config = $.extend(this.config, config);
+        //Add providers to the core object
+        //So "Sync.provider.call" rather than "Sync.providers.provider.call"
+        $.extend(sync, sync.providers);
 
         //Add page title prefix
         var title = document.title;
@@ -85,10 +63,10 @@ var Sync = Sync || (function () {
         if (prefix && title.slice(0, prefix.length) != prefix) document.title = prefix + document.title;
 
         //Change standard URL to Ajax URL
-        if (this.config.autoCorrectLinks) {
+        if (config.autoCorrectLinks) {
             var path = location.pathname;
             if (path != "/") {
-                content.hide();
+                $(config.contentSelector).hide();
                 if (path.charAt(0) == "/") path = path.substr(1);
                 location.replace("/#" + path + location.search);
             }
@@ -98,43 +76,50 @@ var Sync = Sync || (function () {
         var hash = location.hash.substr(1);
         if (hash.length > 1) {
             //Empty content area
-            content.empty();
+            $(config.contentSelector).empty();
             //If url has "!" remove it, it prevents request from being made
             //Remove it on the plugin initialization, page was just reloaded
             if (hash.charAt(0) == "!") location.hash = hash.substr(1);
             //Make request
-            else request(hash);
+            else sync.request(hash);
         }
 
         //Hash change - Back button support
         $(window).hashchange(function () {
             var hash = location.hash.substr(1);
             //If hash is not current address and isn't prefixed with "!", then make request
-            if (hash.charAt(0) != "!" && $(window).data("_updater_address") != hash) {
+            if (hash.charAt(0) != "!" && $(window).data("_sync_address") != hash) {
                 if (hash == "") hash = "/";
-                request(hash);
+                sync.request(hash);
             }
         });
 
         //Attach events to body
         initView("body");
 
-        //Create progress indicator
-        $("body").append("<div id=\"" + this.config.progressId + "\" class=\"" + this.config.progressCss + "\">" + this.config.progressText + "</div>");
+        //Page load event
+        config.onPageLoad();
+
+    });
+
+    /********* Public Methods *********/
+
+    //Initialize the page and config settings
+    sync.init = function (config) {
+
+        //Combine default config with provided
+        $.extend(sync.config, config);
 
     };
 
     //Request
-    this.request = function (url, sender, formData) {
+    sync.request = function (url, sender, formData) {
 
         //Reload page with hash value
         if (url == "#" || url.charAt(0) == "~") return;
 
         //Convert sender to jquery
         sender = $(sender);
-
-        //Response level metadata
-        var navKey;
 
         //On request event
         config.onRequest(url, sender, formData);
@@ -158,8 +143,8 @@ var Sync = Sync || (function () {
         //Remove host header & hash
         url = url.replace(/(http|https):\/\/[a-z0-9-_.:]+/i, "").replace(/#/, "");
 
-        //Show Progress
-        toggleProgress(true);
+        //Show loading indicator
+        sync.loading.show();
 
         //Begin request
         var method = formData == undefined ? "GET" : "POST";
@@ -184,19 +169,19 @@ var Sync = Sync || (function () {
                 var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
 
                 //Text/HTML response
-                if ((/html/i).test(contentType)) handleHtml(result, sender, url);
+                if ((/html/i).test(contentType)) handleHTML(result, sender, url);
 
                 //JSON Response
-                else if ((/json/i).test(contentType)) handleJson(result, sender, url);
+                else if ((/json/i).test(contentType)) handleJSON(result, sender, url);
 
                 //Hide progress
-                toggleProgress(false);
+                sync.loading.hide();
 
                 //Enable sender
                 toggleSender(sender, true);
 
                 //On complete
-                config.onComplete(navKey);
+                config.onComplete();
 
             }, //End Success event
 
@@ -207,7 +192,7 @@ var Sync = Sync || (function () {
                 toggleSender(sender, true);
 
                 //Hide progress
-                toggleProgress(false);
+                sync.loading.hide();
 
                 //Call error event
                 config.onError(error);
@@ -218,23 +203,25 @@ var Sync = Sync || (function () {
     };
 
     //Redirect
-    this.redirect = function (url) {
-        toggleProgress(true);
+    sync.redirect = function (url) {
+        sync.loading.show();
         window.location = url;
     };
 
     //Render a template for an object
     var templates = {};
-    this.render = function (template, model) {
+    sync.render = function (template, model) {
         //Check cache for template function
         var func = templates[template];
         //Check 
         if (!func) {
             //Get template from storage
-            var str = providers.storageProvider.get(template);
+            var str = sync.storage.get(template);
             //Template delimiters
             var left = config.templateDelimiters[0];
             var right = config.templateDelimiters[1];
+            //Fix html encoding
+            str = str.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             //Parse template
             str = str
                 .replace(/[\r\t\n]/g, " ")
@@ -253,16 +240,16 @@ var Sync = Sync || (function () {
     };
 
     //Render templates for an array
-    this.renderAll = function (template, models) {
+    sync.renderAll = function (template, models) {
         var html = "";
         $(models).each(function () {
-            html += render(template, this);
+            html += sync.render(template, this);
         });
         return html;
     };
 
     //Load dependent scripts
-    this.loadScripts = function (scripts) {
+    sync.loadScripts = function (scripts) {
         $(scripts).each(function () {
             var src = $.trim(this);
             //Append 'scriptPath' setting if available
@@ -283,38 +270,56 @@ var Sync = Sync || (function () {
         });
     };
 
-    //Show/Hide progress
-    this.toggleProgress = function (show) {
+    //Close element
+    sync.close = function (type, selector) {
 
-        var progress = $("#" + config.progressId);
+        var el = $(selector);
+        if (!el.length) return;
 
-        //Show
-        if (show) {
-            //Show and center
-            progress.show().position({ at: "center", my: "center", of: window });
-            //Recenter on window resize
-            $(window).bind("resize._progress", function () {
-                progress.position({ at: "center", my: "center", of: window });
-            });
-        }
+        switch (type.toLowerCase()) {
 
-        //Hide
-        else {
-            //Hide
-            progress.hide();
-            //Unbind resize event
-            $(window).unbind("resize._progress");
+            //Update                                                                         
+            case "update":
+                var update = el.closest("[data-update]");
+                //Remove
+                var subrow = update.closest(".subrow");
+                update.remove();
+                //Close SubRow if empty
+                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
+                break;
+
+            //Window                                                                         
+            case "window":
+                sync.window.close(selector);
+                break;
+
+            //Row                                                                         
+            case "row":
+                var grid = el.closest(".grid");
+                var row;
+                if (el.length && el[0].tagName == "TR") row = el;
+                else row = el.closest("tr").andSelf.remove();
+                //Close
+                if (row.next().hasClass("subrow")) row.next().remove();
+                row.remove();
+                //Re-strip
+                grid.find("tr").removeClass("rowalt");
+                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
+                break;
+
+            //Parent                                                                        
+            case "parent":
+                el.parent().remove();
+                break;
+
         }
 
     };
 
-    //Must return for static access
-    return this;
-
     /********* Private Methods *********/
 
-    //Handle html update
-    function handleHtml(result, sender, url) {
+    //Handle HTML update
+    function handleHTML(result, sender, url) {
 
         //Load any script dependencies via script tags 
         //Temporarily replace script tag names with 'tempscript'
@@ -326,11 +331,11 @@ var Sync = Sync || (function () {
             scripts.push(this.getAttribute("src"));
         }).remove();
         result = result.replace(/<scripttemp /i, "<tempscript ");
-        loadScripts(scripts);
+        sync.loadScripts(scripts);
 
         //Store any client templates
         $(result).filter("[data-template]").each(function () {
-            providers.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
+            sync.storage.store(this.getAttribute("data-template"), this.outerHTML);
         });
 
         //Update returned elements
@@ -342,9 +347,6 @@ var Sync = Sync || (function () {
             var meta = update.data();
             meta.update = meta.update.toLowerCase();
 
-            //Remember metadata for later
-            //if (meta.nav != undefined) navKey = meta.nav;
-
             //Update actions
             if (meta.hide) $(meta.hide).hide();
             if (meta.show) $(meta.show).show();
@@ -352,10 +354,10 @@ var Sync = Sync || (function () {
             if (meta.remove) $(meta.remove).show();
 
             //Close
-            if (meta.closeUpdate) close("update", meta.closeUpdate);
-            if (meta.closeWindow) close("window", meta.closeWindow);
-            if (meta.closeRow) close("row", meta.closeRow);
-            if (meta.closeParent) close("parent", meta.closeParent);
+            if (meta.closeUpdate) sync.close("update", meta.closeUpdate);
+            if (meta.closeWindow) sync.close("window", meta.closeWindow);
+            if (meta.closeRow) sync.close("row", meta.closeRow);
+            if (meta.closeParent) sync.close("parent", meta.closeParent);
 
             //On before update
             config.onBeforeUpdate(update, meta);
@@ -384,38 +386,129 @@ var Sync = Sync || (function () {
 
     }
 
-    //Handle json update
-    function handleJson(result, sender, url) {
+    //Update html element
+    function updateElement(element, metadata, sender, url) {
 
-        //Check routes to match url with needed template
-        $(routes).each(function () {
+        //Ensure id
+        var id = element.attr("id");
+        if (id == "" || id == undefined) {
+            id = ("el-" + Math.random()).replace(".", "");
+            element.attr("id", id);
+        }
 
-            //If route matches, then request template
-            if (this.regex.test(url)) {
+        //Match update type by lowercase
+        metadata.update = metadata.update.toLowerCase();
 
-                //Request templates from URL
-                if (!providers.storageProvider.exists(this.templateId)) {
-                    $.ajax({
-                        type: "get",
-                        url: this.templateUrl,
-                        async: false,
-                        success: function (templates) {
-                            //Store any client templates
-                            $(templates).filter("[data-template]").each(function () {
-                                providers.storageProvider.store(this.getAttribute("data-template"), this.outerHTML);
-                            });
-                        }
-                    });
-                }
-
-                //Render template with data, convert to jquery then output
-                if (providers.storageProvider.exists(this.templateId)) {
-                    var update = $(render(this.templateId, result));
-                    updateElement(update, update.data(), sender, url);
-                }
+        //Check custom updates
+        for (var updater in sync.updaters) {
+            if (updater.toLowerCase() == metadata.update) {
+                sync.updaters[updater](element, metadata, sender, url);
+                return;
             }
+        }
 
-        });
+        //Check standard updates
+        switch (metadata.update) {
+
+            // Content                                                                          
+            /*  
+            *   title: string 
+            *   address: string 
+            *   nav: [string|null|false]
+            *   top: selector 
+            *   bottom: selector        
+            */ 
+            case "content":
+                //Address
+                if (metadata.address && metadata.address != "") url = metadata.address;
+                if (url.charAt(0) == "/") url = url.substr(1);
+                $(window).data("_sync_address", url);
+                if (window.location.hash.substr(1) != url) {
+                    if (url != "/") {
+                        window.location.hash = url;
+                    }
+                    else window.location.hash = "";
+                }
+                //Page Title
+                if (metadata.title) document.title = config.pageTitlePrefix + metadata.title;
+                //Top content
+                var topContent = $("#" + config.topContentId);
+                if (metadata.top) topContent.children(":not(" + metadata.top + ")").remove();
+                else topContent.empty();
+                //Bottom content
+                var bottomContent = $("#" + config.bottomContentId);
+                if (metadata.bottom) bottomContent.children(":not(" + metadata.bottom + ")").remove();
+                else bottomContent.empty();
+                //Content
+                $(config.contentSelector).empty().append(element);
+                //Scroll to top by default
+                if (!metadata.scroll) $(window).scrollTop(0);
+                break;
+
+            // Window                                                                                                                                                                                                                                                                                                                                                                                                         
+            /*
+            *   title: string
+            *   modal: bool 
+            *   width: int
+            *   height: int
+            *   maxWidth: int
+            *   maxHeight: int
+            *   minWidth: int
+            *   minHeight: int
+            *   nopad: bool
+            *   overflow: bool
+            *   icon: string
+            */ 
+            case "window":
+                sync.window.create(id, element, metadata);
+                break;
+
+            //Replace                                                                                                                                                                                                                                                                                                                                                                
+            case "replace":
+                $("#" + id).replaceWith(element);
+                break;
+
+            // Insert                                                                                                                                                                                                                                                                                                                                                                
+            /*
+            *   target: selector
+            */ 
+            case "insert":
+                var target = $(metadata.target);
+                target.html(element);
+                break;
+
+            // Prepend                                                                                                                                                                                                                                                       
+            /*
+            *   target: selector
+            */ 
+            case "prepend":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(element);
+                else $(metadata.target).prepend(element);
+                break;
+
+            // Append                                                                                                                                                                                                                                                        
+            /*
+            *   target: selector
+            */ 
+            case "append":
+                var existing = $("#" + id);
+                if (existing.length) existing.replaceWith(element);
+                else $(metadata.target).append(element);
+                break;
+
+            //Top                                                                                                                                                                                                                                                                                                                          
+            case "top":
+                var topContent = $("#" + config.topContentId);
+                topContent.empty().prepend(element);
+                break;
+
+            //Bottom                                                                                                                                                                                                                                                                                                                           
+            case "bottom":
+                var bottomContent = $("#" + config.bottomContentId);
+                bottomContent.empty().prepend(element);
+                break;
+        }
 
     }
 
@@ -454,14 +547,17 @@ var Sync = Sync || (function () {
                 //Prevent default
                 e.preventDefault();
                 //Prevent duplicate requests
-                if (preventAction()) return false;
+                if (preventDoubleClick()) return false;
+                //Link click event
+                config.onLinkClick(link);
                 //Modify link
                 if (url[0] == "#") url = "/" + url.substr(1);
                 //Update details
+                //TODO: Remove this
                 var details = link.attr("data-details");
                 if (details != undefined && $("#" + details).length) url += (url.indexOf("?") != -1 ? "&" : "?") + "UpdateDetails=True";
                 //Get request
-                request(url, this);
+                sync.request(url, this);
                 return false;
             });
         });
@@ -471,21 +567,21 @@ var Sync = Sync || (function () {
             //Prevent default
             e.preventDefault();
             //Prevent duplicate requests
-            if (preventAction()) return false;
+            if (preventDoubleClick()) return false;
             //Get form
             var form = $(this);
             //Return if no ajax
             if (form.attr("data-ajax") == "false") return;
             //Ensure unique ids
             form.attr("id", ("form-" + Math.random()).replace(".", ""));
-            //Required for TinyMCE
-            if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
+            //Form submit event
+            config.onFormSubmit(form);
             //Serialize form data, exclude filtered items
             var data = form.find(":input").not(config.submitFilter).serialize();
             //Disable form
             toggleSender(form, false);
             //Post request
-            request(form.attr("action"), this, data);
+            sync.request(form.attr("action"), this, data);
             return false;
         });
 
@@ -503,12 +599,12 @@ var Sync = Sync || (function () {
 
         //Request
         $("[data-request]", context).click(function () {
-            request($(this).attr("data-request"), this);
+            sync.request($(this).attr("data-request"), this);
         });
 
         //Close
         $("[data-close]", context).click(function () {
-            closeElement($(this).attr("data-close"), this);
+            sync.close($(this).attr("data-close"), this);
         });
 
         //Submit on dropdown change
@@ -543,7 +639,7 @@ var Sync = Sync || (function () {
         //Load dependent scripts
         $(context).find("[data-load]").andSelf().filter("[data-load]").each(function () {
             var scripts = this.getAttribute("data-load").split(",");
-            loadScripts(scripts);
+            sync.loadScripts(scripts);
         });
 
         //Run callbacks
@@ -561,250 +657,38 @@ var Sync = Sync || (function () {
         });
     }
 
-    //Update html element
-    function updateElement(element, meta, sender, url) {
+    //Handle JSON update
+    function handleJSON(result, sender, url) {
 
-        //Ensure id
-        var id = element.attr("id");
-        if (id == "" || id == undefined) {
-            id = ("el-" + Math.random()).replace(".", "");
-            element.attr("id", id);
-        }
+        //Check routes to match url with needed template
+        $(sync.routes).each(function () {
 
-        //Match update type by lowercase
-        meta.update = meta.update.toLowerCase();
+            //If route matches, then request template
+            if (this.regex.test(url)) {
 
-        //Check custom updates
-        for (var updater in updaters) {
-            if (updater.toLowerCase() == meta.update) {
-                updaters[updater](element, meta, sender, url);
-                return;
-            }
-        }
-
-        //Check standard updates
-        switch (meta.update) {
-
-            // Content                                           
-            /*  
-            *   title: string 
-            *   address: string 
-            *   nav: [string|null|false]
-            *   top: selector 
-            *   bottom: selector        
-            */ 
-            case "content":
-                //Address
-                if (meta.address && meta.address != "") url = meta.address;
-                if (url.charAt(0) == "/") url = url.substr(1);
-                $(window).data("_updater_address", url);
-                if (window.location.hash.substr(1) != url) {
-                    if (url != "/") {
-                        window.location.hash = url;
-                    }
-                    else window.location.hash = "";
-                }
-                //Page Title
-                if (meta.title) document.title = config.pageTitlePrefix + meta.title;
-                //Top content
-                var topContent = $("#" + config.topContentId);
-                if (meta.top) topContent.children(":not(" + meta.top + ")").remove();
-                else topContent.empty();
-                //Bottom content
-                var bottomContent = $("#" + config.bottomContentId);
-                if (meta.bottom) bottomContent.children(":not(" + meta.bottom + ")").remove();
-                else bottomContent.empty();
-                //Content
-                $("#" + config.contentId).empty().append(element);
-                //Scroll to top by default
-                if (!meta.scroll) $(window).scrollTop(0);
-                break;
-
-            // Window                                                                                                                                                                                                                                                                                                                                                                          
-            /*
-            *   title: string
-            *   modal: bool 
-            *   width: int
-            *   height: int
-            *   maxWidth: int
-            *   maxHeight: int
-            *   minWidth: int
-            *   minHeight: int
-            *   nopad: bool
-            *   overflow: bool
-            *   icon: string
-            */ 
-            case "window":
-                //Show in content area if empty
-                if ($("#" + config.contentId).children().length == 0) content.html(element);
-                //Show window
-                else {
-                    //Close existing window
-                    $("#" + id).dialog("destroy").remove();
-                    //Window params
-                    var params = $.extend(meta,
-                    {
-                        modal: meta.modal == false ? false : true,
-                        resizable: false,
-                        width: meta.width ? meta.width : "auto",
-                        height: meta.height ? meta.height : "auto",
-                        open: function () {
-                            var win = $(this).parent(".ui-dialog");
-                            element.removeAttr("id");
-                            win.attr("id", id);
-                            var winTitle = win.find(".ui-dialog-titlebar");
-                            var winContent = win.find(".ui-dialog-content");
-                            //Overflow
-                            if (meta.overflow) win.find(".ui-dialog-content").andSelf().css("overflow", "visible");
-                            //No padding
-                            if (meta.nopad) winContent.css("padding", 0);
-                            //Icon
-                            if (meta.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + meta.icon + ".png'/>");
-
-                            //Recenter on window resize
-                            $(window).bind("resize." + id, function () {
-                                win.position({ at: "center", my: "center", of: window });
+                //Request templates from URL
+                if (!sync.storage.exists(this.templateId)) {
+                    $.ajax({
+                        type: "get",
+                        url: this.templateUrl,
+                        async: false,
+                        success: function (templates) {
+                            //Store any client templates
+                            $(templates).filter("[data-template]").each(function () {
+                                sync.storage.store(this.getAttribute("data-template"), this.outerHTML);
                             });
-                            //Recenter on delay
-                            setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
-                        },
-                        close: function () {
-                            //Unbind window resize handler
-                            $(window).unbind("resize." + id);
-                            //Remove window
-                            $(this).remove();
-                        },
-                        drag: function () {
-                            //Unbind window resize handler
-                            $(window).unbind("resize." + id);
-                            //Remove recenter
-                            $(this).parents(".ui-dialog:first");
                         }
                     });
-                    //Show window
-                    element.dialog(params);
                 }
-                break;
 
-            // Table Row                                                                                                                                                                                                                                                                                                                                                                 
-            /*
-            *   target: selector
-            */ 
-            case "row":
-                //Get self or first table
-                if (!meta.target) meta.target = "#content";
-                var table = $(meta.target);
-                if (table[0].tagName != "TABLE") table = $("table:first");
-                //Add tbody
-                if (!table.find("tbody").length) table.append("<tbody></tbody>");
-                //Replace existing row
-                if (table.find("#" + id).length) table.find("#" + id).replaceWith(element);
-                //Add new row
-                else {
-                    var rows = table.find("tbody > tr:not(:has(th))");
-                    if (meta.position == "bottom") rows.last().after(element);
-                    else rows.first().before(element);
+                //Render template with data, convert to jquery then output
+                if (sync.storage.exists(this.templateId)) {
+                    var update = $(sync.render(this.templateId, result));
+                    updateElement(update, update.data(), sender, url);
                 }
-                //Select row
-                $("." + config.rowSelectCss).removeClass(config.rowSelectCss);
-                var row = table.find("#" + id);
-                row.addClass(config.rowSelectCss);
-                //Hide empty
-                //TODO: Remove this
-                table.next(".empty:first").hide();
-                break;
+            }
 
-            //Replace                                                                                                                                                                                                                                                                                                                                 
-            case "replace":
-                $("#" + id).replaceWith(element);
-                break;
-
-            // Insert                                                                                                                                                                                                                                                                                                                                 
-            /*
-            *   target: selector
-            */ 
-            case "insert":
-                var target = $(meta.target);
-                target.html(element);
-                break;
-
-            // Prepend                                                                                                                                                                                                                        
-            /*
-            *   target: selector
-            */ 
-            case "prepend":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(meta.target).prepend(element);
-                break;
-
-            // Append                                                                                                                                                                                                                         
-            /*
-            *   target: selector
-            */ 
-            case "append":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(meta.target).append(element);
-                break;
-
-            //Top                                                                                                                                                                                                                                                                                           
-            case "top":
-                var topContent = $("#" + config.topContentId);
-                topContent.empty().prepend(element);
-                break;
-
-            //Bottom                                                                                                                                                                                                                                                                                            
-            case "bottom":
-                var bottomContent = $("#" + config.bottomContentId);
-                bottomContent.empty().prepend(element);
-                break;
-        }
-
-    }
-
-    //Close element
-    function closeElement(type, selector) {
-
-        var el = $(selector);
-        if (!el.length) return;
-
-        switch (type.toLowerCase()) {
-
-            //Update                                          
-            case "update":
-                var update = el.closest("[data-update]");
-                //Remove
-                var subrow = update.closest(".subrow");
-                update.remove();
-                //Close SubRow if empty
-                if (subrow.find("td:first > *:first").length == 0) subrow.remove();
-                break;
-
-            //Window                                          
-            case "window":
-                el.closest(".ui-dialog").dialog("destroy").remove();
-                break;
-
-            //Row                                          
-            case "row":
-                var grid = el.closest(".grid");
-                var row;
-                if (el.length && el[0].tagName == "TR") row = el;
-                else row = el.closest("tr").andSelf.remove();
-                //Close
-                if (row.next().hasClass("subrow")) row.next().remove();
-                row.remove();
-                //Re-strip
-                grid.find("tr").removeClass("rowalt");
-                grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
-                break;
-
-            //Parent                                         
-            case "parent":
-                el.parent().remove();
-                break;
-        }
+        });
 
     }
 
@@ -818,19 +702,19 @@ var Sync = Sync || (function () {
         //TODO: Disable other sender types
     }
 
-    //Prevent a user action for .7 seconds
+    //Prevent a double click for .7 seconds
     //Prevents user from making duplicate requests
-    var holdAction;
-    function preventAction() {
-        if (holdAction != undefined) return true;
+    var justClicked;
+    function preventDoubleClick() {
+        if (justClicked != undefined) return true;
         else {
-            holdAction = {};
-            setTimeout(function () { holdAction = undefined; }, 700);
+            justClicked = {};
+            setTimeout(function () { justClicked = undefined; }, 700);
         }
         return false;
     }
 
-})();
+} (window.Sync = window.Sync || {}));
 
 
 /*
@@ -841,4 +725,4 @@ var Sync = Sync || (function () {
 *   Dual licensed under the MIT and GPL licenses.
 *   http://benalman.com/about/license/
 */
-(function (j, o, r) { var q = "hashchange", l = document, n, m = j.event.special, k = l.documentMode, p = "on" + q in o && (k === r || k > 7); function s(a) { a = a || location.href; return "#" + a.replace(/^[^#]*#?(.*)$/, "$1") } j.fn[q] = function (a) { return a ? this.bind(q, a) : this.trigger(q) }; j.fn[q].delay = 50; m[q] = j.extend(m[q], { setup: function () { if (p) { return false } j(n.start) }, teardown: function () { if (p) { return false } j(n.stop) } }); n = (function () { var d = {}, e, a = s(), c = function (h) { return h }, b = c, f = c; d.start = function () { e || g() }; d.stop = function () { e && clearTimeout(e); e = r }; function g() { var h = s(), i = f(a); if (h !== a) { b(a = h, i); j(o).trigger(q) } else { if (i !== a) { location.href = location.href.replace(/#.*/, "") + i } } e = setTimeout(g, j.fn[q].delay) } j.browser.msie && !p && (function () { var i, h; d.start = function () { if (!i) { h = j.fn[q].src; h = h && h + s(); i = j('<iframe tabindex="-1" title="empty"/>').hide().one("load", function () { h || b(s()); g() }).attr("src", h || "javascript:0").insertAfter("body")[0].contentWindow; l.onpropertychange = function () { try { if (event.propertyName === "title") { i.document.title = l.title } } catch (t) { } } } }; d.stop = c; f = function () { return s(i.location.href) }; b = function (w, z) { var x = i.document, y = j.fn[q].domain; if (w !== z) { x.title = l.title; x.open(); y && x.write('<script>document.domain="' + y + '"<\/script>'); x.close(); i.location.hash = w } } })(); return d })() })(jQuery, this);
+(function (i, d, a) { var b = "hashchange", g = document, e, f = i.event.special, h = g.documentMode, c = "on" + b in d && (h === a || h > 7); function t(j) { j = j || location.href; return "#" + j.replace(/^[^#]*#?(.*)$/, "$1") } i.fn[b] = function (j) { return j ? this.bind(b, j) : this.trigger(b) }; i.fn[b].delay = 50; f[b] = i.extend(f[b], { setup: function () { if (c) { return false } i(e.start) }, teardown: function () { if (c) { return false } i(e.stop) } }); e = (function () { var o = {}, n, k = t(), p = function (q) { return q }, j = p, m = p; o.start = function () { n || l() }; o.stop = function () { n && clearTimeout(n); n = a }; function l() { var r = t(), q = m(k); if (r !== k) { j(k = r, q); i(d).trigger(b) } else { if (q !== k) { location.href = location.href.replace(/#.*/, "") + q } } n = setTimeout(l, i.fn[b].delay) } i.browser.msie && !c && (function () { var q, r; o.start = function () { if (!q) { r = i.fn[b].src; r = r && r + t(); q = i('<iframe tabindex="-1" title="empty"/>').hide().one("load", function () { r || j(t()); l() }).attr("src", r || "javascript:0").insertAfter("body")[0].contentWindow; g.onpropertychange = function () { try { if (event.propertyName === "title") { q.document.title = g.title } } catch (s) { } } } }; o.stop = p; m = function () { return t(q.location.href) }; j = function (u, v) { var s = q.document, A = i.fn[b].domain; if (u !== v) { s.title = g.title; s.open(); A && s.write('<script>document.domain="' + A + '"<\/script>'); s.close(); q.location.hash = u } } })(); return o })() })(jQuery, this);

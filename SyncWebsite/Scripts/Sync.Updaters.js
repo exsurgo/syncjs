@@ -11,7 +11,7 @@ Sync.updaters = {
         //Get id
         var id = $(element).attr("id");
         //Get self or first table
-        if (!metadata.target) metadata.target = "#content";
+        if (!metadata.target) metadata.target = Sync.config.contentSelector;
         var table = $(metadata.target);
         if (table[0].tagName != "TABLE") table = $("table:first");
         //Add tbody
@@ -50,8 +50,8 @@ Sync.updaters = {
                     tr.after("<tr class='subrow'><td colspan='" + cols + "'></td></tr>");
                 }
                 //Selected row
-                $(".rowselect").removeClass("rowselect");
-                $(tr).closest("tr").addClass("rowselect");
+                $(".row-select").removeClass("row-select");
+                $(tr).closest("tr").addClass("row-select");
                 //Add update
                 var zone = tr.next().find("td:first");
                 zone.prepend(element);

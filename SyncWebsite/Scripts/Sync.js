@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.55
+*   Sync JS - v 0.9.1.56
 *   This file contains the core functionality
 *   Dependencies: jQuery UI, HashChange plugin
 */
@@ -271,47 +271,47 @@
     };
 
     //Close element
-    sync.close = function(type, selector) {
+    sync.close = function (type, selector) {
 
         var el = $(selector);
         if (!el.length) return;
 
         switch (type.toLowerCase()) {
 
-            //Update                                                                        
+            //Update                                                                         
             case "update":
                 var update = el.closest("[data-update]");
-                    //Remove
+                //Remove
                 var subrow = update.closest(".subrow");
                 update.remove();
-                    //Close SubRow if empty
+                //Close SubRow if empty
                 if (subrow.find("td:first > *:first").length == 0) subrow.remove();
                 break;
 
-            //Window                                                                        
+            //Window                                                                         
             case "window":
-                el.closest(".ui-dialog").dialog("destroy").remove();
+                sync.window.close(selector);
                 break;
 
-            //Row                                                                        
+            //Row                                                                         
             case "row":
                 var grid = el.closest(".grid");
                 var row;
                 if (el.length && el[0].tagName == "TR") row = el;
                 else row = el.closest("tr").andSelf.remove();
-                    //Close
+                //Close
                 if (row.next().hasClass("subrow")) row.next().remove();
                 row.remove();
-                    //Re-strip
+                //Re-strip
                 grid.find("tr").removeClass("rowalt");
                 grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
                 break;
 
-            //Parent                                                                       
+            //Parent                                                                        
             case "parent":
                 el.parent().remove();
                 break;
-                
+
         }
 
     };
@@ -354,10 +354,10 @@
             if (meta.remove) $(meta.remove).show();
 
             //Close
-            if (meta.closeUpdate) close("update", meta.closeUpdate);
-            if (meta.closeWindow) close("window", meta.closeWindow);
-            if (meta.closeRow) close("row", meta.closeRow);
-            if (meta.closeParent) close("parent", meta.closeParent);
+            if (meta.closeUpdate) sync.close("update", meta.closeUpdate);
+            if (meta.closeWindow) sync.close("window", meta.closeWindow);
+            if (meta.closeRow) sync.close("row", meta.closeRow);
+            if (meta.closeParent) sync.close("parent", meta.closeParent);
 
             //On before update
             config.onBeforeUpdate(update, meta);
@@ -410,7 +410,7 @@
         //Check standard updates
         switch (metadata.update) {
 
-            // Content                                                                         
+            // Content                                                                          
             /*  
             *   title: string 
             *   address: string 
@@ -445,7 +445,7 @@
                 if (!metadata.scroll) $(window).scrollTop(0);
                 break;
 
-            // Window                                                                                                                                                                                                                                                                                                                                                                                                        
+            // Window                                                                                                                                                                                                                                                                                                                                                                                                         
             /*
             *   title: string
             *   modal: bool 
@@ -463,12 +463,12 @@
                 sync.window.create(id, element, metadata);
                 break;
 
-            //Replace                                                                                                                                                                                                                                                                                                                                                               
+            //Replace                                                                                                                                                                                                                                                                                                                                                                
             case "replace":
                 $("#" + id).replaceWith(element);
                 break;
 
-            // Insert                                                                                                                                                                                                                                                                                                                                                               
+            // Insert                                                                                                                                                                                                                                                                                                                                                                
             /*
             *   target: selector
             */ 
@@ -477,7 +477,7 @@
                 target.html(element);
                 break;
 
-            // Prepend                                                                                                                                                                                                                                                      
+            // Prepend                                                                                                                                                                                                                                                       
             /*
             *   target: selector
             */ 
@@ -487,7 +487,7 @@
                 else $(metadata.target).prepend(element);
                 break;
 
-            // Append                                                                                                                                                                                                                                                       
+            // Append                                                                                                                                                                                                                                                        
             /*
             *   target: selector
             */ 
@@ -497,13 +497,13 @@
                 else $(metadata.target).append(element);
                 break;
 
-            //Top                                                                                                                                                                                                                                                                                                                         
+            //Top                                                                                                                                                                                                                                                                                                                          
             case "top":
                 var topContent = $("#" + config.topContentId);
                 topContent.empty().prepend(element);
                 break;
 
-            //Bottom                                                                                                                                                                                                                                                                                                                          
+            //Bottom                                                                                                                                                                                                                                                                                                                           
             case "bottom":
                 var bottomContent = $("#" + config.bottomContentId);
                 bottomContent.empty().prepend(element);
@@ -599,12 +599,12 @@
 
         //Request
         $("[data-request]", context).click(function () {
-            request($(this).attr("data-request"), this);
+            sync.request($(this).attr("data-request"), this);
         });
 
         //Close
         $("[data-close]", context).click(function () {
-            close($(this).attr("data-close"), this);
+            sync.close($(this).attr("data-close"), this);
         });
 
         //Submit on dropdown change

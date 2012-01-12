@@ -1,30 +1,33 @@
 ﻿
-/**** Page load ****/
-$(function () {
+//Initialize 
+Sync.init({
 
-    //Initialize dynamic updates
-    Sync.init({
+    //The page just loaded
+    onPageLoad: function() { },
 
-		//Custom config settings here
-	
-        //Request event
-        onRequest: function (url, sender, formData) { },
+    //Link click
+    onLinkClick: function (link) { },
 
-        //Success event
-        onSuccess: function (result) { },
+    //Form click
+    onFormClick: function (form) { },
+        
+    //Request event
+    onRequest: function (url, sender, formData) { },
 
-        //Before update event
-        onBeforeUpdate: function (update, meta) { },
+    //Success event
+    onSuccess: function (result) { },
 
-        //After update event
-        onAfterUpdate: function (update, meta) {},
+    //Before update event
+    onBeforeUpdate: function (update, meta) { },
 
-        //Complete event
-        onComplete: function (navKey) { },
+    //After update event
+    onAfterUpdate: function (update, meta) { },
 
-        //Error event
-        onError: function (result) {}
+    //Complete event
+    onComplete: function () { },
 
-    });
-
+    //Error event
+    onError: function (result) { }
+    
 });
+

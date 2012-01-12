@@ -1,7 +1,9 @@
 ﻿
+//Provider allow for custom implementations of common functions
 Sync.providers = {
 
-    //Storage provider - Amplify.js
+    //Storage provider
+    //Dependent on AmplifyJS
     storage: {
         store: function (key, data) {
             amplify.store.sessionStorage(key, data);
@@ -24,10 +26,11 @@ Sync.providers = {
     },
 
     //Window provider
+    //Dependent on jQuery UI dialog
     window: {
-        show: function (id, element, metadata) {
+        create: function (id, element, metadata) {
             //Get content area
-            var contentArea = $(config.contentSelector);
+            var contentArea = $(Sync.config.contentSelector);
             //Show in content area if empty
             if (contentArea.children().length == 0) contentArea.html(element);
             //Show window
@@ -83,22 +86,28 @@ Sync.providers = {
     },
 
     //Loading indicator provider
-    laoding: {
+    //Dependent on jQuery UI position
+    loading: {
         show: function () {
-            //Get Progress
-            var progress = $("#" + config.progressId);
+            //Get indicator
+            var loading = $("#loading-indicator");
+            //Create indicator if not exists
+            if (!loading.length) {
+                $("body").append("<div id=\"loading-indicator\">&nbsp;</div>");
+                loading = $("#loading-indicator");
+            }
             //Show and center
-            progress.show().position({ at: "center", my: "center", of: window });
+            loading.show().position({ at: "center", my: "center", of: window });
             //Recenter on window resize
             $(window).bind("resize._progress", function () {
-                progress.position({ at: "center", my: "center", of: window });
+                loading.position({ at: "center", my: "center", of: window });
             });
         },
         hide: function () {
-            //Get progress
-            var progress = $("#" + config.progressId);
+            //Get indicator
+            var loading = $("#loading-indicator");
             //Hide
-            progress.hide();
+            loading.hide();
             //Unbind resize event
             $(window).unbind("resize._progress");
         }

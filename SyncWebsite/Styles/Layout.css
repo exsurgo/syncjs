@@ -61,10 +61,10 @@ hr.line { border-top: 1px solid #c5c5c5; height: 0px; margin: 50px 0 50px 0; pad
 
 /* images */
 img { vertical-align: middle; border: none; }
-img.lframe, img.rframe { border: 1px solid #aaaaaa; margin-right: 8px; margin-left: 4px; background: url(/Images/ProgressLight.gif) no-repeat center center; }
+img.lframe, img.rframe { border: 1px solid #aaaaaa; margin-right: 8px; margin-left: 4px; background: url(/Images/LoadingSmall.gif) no-repeat center center; }
 img.lframe { float: left; }
 img.rframe { float: right; }
-img.frame, .frame-images img { border: 1px solid #aaaaaa; margin: 4px 3px; padding: 0; background: url(/Images/ProgressLight.gif) no-repeat center center; }  
+img.frame, .frame-images img { border: 1px solid #aaaaaa; margin: 4px 3px; padding: 0; background: url(/Images/LoadingSmall.gif) no-repeat center center; }  
     
 /* float */
 .lfloat { float: left !important; clear: none; }

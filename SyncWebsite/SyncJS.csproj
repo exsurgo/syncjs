@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ComponentDiagram.jpg" />
-    <Content Include="Images\Progress.gif" />
+    <Content Include="Images\Loading.gif" />
     <Content Include="Images\BigCheck.png" />
     <Content Include="Images\Button.gif" />
     <Content Include="Images\ButtonHover.gif" />
@@ -70,7 +70,7 @@
     <Content Include="Images\DownRight.png" />
     <Content Include="Images\Grad.png" />
     <Content Include="Images\Logo.png" />
-    <Content Include="Images\ProgressLight.gif" />
+    <Content Include="Images\LoadingSmall.gif" />
     <Content Include="Images\WorkPlex.png" />
     <Content Include="Scripts\Amplify.js" />
     <Content Include="Scripts\Callback.js" />

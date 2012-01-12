@@ -82,7 +82,7 @@
             This element was appended.
         </div>
 
-        <div data-update="prepend" data-target="#add-to-div" class="after-update-style">
+        <div data-update="prepend" data-target="#add-to-div">
             This element was prepended.
         </div>
     </pre>
@@ -117,11 +117,29 @@
     <div id="multi-update-div" class="before-update-style">
         This div should be replaced.  And a modal window should show
     </div>
+    
+    <hr class="line"/>
+
+    <!--Custom Updaters-->
+    <h3>Custom Updaters</h3>
+    <p>
+        In additional to the built in update types, you can add additional updaters to handle custom custom update types.
+    </p>
+    <label>Sync.Updaters.js</label>
+    <pre class="brush: js;">
+        Sync.updaters = {
+
+            customUpdateType: function (element, metadata, sender) {
+                ...
+            }
+        
+        }
+    </pre>
 
     <hr class="line" />
 
     <!-- Table Row -->
-    <h3>Table Row</h3>
+    <h3>Table Row (Custom)</h3>
     <hr />
     <label>Server Response</label>
     <div class="syntaxhighlighter  xml ie"><table border="0" cellSpacing="0" cellPadding="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"></div><div class="line number2 index1 alt1"><code class="xml spaces">&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">tr</code> <code class="xml color1">data-update</code><code class="xml plain">=</code><code class="xml string">"row"</code> <code class="xml color1">data-target</code><code class="xml plain">=</code><code class="xml string">"#my-table"</code><code class="xml plain">&gt;</code></div><div class="line number3 index2 alt2"><code class="xml spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="xml plain">&lt;</code><code class="xml keyword">td</code><code class="xml plain">&gt;...&lt;/</code><code class="xml keyword">td</code><code class="xml plain">&gt;</code></div><div class="line number4 index3 alt1"><code class="xml spaces">&nbsp;&nbsp;</code><code class="xml plain">&lt;/</code><code class="xml keyword">tr</code><code class="xml plain">&gt;</code></div></div></td></tr></tbody></table></div>
@@ -133,7 +151,7 @@
             <td>Details</td>
             <td>123</td>
             <td>1/7/2010</td>
-        </tr>            
+        </tr>
         <tr>
             <td>Details</td>
             <td>123</td>
@@ -149,7 +167,7 @@
     <hr class="line" />
 
     <!--Sub Row-->
-    <h3>SubRow</h3>
+    <h3>SubRow (Custom)</h3>
     <hr />
     <label>Server Response</label>
     <pre class="brush: xml;">

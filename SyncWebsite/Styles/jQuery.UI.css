@@ -67,7 +67,7 @@
 .ui-autocomplete { position: absolute; cursor: default; background-color: #ffffff; border: 1px solid #aaaaaa; z-index: 3000 !important; }
 .ui-autocomplete a, ui-autocomplete a:hover { padding: 2px !important; margin: 0 !important; text-decoration: none; border: 1px solid #ffffff; }
 .ui-autocomplete a.ui-state-hover { background-color: #F0F5FF; border: 1px solid #cccccc; cursor: pointer; }
-.ui-autocomplete-loading { background: white url('/Images/Progress.gif') right center no-repeat; }
+.ui-autocomplete-loading { background: white url('/Images/LoadingSmall.gif') right center no-repeat; }
 
 /* Slider */
 .ui-slider { position: relative; text-align: left; border: 1px solid #aaaaaa; background-color: #dddddd; margin: 3px 6px 3px 3px; top: 2px; }

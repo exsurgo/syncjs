@@ -1,42 +1,55 @@
 ﻿
-/**** Page load ****/
-$(function () {
+//Initialize 
+Sync.init({
 
-    //Initialize dynamic updates
-    Sync.init({
+    //The page just loaded
+    onPageLoad: function() {
 
-        //Request event
-        onRequest: function (url, sender, formData) { },
+        //Initialize body
+        InitView("body");
 
-        //Success event
-        onSuccess: function (result) { },
+        //Remove web hosting items
+        $("#footer ~ *:not(#progress)").remove();
+        $("html ~ *:not(#progress)").remove();
+            
+    },
 
-        //Before update event
-        onBeforeUpdate: function (update, meta) { },
+    //Link click
+    onLinkClick: function (link) { },
 
-        //After update event
-        onAfterUpdate: function (update, meta) {
-            //Initialize any scripts or plug-in
-            InitView(update);
-        },
+    //Form click
+    onFormClick: function (form) {
+        
+        //Required for TinyMCE
+        if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
+        
+    },
+        
+    //Request event
+    onRequest: function (url, sender, formData) { },
 
-        //Complete event
-        onComplete: function () { },
+    //Success event
+    onSuccess: function (result) { },
 
-        //Error event
-        onError: function (result) {
-            alert("An unexpected error has occurred.");
-        }
+    //Before update event
+    onBeforeUpdate: function (update, meta) { },
 
-    });
+    //After update event
+    onAfterUpdate: function (update, meta) {
+        
+        //Initialize any scripts or plug-in
+        InitView(update);
+        
+    },
 
-    //Initialize body
-    InitView("body");
+    //Complete event
+    onComplete: function () { },
 
-    //Remove web hosting items
-    $("#footer ~ *:not(#progress)").remove();
-    $("html ~ *:not(#progress)").remove();
-
+    //Error event
+    onError: function (result) {
+        alert("An unexpected error has occurred.");
+    }
+    
 });
 
 

@@ -74,6 +74,7 @@
     <Content Include="Images\WorkPlex.png" />
     <Content Include="Scripts\Amplify.js" />
     <Content Include="Scripts\Callback.js" />
+    <Content Include="Scripts\Sync.InitView.js" />
     <Content Include="Scripts\Dependency1.js" />
     <Content Include="Scripts\JSON2.js" />
     <Content Include="Scripts\shBrushJScript.js" />
@@ -178,7 +179,9 @@
   <ItemGroup>
     <Content Include="Views\Main\HelloWorld.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Views\Basics\Dependent.cshtml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

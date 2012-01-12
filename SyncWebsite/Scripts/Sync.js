@@ -7,7 +7,7 @@
 
 (function (sync) {
 
-    /********* Config *********/
+    /********* State *********/
 
     //Configuration
     var config = {
@@ -125,20 +125,7 @@
         config.onRequest(url, sender, formData);
 
         //Confirm request
-        /*
-        *   data-confirm="true"
-        *   data-confirm="delete"
-        *   data-confirm="Are you sure you want to delete this item?"
-        */
-        if (sender) {
-            var val = sender.attr("data-confirm");
-            if (!val) val = sender.find("submit:first").attr("data-confirm");
-            if (val) {
-                if (val == "true" && !confirm("Are you sure you want to do this?")) return false;
-                if (val.indexOf(" ") == -1 && !confirm("Are you sure you want to " + val + "?")) return false;
-                if (val.indexOf(" ") > -1 && !confirm(val)) return false;
-            }
-        }
+        if (!confirmRequest(sender)) return false;
 
         //Remove host header & hash
         url = url.replace(/(http|https):\/\/[a-z0-9-_.:]+/i, "").replace(/#/, "");
@@ -179,6 +166,14 @@
 
                 //Enable sender
                 toggleSender(sender, true);
+
+                //Check for removed content dependencies
+                $("[data-dependent]").each(function () {
+                    var el = $(this);
+                    var dependent = $(el.attr("data-dependent"));
+                    //Remove element of dependent does not exist
+                    if (!dependent.length) el.remove();
+                });
 
                 //On complete
                 config.onComplete();
@@ -278,7 +273,7 @@
 
         switch (type.toLowerCase()) {
 
-            //Update                                                                         
+            //Update                                                                                 
             case "update":
                 var update = el.closest("[data-update]");
                 //Remove
@@ -288,12 +283,12 @@
                 if (subrow.find("td:first > *:first").length == 0) subrow.remove();
                 break;
 
-            //Window                                                                         
+            //Window                                                                                 
             case "window":
                 sync.window.close(selector);
                 break;
 
-            //Row                                                                         
+            //Row                                                                                 
             case "row":
                 var grid = el.closest(".grid");
                 var row;
@@ -307,7 +302,7 @@
                 grid.find("tr:not(.group):not(.subrow):not(:has(th)):odd").addClass("rowalt");
                 break;
 
-            //Parent                                                                        
+            //Parent                                                                                
             case "parent":
                 el.parent().remove();
                 break;
@@ -318,7 +313,7 @@
 
     /********* Private Methods *********/
 
-    //Handle HTML update
+    //Handle HTML response
     function handleHTML(result, sender, url) {
 
         //Load any script dependencies via script tags 
@@ -383,10 +378,9 @@
         $(result).filter("script:not([src])").each(function () {
             $.globalEval($(this).html());
         });
-
     }
 
-    //Update html element
+    //Update html element in the DOM
     function updateElement(element, metadata, sender, url) {
 
         //Ensure id
@@ -410,7 +404,7 @@
         //Check standard updates
         switch (metadata.update) {
 
-            // Content                                                                          
+            // Content                                                                                  
             /*  
             *   title: string 
             *   address: string 
@@ -445,7 +439,7 @@
                 if (!metadata.scroll) $(window).scrollTop(0);
                 break;
 
-            // Window                                                                                                                                                                                                                                                                                                                                                                                                         
+            // Window                                                                                                                                                                                                                                                                                                                                                                                                                 
             /*
             *   title: string
             *   modal: bool 
@@ -463,12 +457,12 @@
                 sync.window.create(id, element, metadata);
                 break;
 
-            //Replace                                                                                                                                                                                                                                                                                                                                                                
+            //Replace                                                                                                                                                                                                                                                                                                                                                                        
             case "replace":
                 $("#" + id).replaceWith(element);
                 break;
 
-            // Insert                                                                                                                                                                                                                                                                                                                                                                
+            // Insert                                                                                                                                                                                                                                                                                                                                                                        
             /*
             *   target: selector
             */ 
@@ -477,7 +471,7 @@
                 target.html(element);
                 break;
 
-            // Prepend                                                                                                                                                                                                                                                       
+            // Prepend                                                                                                                                                                                                                                                               
             /*
             *   target: selector
             */ 
@@ -487,7 +481,7 @@
                 else $(metadata.target).prepend(element);
                 break;
 
-            // Append                                                                                                                                                                                                                                                        
+            // Append                                                                                                                                                                                                                                                                
             /*
             *   target: selector
             */ 
@@ -497,19 +491,18 @@
                 else $(metadata.target).append(element);
                 break;
 
-            //Top                                                                                                                                                                                                                                                                                                                          
+            //Top                                                                                                                                                                                                                                                                                                                                  
             case "top":
                 var topContent = $("#" + config.topContentId);
                 topContent.empty().prepend(element);
                 break;
 
-            //Bottom                                                                                                                                                                                                                                                                                                                           
+            //Bottom                                                                                                                                                                                                                                                                                                                                   
             case "bottom":
                 var bottomContent = $("#" + config.bottomContentId);
                 bottomContent.empty().prepend(element);
                 break;
         }
-
     }
 
     //Initialize any events or prerequisites 
@@ -657,7 +650,7 @@
         });
     }
 
-    //Handle JSON update
+    //Handle JSON response
     function handleJSON(result, sender, url) {
 
         //Check routes to match url with needed template
@@ -712,6 +705,25 @@
             setTimeout(function () { justClicked = undefined; }, 700);
         }
         return false;
+    }
+
+    //Confirm request
+    /*
+    *   data-confirm="true"
+    *   data-confirm="delete"
+    *   data-confirm="Are you sure you want to delete this item?"
+    */
+    function confirmRequest(sender) {
+        if (sender) {
+            var val = sender.attr("data-confirm");
+            if (!val) val = sender.find("submit:first").attr("data-confirm");
+            if (val) {
+                if (val == "true" && !confirm("Are you sure you want to do this?")) return false;
+                if (val.indexOf(" ") == -1 && !confirm("Are you sure you want to " + val + "?")) return false;
+                if (val.indexOf(" ") > -1 && !confirm(val)) return false;
+            }
+        }
+        return true;
     }
 
 } (window.Sync = window.Sync || {}));

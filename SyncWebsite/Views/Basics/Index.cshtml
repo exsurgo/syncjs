@@ -77,7 +77,7 @@
         <button type="submit">Save</button>
     </form>
     <hr />
-    <div id="post-div" class="before-update-style">
+    <div id="post-div" class="orange-div">
         This div should be replaced after the form is posted.
     </div>
 
@@ -111,5 +111,36 @@
     </p>
     <a href="javascript:Sync.loading.show();">Show Loading</a> | 
     <a href="javascript:Sync.loading.hide();">Hide Loading</a>
+
+    <hr class="line"/>
+
+    <!-- Dependent Content-->
+    <h2>Dependent Content</h2>
+    <p>
+        Elements can be dependent on other dependents by using the <em>data-dependent="{selector}"</em> attribute.  If an element is dependent on 
+        other content, then the content must be on the page or the element is removed after the next request.
+    </p>
+    <hr />
+    <pre class="brush: xml;">
+        <div data-dependent="#dependent-div">
+            This div is dependent on the blue div below
+        </div>  
+        
+        <div id="dependent-div" >
+            This is the dependent div.  If it is removed or replaced, the div above will also be removed. <a href="/Basics/Dependent">Click Me</a>
+        </div>  
+    </pre>
+    <hr />
+    <div class="orange-div">
+        <div data-dependent="#dependent-div" class="orange-div">
+            This div is dependent on the blue div below
+        </div>
+    </div>
+    <hr />
+    <div id="dependent-div-parent" class="orange-div">
+        <div id="dependent-div" class="blue-div">
+            This is the dependent div.  If it is removed or replaced, the div above will also be removed. <a href="/Basics/Dependent">Click Me</a>
+        </div>
+    </div>
 
 </div>

@@ -4,7 +4,6 @@
 *   This file contains the core functionality
 *   Dependencies: jQuery UI, HashChange plugin
 */
-
 (function (sync) {
 
     /********* State *********/
@@ -16,8 +15,6 @@
         autoEvents: true, //Automatically hijax every link and form
         autoCorrectLinks: true, //Change standard URL's to ajax (#) URL's
         contentSelector: "[data-content=true]:first", //The main content area where content is rendered
-        topContentId: "content-top", //The content area right above the main content
-        bottomContentId: "content-bottom", //The content area right below the main content
         pageTitlePrefix: "", //Prepend to title of each page
         submitFilter: ".placeholder", //Don't submit any form elements that match this
         scriptPath: "/Scripts", //Path to download dependent scripts from
@@ -408,9 +405,7 @@
             /*  
             *   title: string 
             *   address: string 
-            *   nav: [string|null|false]
-            *   top: selector 
-            *   bottom: selector        
+            *   nav: [string|null|false]     
             */ 
             case "content":
                 //Address
@@ -425,14 +420,6 @@
                 }
                 //Page Title
                 if (metadata.title) document.title = config.pageTitlePrefix + metadata.title;
-                //Top content
-                var topContent = $("#" + config.topContentId);
-                if (metadata.top) topContent.children(":not(" + metadata.top + ")").remove();
-                else topContent.empty();
-                //Bottom content
-                var bottomContent = $("#" + config.bottomContentId);
-                if (metadata.bottom) bottomContent.children(":not(" + metadata.bottom + ")").remove();
-                else bottomContent.empty();
                 //Content
                 $(config.contentSelector).empty().append(element);
                 //Scroll to top by default
@@ -491,16 +478,22 @@
                 else $(metadata.target).append(element);
                 break;
 
-            //Top                                                                                                                                                                                                                                                                                                                                  
-            case "top":
-                var topContent = $("#" + config.topContentId);
-                topContent.empty().prepend(element);
+            // After                                                                                                                                                                                                                                                                                                                                                                         
+            /*
+            *   target: selector
+            */ 
+            case "after":
+                var target = $(metadata.target);
+                target.after(element);
                 break;
 
-            //Bottom                                                                                                                                                                                                                                                                                                                                   
-            case "bottom":
-                var bottomContent = $("#" + config.bottomContentId);
-                bottomContent.empty().prepend(element);
+            // Before                                                                                                                                                                                                                                                                                                                                                                         
+            /*
+            *   target: selector
+            */ 
+            case "before":
+                var target = $(metadata.target);
+                target.html(element);
                 break;
         }
     }

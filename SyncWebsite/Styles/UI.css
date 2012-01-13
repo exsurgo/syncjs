@@ -17,7 +17,7 @@ th > .sortdesc > a { background: url(/Iimages/sortdesc.gif) no-repeat right 50%;
 .grid > tbody > tr > td { text-align: left; border-top: 1px solid #E2E2E2; border-bottom: 1px solid #E2E2E2; padding: 9px 5px 9px 5px; margin: 0px; border-top-color: #E6E6E6; border-bottom-color: #E2E2E2; }
 table.thin > tbody > tr > td { padding: 1px; }
 table.grid > tbody > tr:nth-child(odd) { background-color: #F7F7F7; }
-tr.row-select { background-color: #E8F0FB; }
+tr.row-select > td { background-color: #E8F0FB; }
 /* group */
 tr.group { background-color: #9E9E9E; }
 tr.group > td { padding: 1px 4px 1px 4px !important; color: #ffffff; font-weight: bold; font-size: .75em; }

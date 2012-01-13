@@ -99,7 +99,7 @@ Sync.providers = {
             //Show and center
             loading.show().position({ at: "center", my: "center", of: window });
             //Recenter on window resize
-            $(window).bind("resize._progress", function () {
+            $(window).bind("resize._loading", function () {
                 loading.position({ at: "center", my: "center", of: window });
             });
         },
@@ -109,7 +109,7 @@ Sync.providers = {
             //Hide
             loading.hide();
             //Unbind resize event
-            $(window).unbind("resize._progress");
+            $(window).unbind("resize._loading");
         }
     }
 

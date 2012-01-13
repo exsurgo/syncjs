@@ -7,7 +7,7 @@
 Sync.updaters = {
 
     //Row - replaces or adds a row
-    row: function (element, metadata, sender) {
+    row: function (element, metadata) {
         //Get id
         var id = $(element).attr("id");
         //Get self or first table

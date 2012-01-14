@@ -2,6 +2,9 @@
 //Initialize 
 Sync.init({
 
+    //Settings
+    scriptPath: "/JavaScripts",
+        
     //The page just loaded
     onPageLoad: function() {
 

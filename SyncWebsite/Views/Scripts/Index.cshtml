@@ -16,69 +16,48 @@
         <scriptt>alert("The request returned a script tag which was executed.")</scriptt>
     </pre>
     <p>
-        <a href="/Dependencies/InlineScript">Make request with inline script</a>
+        <a href="/Scripts/InlineScript">Make request with inline script</a>
     </p>
-
-    <hr class="line"/>
-
-    <!--Dependency via Script Tag-->
-    <h2>Dependency via Script Tag</h2>
-    <p>
-        Scripts can be loaded via the standard script tag like so.  Note that the script location can be set in the config "scriptPath" so that
-        all scripts are requested from the same location.   So instead of "/Content/Scripts/Dependency1.js", you can just set the value
-        of scriptPath to "/Content/Scripts/" in the config, and use "Dependency1.js" in the tag.
-    </p>
-    <label>Server Response</label>
-    <pre class="brush: xml;">
-        <!-- Dependent script loaded before update -->
-        <scriptt src="Dependency1.js" />
-
-        <div id="div-with-dependency-tag" data-update="replace">
-            This div was just loaded and a dependent script was run.
-        </div>
-
-        <!-- Inline script ran after dependency is loaded -->
-        <scriptt>
-            dependentFunction1();
-        </scriptt>
-    </pre>
-    <p>
-        <a href="/Dependencies/DependencyTag">Update with dependency</a>
-    </p>
-    <br />
-    <div id="div-with-dependency-tag" class="orange-div">
-        This div should be replaced.  Dependent scripts should be loaded via a script tag.
-    </div>
     
     <hr class="line"/>
 
-    <!--Dependency via attributes-->
-    <h2>Dependency via attribute</h2>
+    <!--Script Loading-->
+    <h2>On-Demand Script Loading</h2>
+    <p>
+        Scripts can be associated with HTML elements via the <em>data-load="{script}"</em> attribute. When the element is updated in the page,
+        the associated script is lazy-loaded.  You can load multiple scripts separated by commas: <em>data-load="{script1}, {script2}"</em>
+    </p>
+    <p>
+        Note that the script location can be set via <em>config.scriptPath</em> so that all scripts are requested from the same location.   
+        So instead of "/Content/Scripts/Dependency1.js", you can just set the value of scriptPath to "/Content/Scripts/" in the config, 
+        and use "Dependency1.js" for the attribute value.
+    </p>
     <hr />
     <label>Server Response</label>
     <pre class="brush: xml;">
-        <div id="div-with-dependency-attr" data-update="replace" data-load="Dependency2.js">
+        <div id="div-with-load" data-update="replace" data-load="Dependency.js">
             This div was just loaded and a dependent script was run.
         </div>
 
         <!-- Inline script ran after dependency is loaded -->
         <scriptt>
-            dependentFunction2();
+            dependentFunction();
         </scriptt>    
     </pre>
     <p>
-        <a href="/Dependencies/DependencyAttr">Update with dependency</a>
+        <a href="/Scripts/Load">Update with dependency</a>
     </p>
     <br />
-    <div id="div-with-dependency-attr" class="orange-div">
+    <div id="div-with-load" class="orange-div">
         This div should be replaced.  Dependent scripts should be loaded via a data attribute.
     </div>
 
     <hr class="line"/>
 
+    <!--Callbacks-->
     <h2>Callbacks</h2>
     <p>
-        Once scripts are loaded on demand, a callback can also be executed via the data-callback attribute.  
+        Once an update occurs, a callback can also be executed via the data-callback attribute.  
         The call back can be a global function or namespaced.  Also note that the context (this keyword) is
         a jQuery object representing the HTML update.
     </p>
@@ -102,7 +81,7 @@
         }
     </pre>
     <p>
-        <a href="/Dependencies/Callback">Make Request with callback</a>
+        <a href="/Scripts/Callback">Make Request with callback</a>
     </p>
     <div id="callback-div" class="orange-div">
         This div should be replaced and then a callback is run

@@ -6,8 +6,11 @@
 */
 Sync.updaters = {
 
-    //Row - replaces or adds a row
-    row: function (element, metadata) {
+    /*
+    *   Row - replaces or adds a row to a table
+    *   target: {selector}
+    */
+    row: function (element, metadata, sender) {
         //Get id
         var id = $(element).attr("id");
         //Get self or first table
@@ -28,14 +31,18 @@ Sync.updaters = {
         $(".row-select").removeClass("row-select");
         var row = table.find("#" + id);
         row.addClass("row-select");
-        //Hide empty
+        //Hide empty section
         table.next(".empty:first").hide();
     },
 
-    //SubRow - adds a row in a table under another row
+    /*
+    *   SubRow - adds a row in a table under another row
+    *   "data-close=true" for close event
+    *   target: {selector}
+    */
     subrow: function (element, metadata, sender) {
         //Replace if exists
-        var sub = $("#" + $(element).attr("id"));
+        var sub = $("#" + element.attr("id"));
         if (sub.length) sub.replaceWith(element);
         //Add new
         else {
@@ -59,6 +66,13 @@ Sync.updaters = {
                 if ($.browser.msie && $.browser.version == "8.0") zone.find("table").hide().slideDown(1);
             }
         }
+        //Close event
+        element.find("[data-close=true]").click(function () {
+            var el = $(this);
+            var subrow = el.closest(".subrow");
+            el.closest("[data-update]").remove();
+            if (!subrow.find("td:first > *:first").length) subrow.remove();
+        });
     }
 
 }

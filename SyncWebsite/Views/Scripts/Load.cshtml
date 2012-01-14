@@ -1,10 +1,10 @@
 ﻿
 <!-- Dependent script loaded before update -->
-<div id="div-with-dependency-attr" data-update="replace" data-load="Dependency2.js" class="green-div">
+<div id="div-with-load" data-update="replace" data-load="Dependency.js" class="green-div">
     This div was just loaded and a dependent script was run.
 </div>
 
 <!-- Inline script ran after dependency is loaded -->
 <script>
-    dependentFunction2();
+    dependentFunction();
 </script>

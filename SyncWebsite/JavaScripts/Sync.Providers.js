@@ -2,8 +2,10 @@
 //Provider allow for custom implementations of common functions
 Sync.providers = {
 
-    //Storage provider
-    //Dependent on AmplifyJS
+    /*
+    *   Storage Provider
+    *   Dependent on AmplifyJS
+    */
     storage: {
         store: function (key, data) {
             amplify.store.sessionStorage(key, data);
@@ -20,14 +22,30 @@ Sync.providers = {
         }
     },
 
-    //Template provider
+    //Template Provider
     template: {
         render: undefined //function (template, data) { }
     },
 
-    //Window provider
-    //Dependent on jQuery UI dialog
+    /*
+    *   Window Provider
+    *   Dependent on jQuery UI Dialog
+    */
     window: {
+        /*
+        *   "data-close=true" to close window
+        *   title: {string}
+        *   modal: {bool} 
+        *   width: {int}
+        *   height: {int}
+        *   maxWidth: {int}
+        *   maxHeight: {int}
+        *   minWidth: {int}
+        *   minHeight: {int}
+        *   nopad: {bool}
+        *   overflow: {bool}
+        *   icon: {string}
+        */
         create: function (id, element, metadata) {
             //Get content area
             var contentArea = $(Sync.config.contentSelector);
@@ -58,7 +76,10 @@ Sync.providers = {
                         if (metadata.icon) winTitle.find(".ui-dialog-title").prepend("<img src='/Images/" + metadata.icon + ".png'/>");
                         //Recenter on window resize
                         $(window).bind("resize." + id, function () {
-                            win.position({ at: "center", my: "center", of: window });
+                            //Recenter if exists
+                            if (win.length) win.position({ at: "center", my: "center", of: window });
+                            //Unbind if doesn't exists
+                            else $(window).unbind("resize." + id);
                         });
                         //Recenter on delay
                         setTimeout(function () { win.position({ at: "center", my: "center", of: window }); }, 10);
@@ -78,6 +99,10 @@ Sync.providers = {
                 });
                 //Show window
                 element.dialog(params);
+                //Close event
+                element.find("[data-close]").click(function () {
+                    Sync.window.close(this);
+                });
             }
         },
         close: function (selector) {
@@ -85,8 +110,10 @@ Sync.providers = {
         }
     },
 
-    //Loading indicator provider
-    //Dependent on jQuery UI position
+    /*
+    *   Loading Indicator Provider
+    *   Dependent on jQuery UI Position
+    */
     loading: {
         show: function () {
             //Get indicator

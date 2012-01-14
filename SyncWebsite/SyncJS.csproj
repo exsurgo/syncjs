@@ -72,17 +72,17 @@
     <Content Include="Images\Logo.png" />
     <Content Include="Images\LoadingSmall.gif" />
     <Content Include="Images\WorkPlex.png" />
-    <Content Include="Scripts\Amplify.js" />
-    <Content Include="Scripts\Callback.js" />
-    <Content Include="Scripts\Sync.InitView.js" />
-    <Content Include="Scripts\Dependency1.js" />
-    <Content Include="Scripts\JSON2.js" />
-    <Content Include="Scripts\shBrushJScript.js" />
-    <Content Include="Scripts\shBrushXml.js" />
-    <Content Include="Scripts\shCore.js" />
-    <Content Include="Scripts\Sync.Providers.js" />
-    <Content Include="Scripts\Sync.Routes.js" />
-    <Content Include="Scripts\Sync.Updaters.js" />
+    <Content Include="JavaScripts\Amplify.js" />
+    <Content Include="JavaScripts\Callback.js" />
+    <Content Include="JavaScripts\Sync.InitView.js" />
+    <Content Include="JavaScripts\Dependency.js" />
+    <Content Include="JavaScripts\JSON2.js" />
+    <Content Include="JavaScripts\shBrushJScript.js" />
+    <Content Include="JavaScripts\shBrushXml.js" />
+    <Content Include="JavaScripts\shCore.js" />
+    <Content Include="JavaScripts\Sync.Providers.js" />
+    <Content Include="JavaScripts\Sync.Routes.js" />
+    <Content Include="JavaScripts\Sync.Updaters.js" />
     <Content Include="Styles\Forms.css" />
     <Content Include="Styles\jQuery.jGrowl.css" />
     <Content Include="Styles\jQuery.UI.css" />
@@ -97,13 +97,12 @@
     <Content Include="Images\Info.gif" />
     <Content Include="Images\Success.gif" />
     <Content Include="Images\Warning.gif" />
-    <Content Include="Scripts\Dependency2.js" />
-    <Content Include="Scripts\jQuery.jGrowl.js" />
-    <Content Include="Scripts\jQuery.js" />
-    <Content Include="Scripts\jQuery.UI.js" />
-    <Content Include="Scripts\Sync.js" />
-    <Content Include="Scripts\Sync.Init.js" />
-    <Content Include="Scripts\Modernizr.js" />
+    <Content Include="JavaScripts\jQuery.jGrowl.js" />
+    <Content Include="JavaScripts\jQuery.js" />
+    <Content Include="JavaScripts\jQuery.UI.js" />
+    <Content Include="JavaScripts\Sync.js" />
+    <Content Include="JavaScripts\Sync.Init.js" />
+    <Content Include="JavaScripts\Modernizr.js" />
     <Content Include="Web.config" />
     <Content Include="Styles\Site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -111,7 +110,7 @@
     <Content Include="Views\Main\Page.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Dependencies\Index.cshtml" />
+    <Content Include="Views\Scripts\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Updates\Window.cshtml" />
@@ -162,10 +161,8 @@
     <Content Include="Views\Updates\Content.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Dependencies\Callback.cshtml" />
-    <Content Include="Views\Dependencies\DependencyAttr.cshtml" />
-    <Content Include="Views\Dependencies\DependencyTag.cshtml" />
-    <Content Include="Views\Dependencies\InlineScript.cshtml" />
+    <Content Include="Views\Scripts\Callback.cshtml" />
+    <Content Include="Views\Scripts\InlineScript.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\API\Index.cshtml" />
@@ -187,6 +184,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Updates\Before.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Scripts\Load.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SEO\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Events\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

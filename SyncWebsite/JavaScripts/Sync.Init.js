@@ -1,85 +1,92 @@
 ﻿
-//Initialize 
+//Initialize
 Sync.init({
 
-    //Settings
+    //Config
     scriptPath: "/JavaScripts",
-        
-    //The page just loaded
-    onPageLoad: function() {
 
-        //Initialize body
-        InitView("body");
+    //The document is ready
+    ready: function () {
+
+        //Override default alert
+        window.alert = function alert(text, type) {
+            if (text) {
+                var duration = text.length * 120;
+                $.jGrowl(text, {
+                    life: duration,
+                    theme: (type ? "jGrowl-alert-" + type.toLowerCase() : "")
+                });
+            }
+        };
 
         //Remove web hosting items
         $("#footer ~ *:not(#progress)").remove();
         $("html ~ *:not(#progress)").remove();
-            
+
     },
 
-    //Link click
-    onLinkClick: function (link) { },
+    //A request is being made
+    request: function (url, postData, sender) {
 
-    //Form click
-    onFormClick: function (form) {
-        
-        //Required for TinyMCE
-        if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
-        
-    },
-        
-    //Request event
-    onRequest: function (url, sender, formData) { },
-
-    //Success event
-    onSuccess: function (result) { },
-
-    //Before update event
-    onBeforeUpdate: function (update, meta) { },
-
-    //After update event
-    onAfterUpdate: function (update, meta) {
-        
-        //Initialize any scripts or plug-in
-        InitView(update);
-        
-    },
-
-    //Complete event
-    onComplete: function () { },
-
-    //Error event
-    onError: function (result) {
-        alert("An unexpected error has occurred.");
-    }
-    
-});
-
-
-/**** Initialize scripts and plugins ****/
-function InitView(context) {
-
-    //Code syntax highlighting
-    SyntaxHighlighter.defaults["toolbar"] = false;
-    SyntaxHighlighter.highlight(document.body);
-    //Syntax fixes
-    $("code:contains(scriptt)").text("script");
-    $("code:contains(bodyy)").text("body");
-    $("code:contains(headd)").text("head");
-    $("code:contains(htmll)").text("html");
-
-}
-
-
-/**** Override default alert with growl ****/
-function alert(text, type) {
-    $(function () {
-        if (text) {
-            var duration = text.length * 120;
-            $.jGrowl(text, {
-                life: duration,
-                theme: (type ? "jGrowl-alert-" + type.toLowerCase() : "")
+        //Add TinyMCE rich text to post data
+        if (postData) {
+            $(sender).find("[data-richtext]").each(function () {
+                var textbox = $(this);
+                if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
+                postData.push({
+                    name: textbox.attr("name"),
+                    value: textbox.val()
+                });
             });
         }
-    });
-}
+
+    },
+
+    //A request was successful
+    success: function (result, metadata, xhr) {
+
+    },
+
+    //A request resulted error
+    error: function (message, xhr) {
+
+        //Show friendly error message
+        alert("An unexpected error has occurred.", "error");
+
+    },
+
+    //An element is about to be updated in the DOM
+    updating: function (element, metadata) {
+
+    },
+
+    //An element was just updated in the DOM
+    updated: function (element, metadata) {
+
+    },
+
+    //The result was successful and all updates have been made
+    complete: function (metadata) {
+
+    },
+
+    //Initialize HTML after page load or elements update
+    init: function (element, metadata) {
+
+        //Code syntax highlighting
+        SyntaxHighlighter.defaults["toolbar"] = false;
+        SyntaxHighlighter.highlight(document.body);
+
+        //Replace temp fixes
+        //Keep scripts from being run and script highlighter from breaking
+        $("code:contains(script-temp)", element).text("script");
+        $("code:contains(body-temp)", element).text("body");
+        $("code:contains(head-temp)", element).text("head");
+        $("code:contains(html-temp)", element).text("html");
+        $("code:contains(data-callback-temp)", element).text("data-callback");
+        $("code:contains(data-load-temp)", element).text("data-load");
+        $("code:contains(href-temp)", element).text("data-load");
+
+    }
+
+});

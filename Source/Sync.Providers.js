@@ -29,7 +29,7 @@ Sync.providers = {
 
     /*
     *   Window Provider
-    *   Dependent on jQuery UI dialog
+    *   Dependent on jQuery UI Dialog
     */
     window: {
         /*
@@ -100,7 +100,7 @@ Sync.providers = {
                 //Show window
                 element.dialog(params);
                 //Close event
-                element.find("[data-close=true]").click(function () {
+                element.find("[data-close]").click(function () {
                     Sync.window.close(this);
                 });
             }
@@ -112,7 +112,7 @@ Sync.providers = {
 
     /*
     *   Loading Indicator Provider
-    *   Dependent on jQuery UI position
+    *   Dependent on jQuery UI Position
     */
     loading: {
         show: function () {
@@ -120,7 +120,7 @@ Sync.providers = {
             var loading = $("#loading-indicator");
             //Create indicator if not exists
             if (!loading.length) {
-                $("body").append("<div id=\"loading-indicator\">One Moment...</div>");
+                $("body").append("<div id=\"loading-indicator\">&nbsp;</div>");
                 loading = $("#loading-indicator");
             }
             //Show and center

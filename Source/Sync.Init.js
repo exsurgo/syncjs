@@ -1,33 +1,48 @@
 ﻿
-//Initialize 
+//Initialize
 Sync.init({
 
-    //The page just loaded
-    onPageLoad: function() { },
+    //Config
+    scriptPath: "/Scripts",
 
-    //Link click
-    onLinkClick: function (link) { },
+    //The document is ready
+    ready: function () {
 
-    //Form click
-    onFormClick: function (form) { },
-        
-    //Request event
-    onRequest: function (url, sender, formData) { },
+    },
 
-    //Success event
-    onSuccess: function (result) { },
+    //A request is being made
+    request: function (url, postData, sender) {
 
-    //Before update event
-    onBeforeUpdate: function (update, meta) { },
+    },
 
-    //After update event
-    onAfterUpdate: function (update, meta) { },
+    //A request was successful
+    success: function (result, metadata, xhr) {
 
-    //Complete event
-    onComplete: function () { },
+    },
 
-    //Error event
-    onError: function (result) { }
-    
+    //A request resulted error
+    error: function (message, xhr) {
+
+    },
+
+    //An element is about to be updated in the DOM
+    updating: function (element, metadata) {
+
+    },
+
+    //An element was just updated in the DOM
+    updated: function (element, metadata) {
+
+    },
+
+    //The result was successful and all updates have been made
+    complete: function (metadata) {
+
+    },
+
+    //Initialize HTML after page load or elements update
+    init: function (element, metadata) {
+
+    }
+
 });
-

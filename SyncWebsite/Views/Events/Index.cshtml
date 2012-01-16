@@ -1,8 +1,79 @@
 ﻿
-<div data-update="content" data-title="API">
+<div data-update="content" data-title="Events">
 
-    <div class="center p5">
-        <h1>Coming Soon...</h1>
-    </div>
+    <h2>Event Types</h2>
+    <p>
+        There are eight types of events in the Sync framework.  These events occur at various stages of the request/response process.
+        <ul>
+            <li>
+                <em class="b">ready</em> - The document is ready, equivalent to jQuery's <em>$(document).ready()</em> event.
+            </li>
+            <li>
+                <em class="b">request</em> - A request was just made with the Sync framework.  This event occurs anytime an ajaxified 
+                link is clicked or an ajaxified form is submitted.
+            </li>
+            <li>
+                <em class="b">success</em> - An OK response was recieved from the server, generally returning either HTML or JSON.
+            </li>
+            <li>
+                <em class="b">error</em> - An error response was received from the server.
+            </li>
+            <li>
+                <em class="b">updating</em> - An HTML element is about to be updated in the DOM.  There may be multiple elements returned
+                from a single response, so this event would occur each time.
+            </li>        
+            <li>
+                <em class="b">updated</em> - An HTML element was just updated in the DOM.  
+                This event occurs right after the <em>updating</em> event.
+            </li>
+            <li>
+                <em class="b">complete</em> - The request/response/update process has been completed.
+            </li>
+            <li>
+                <em class="b">init</em> - The HTML was just initialized after either the initial page load or an element was updated.
+                Use this event to initialize any plugins or attach any events to the DOM.
+            </li>
+       </ul>
+    </p>
+    
+    <hr class="line"/>
+
+    <h2>Global Events</h2>
+    <p>
+        Global event handlers can be defined in the <em>Sync.Init.js</em> file, or by adding them directly to the <em>Sync.events</em> object.
+    </p>
+    <label>Sync.Init.js</label>
+    <pre class="brush: js;">
+        //Initialize
+        Sync.init({
+            ...
+
+            //The document is ready
+            ready: function () { ... },
+
+            //A request is being made
+            request: function (url, postData, sender) { ... },
+
+            //A request was successful
+            success: function (result, metadata, xhr) { ... },
+
+            //A request resulted error
+            error: function (message, xhr) { ... },
+
+            //An element is about to be updated in the DOM
+            updating: function (element, metadata) { ... },
+
+            //An element was just updated in the DOM
+            updated: function (element, metadata) { ... },
+
+            //The result was successful and all updates have been made
+            complete: function (metadata) { ... },
+
+            //Initialize HTML after page load or elements update
+            init: function (element, metadata) { ... }
+
+        });
+    </pre>
+
 
 </div>

@@ -1,8 +1,53 @@
 ﻿
-<div data-update="content" data-title="API">
+<div data-update="content" data-title="SEO">
 
-    <div class="center p5">
-        <h1>Coming Soon...</h1>
-    </div>
+    <h2>SEO</h2>
+    <p>
+        SEO is a always a tricky problem with highly-ajaxified, single page applications. The solution for many developers is to simply create two
+        versions of the site, one which is SEO optimized.  This can be extremely costly for large sites however.
+    </p>
+    <p>
+        Using partial HTML updates, you can accomplish this by  adaptively rendering the response depending on http headers.  
+        Almost all Ajax requests can be identified by the <em>X-Requested-With: XMLHttpRequest</em> header.  If the request is an 
+        Ajax request, then partial HTML should be returned, if it's a standard request, then the full page should be returned.  
+        Because Sync JS uses standard links to initiate ajax requests, applications can still be crawled by search engines.
+    </p>
+    <hr/>
+
+    <p>
+        To illustrate this, simply turn JavaScript off for this site.
+        <ul>
+            <li><b>Chrome</b>: "Options" > "Under the Hood" > "Content Settings" > select "Do not allow any site to run JavaScript"</li>
+            <li><b>FireFox</b>: "Options" > "Content" tab > uncheck "Enable JavaScript"</li>
+            <li><b>Safari</b>: "Preferences" > "Security" > uncheck "Enable JavaScript"</li>
+            <li><b>IE</b>: "Internet Options" > "Security" tab > "Custom Level" > check "Disable" for "Active Scripting"</li>
+        </ul>
+    </p>
+
+    <hr class="line"/>
+
+    <h2>Server Side</h2>
+    <p>
+        Adaptive rendering can be accomplished in a variety of ways depending on the server-side platform your using.   
+        <a href="http://http://rubyonrails.org/">Ruby-On-Rails</a>, <a href="http://www.asp.net/mvc">ASP.NET MVC</a>, 
+        <a href="http://www.playframework.org">Java Play!</a> and other REST focused web frameworks generally work 
+        very well with Sync JS.   You should normally place the adaptive rendering code in a single locations such as
+        a base controller a helper or a master page.
+    </p>
+    <label>Ruby on Rails</label>
+    <pre class="brush: ruby;">
+        if request.xhr? then
+            render :partial => view_name
+        else
+            render view_name
+        end
+    </pre>
+    <label>.NET / C#</label>
+    <pre class="brush: js;">
+        if (!IsAjax) 
+        {
+            Layout = "~/Views/Shared/Page.cshtml";
+        }
+    </pre>
 
 </div>

@@ -7,7 +7,7 @@
 Sync.updaters = {
 
     /*
-    *   Row - replaces or adds a row
+    *   Row - replaces or adds a row to a table
     *   target: {selector}
     */
     row: function (element, metadata, sender) {

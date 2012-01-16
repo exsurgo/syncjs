@@ -61,7 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ComponentDiagram.jpg" />
-    <Content Include="Images\Loading.gif" />
+    <Content Include="Images\SyncLogo.png" />
+    <Content Include="Images\_Loading.gif" />
     <Content Include="Images\BigCheck.png" />
     <Content Include="Images\Button.gif" />
     <Content Include="Images\ButtonHover.gif" />
@@ -74,6 +75,8 @@
     <Content Include="Images\WorkPlex.png" />
     <Content Include="JavaScripts\Amplify.js" />
     <Content Include="JavaScripts\Callback.js" />
+    <Content Include="JavaScripts\shBrushRuby.js" />
+    <Content Include="JavaScripts\Sync.Events.js" />
     <Content Include="JavaScripts\Sync.InitView.js" />
     <Content Include="JavaScripts\Dependency.js" />
     <Content Include="JavaScripts\JSON2.js" />
@@ -83,6 +86,7 @@
     <Content Include="JavaScripts\Sync.Providers.js" />
     <Content Include="JavaScripts\Sync.Routes.js" />
     <Content Include="JavaScripts\Sync.Updaters.js" />
+    <Content Include="JavaScripts\Todos.js" />
     <Content Include="Styles\Forms.css" />
     <Content Include="Styles\jQuery.jGrowl.css" />
     <Content Include="Styles\jQuery.UI.css" />
@@ -171,7 +175,7 @@
     <Content Include="Views\Providers\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Routing\Index.cshtml" />
+    <Content Include="Views\Metadata\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Main\HelloWorld.cshtml" />

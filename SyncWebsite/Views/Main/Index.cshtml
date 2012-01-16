@@ -25,6 +25,7 @@
             <li>Client-side Templates</li>
             <li>Local storage integration</li>            
             <li>Lightweight - 12k compressed</li>
+            <li>SEO Support</li>
             <li>Web server agnostic</li>
             <li>Built on jQuery</li>
             <li>Reduce code</li>
@@ -46,26 +47,26 @@
     </p>
     <label>Page Layout</label>
     <pre class="brush: xml;">
-        <htmll>    
-            <headd>       
+        <html-temp>    
+            <head-temp>       
                 ...
                 <!--Dependent Scripts--> 
-                <scriptt src="/Scripts/jQuery.js"></scriptt>        
-                <scriptt src="/Scripts/Sync.js"></scriptt>        
-                <scriptt src="/Scripts/Sync.Init.js"></scriptt> 
+                <script-temp src="/Scripts/jQuery.js"></script-temp>        
+                <script-temp src="/Scripts/Sync.js"></script-temp>        
+                <script-temp src="/Scripts/Sync.Init.js"></script-temp> 
                 ...   
-            </headd>    
-            <bodyy>  
+            </head-temp>    
+            <body-temp>  
                 ...      
                 <!--Links are automatically hijaxed-->
-                <a href="/Main/HelloWorld">Say Hello</a>
+                <a href-temp="/Main/HelloWorld">Say Hello</a>
                 <!--The main content area-->
                 <div data-content="true">            
                     Replace this content               
                 </div>
                 ...    
-            </bodyy>
-        </htmll>
+            </body-temp>
+        </html-temp>
     </pre>
     <label>Server Response</label>
     <pre class="brush: xml">

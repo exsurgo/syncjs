@@ -1,8 +1,8 @@
 
 /*
-*   Sync JS - v 0.9.1.59
+*   Sync JS - v 0.9.1.64
 *   This file contains the core functionality
-*   Dependencies: HashChange plugin
+*   Dependencies: jQuery 1.5+, HashChange plugin 1.3+ (included)
 */
 (function (sync) {
 
@@ -19,6 +19,7 @@
     config = {
 
         //General 
+        metadata: {}, //Default global metadata
         autoEvents: true, //Automatically hijax every link and form
         autoCorrectLinks: true, //Change standard URL's to ajax (#) URL's
         contentSelector: "[data-content=true]:first", //The main content area where content is rendered
@@ -26,29 +27,19 @@
         submitFilter: ".placeholder", //Don't submit any form elements that match this
         scriptPath: "/Scripts", //Path to download dependent scripts from
         templateDelimiters: ["<%", "%>"], //Delimiters for embedded scripts in templates
-
-        //Global events
-        onPageLoad: function () { }, //The page just loaded
-        onLinkClick: function () { }, //An ajaxified link is just clicked
-        onFormSubmit: function () { }, //An ajaxified form is just submitted
-        onRequest: function () { }, //A request is just made
-        onSuccess: function () { }, //A response is just received
-        onBeforeUpdate: function () { }, //Just before content is updated in the DOM
-        onAfterUpdate: function () { }, //Just after content is updated in the DOM
-        onComplete: function () { }, //The request and updated have been successfully completed
-        onError: function () { } //Request resulted in an error
-
+        closeWindowOnPost: true //Close the form window automatically after successful post
     };
     sync.config = config;
 
     //Global events
-    sync.events = {};
+    var events = {};
+    sync.events = events;
 
     //Custom updaters
     sync.updaters = {};
 
     //Routes
-    sync.routes = {};
+    sync.routes = [];
 
     //Providers
     sync.providers = {};
@@ -98,26 +89,32 @@
             }
         });
 
-        //Attach events to body
-        initView("body");
+        //Document ready
+        events.ready();
 
-        //Page load event
-        config.onPageLoad();
+        //Attach events to body
+        initHTML("body");
+        events.init("body");
 
     });
 
     /********* Public Methods *********/
 
     //Initialize the page and config settings
-    sync.init = function (config) {
+    sync.init = function (obj) {
 
-        //Combine default config with provided
-        $.extend(sync.config, config);
+        //Iterate from all object properties
+        for (var prop in obj) {
+            //Add functions to Sync.events
+            if (typeof obj[prop] == "function") events[prop] = obj[prop];
+            //Add all other properties to Sync.config
+            else config[prop] = obj[prop];
+        }
 
     };
 
     //Request
-    sync.request = function (url, sender, formData) {
+    sync.request = function (url, postData, sender) {
 
         //Reload page with hash value
         if (url == "#" || url.charAt(0) == "~") return;
@@ -125,8 +122,16 @@
         //Convert sender to jquery
         sender = $(sender);
 
+        //Get metadata from route and sender
+        //Ensure that data object are not undefined
+        var routeData = getRouteData(url) || {};
+        var senderData = sender.data() || {};
+        //Combine global, route and sender metadata in that order
+        //Override values in order: sender -> route -> global
+        var metadata = $.extend({}, config.metadata, routeData, senderData);
+
         //On request event
-        config.onRequest(url, sender, formData);
+        events.request(url, sender, postData, metadata);
 
         //Confirm request
         if (!confirmAction(sender)) return false;
@@ -137,24 +142,30 @@
         //Show loading indicator
         sync.loading.show();
 
+        //Serialize postData
+        if (postData && typeof postData != "string") postData = $.param(postData);
+
         //Begin request
-        var method = formData == undefined ? "GET" : "POST";
+        var method = postData ? "POST" : "GET";
         $.ajax({
 
             //Parameters
             type: method,
             url: url,
-            data: formData,
+            data: postData,
             cache: false,
 
             //Success event
             success: function (result, status, xhr) {
 
-                //On success event
-                config.onSuccess(result);
+                //Success events
+                var args = [result, metadata, sender, xhr];
+                events.success.apply(window, args);
+                if (senderData.success) callFunction(senderData.success, sender, args);
+                else if (routeData.success) callFunction(routeData.success, window, args);
 
                 //Close window on post
-                if (method == "POST") sync.window.close(sender);
+                if (method == "POST" && config.closeWindowOnPost) sync.window.close(sender);
 
                 //Get return type (HTML, JSON, etc)
                 var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
@@ -180,7 +191,7 @@
                 });
 
                 //On complete
-                config.onComplete();
+                events.complete();
 
             },
 
@@ -194,7 +205,7 @@
                 sync.loading.hide();
 
                 //Call error event
-                config.onError(error);
+                events.error(error, xhr);
             }
 
         });
@@ -207,8 +218,35 @@
         window.location = url;
     };
 
+    //Load dependent scripts
+    sync.load = function (scripts) {
+        //If script, split by comma and convert to array
+        if (typeof (scripts) == "string") scripts = scripts.split(",");
+        //Load each script
+        //TODO: Allow multiple scripts to be requested at once
+        $(scripts).each(function () {
+            //Trim
+            var src = $.trim(this);
+            //Append 'scriptPath' setting if available
+            var path = config.scriptPath;
+            if (path) {
+                if (!path.match(/\/$/)) path += "/";
+                src = path + src;
+            }
+            //Load script via ajax
+            $.ajax({
+                type: "GET",
+                url: src,
+                dataType: "script",
+                cache: true, //Enable caching
+                async: false //Can't be async, must be loaded first
+            });
+        });
+    };
+
+    /********* Provider Methods *********/
+
     //Render a template for an object
-    var templates = {};
     sync.render = function (template, model) {
         //Check cache for template function
         var func = templates[template];
@@ -247,28 +285,6 @@
         return html;
     };
 
-    //Load dependent scripts
-    sync.loadScripts = function (scripts) {
-        $(scripts).each(function () {
-            var src = $.trim(this);
-            //Append 'scriptPath' setting if available
-            var path = config.scriptPath;
-            if (path) {
-                if (!path.match(/\/$/)) path += "/";
-                src = path + src;
-            }
-            //Call with ajax to access config
-            //TODO: Allow multiple scripts to be requested at once
-            $.ajax({
-                type: "GET",
-                url: src,
-                dataType: "script",
-                cache: true, //Enable caching
-                async: false //Can't be async, must be loaded first
-            });
-        });
-    };
-
     /********* Private Methods *********/
 
     //Handle HTML response
@@ -280,7 +296,7 @@
             //Store src to request later
             scripts.push(this.getAttribute("src"));
         }).remove();
-        sync.loadScripts(scripts);
+        sync.load(scripts);
 
         //Store templates
         $(result).filter("[data-template]").each(function () {
@@ -304,7 +320,7 @@
             if (meta.remove) $(meta.remove).show();
 
             //On before update
-            config.onBeforeUpdate(element, meta);
+            events.updating(element, meta);
 
             //Hide update
             element.hide();
@@ -313,14 +329,10 @@
             updateElement(element, meta, sender, url);
 
             //On after update
-            config.onAfterUpdate(element, meta);
+            events.updated(element, meta);
 
             //Show update
             element.show();
-
-            //Events
-            initView(element);
-
         });
 
         //Run inline scripts
@@ -345,7 +357,10 @@
         //Check custom updates
         for (var updater in sync.updaters) {
             if (updater.toLowerCase() == metadata.update) {
+                //Run custom updater
                 sync.updaters[updater](element, metadata, sender, url);
+                //Initialize the view
+                initHTML(element);
                 return;
             }
         }
@@ -354,7 +369,7 @@
         //Content, Window, Replace, Insert, Append, Prepend, After, Before
         switch (metadata.update) {
 
-            //Content                                                                                          
+            //Content                                                                                                                               
             /*  
             *   title: {string} 
             *   address: {string} 
@@ -378,17 +393,17 @@
                 if (!metadata.scroll) $(window).scrollTop(0);
                 break;
 
-            //Window                                                                                                                                                                                                                                                                                                                                                                                                                         
+            //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                              
             case "window":
                 sync.window.create(id, element, metadata);
                 break;
 
-            //Replace                                                                                                                                                                                                                                                                                                                                                                                
+            //Replace                                                                                                                                                                                                                                                                                                                                                                                                                     
             case "replace":
                 $("#" + id).replaceWith(element);
                 break;
 
-            //Insert                                                                                                                                                                                                                                                                                                                                                                                
+            //Insert                                                                                                                                                                                                                                                                                                                                                                                                                     
             /*
             *   target: {selector}
             */ 
@@ -397,7 +412,7 @@
                 target.html(element);
                 break;
 
-            //Prepend                                                                                                                                                                                                                                                                       
+            //Prepend                                                                                                                                                                                                                                                                                                            
             /*
             *   target: {selector}
             */ 
@@ -407,7 +422,7 @@
                 else $(metadata.target).prepend(element);
                 break;
 
-            //Append                                                                                                                                                                                                                                                                        
+            //Append                                                                                                                                                                                                                                                                                                             
             /*
             *   target: {selector}
             */ 
@@ -417,7 +432,7 @@
                 else $(metadata.target).append(element);
                 break;
 
-            //After                                                                                                                                                                                                                                                                                                                                                                                 
+            //After                                                                                                                                                                                                                                                                                                                                                                                                                      
             /*
             *   target: {selector}
             */ 
@@ -426,7 +441,7 @@
                 target.after(element);
                 break;
 
-            //Before                                                                                                                                                                                                                                                                                                                                                                                 
+            //Before                                                                                                                                                                                                                                                                                                                                                                                                                      
             /*
             *   target: {selector}
             */ 
@@ -435,10 +450,14 @@
                 target.before(element);
                 break;
         }
+
+        //Initialize the view
+        initHTML(element);
+        events.init(element, metadata);
     }
 
     //Initialize any events or prerequisites 
-    function initView(context) {
+    function initHTML(context) {
 
         //Scroll
         //TODO: Need to test this
@@ -473,8 +492,6 @@
                 e.preventDefault();
                 //Prevent duplicate requests
                 if (preventDoubleClick()) return false;
-                //Link click event
-                config.onLinkClick(link);
                 //Modify link
                 if (url[0] == "#") url = "/" + url.substr(1);
                 //Update details
@@ -482,7 +499,7 @@
                 var details = link.attr("data-details");
                 if (details != undefined && $("#" + details).length) url += (url.indexOf("?") != -1 ? "&" : "?") + "UpdateDetails=True";
                 //Get request
-                sync.request(url, this);
+                sync.request(url, null, this);
                 return false;
             });
         });
@@ -499,14 +516,13 @@
             if (form.attr("data-ajax") == "false") return;
             //Ensure unique ids
             form.attr("id", ("form-" + Math.random()).replace(".", ""));
-            //Form submit event
-            config.onFormSubmit(form);
-            //Serialize form data, exclude filtered items
-            var data = form.find(":input").not(config.submitFilter).serialize();
+            //Convert fields to array, exclude filtered items
+            //Array is in format [{name: "...", value: ".."},{name: "...", value: "..."}]
+            var postData = form.find(":input").not(config.submitFilter).serializeArray();
             //Disable form
             toggleSender(form, false);
             //Post request
-            sync.request(form.attr("action"), this, data);
+            sync.request(form.attr("action"), postData, this);
             return false;
         });
 
@@ -563,8 +579,7 @@
 
         //Load dependent scripts
         $(context).find("[data-load]").andSelf().filter("[data-load]").each(function () {
-            var scripts = this.getAttribute("data-load").split(",");
-            sync.loadScripts(scripts);
+            sync.load(this.getAttribute("data-load"));
         });
 
         //Run callbacks
@@ -589,13 +604,13 @@
         $(sync.routes).each(function () {
 
             //If route matches, then request template
-            if (this.regex.test(url)) {
+            if (this.route.test(url)) {
 
                 //Request templates from URL
                 if (!sync.storage.exists(this.templateId)) {
                     $.ajax({
                         type: "get",
-                        url: this.templateUrl,
+                        url: this.templateURL,
                         async: false,
                         success: function (templates) {
                             //Store any client templates
@@ -655,6 +670,28 @@
             }
         }
         return true;
+    }
+
+    //Call a global or namespaced function by string
+    function callFunction(name, context, args) {
+        if (name != undefined && name != "" && name != null) {
+            var parts = name.split("."),
+                obj = window;
+            for (var i = 0; i < parts.length; ++i) {
+                obj = obj[parts[i].trim()];
+            }
+            //Run method, use context for "this" value
+            obj.apply(context, args);
+        }
+    }
+
+    //Get route metadata
+    function getRouteData(url) {
+        $(sync.routes).each(function () {
+            if (this.route.test(url)) return this;
+        });
+        //Return empty object to prevent undefined error
+        return undefined;
     }
 
 } (window.Sync = window.Sync || {}));

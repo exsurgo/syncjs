@@ -4,9 +4,9 @@ Sync.routes = [
     
     //Todos list
     {
-        regex: /^\/Todos$/i,
+        route: /^\/Todos$/i,
         templateId: "todo-list-remote",
-        templateUrl: "/Templates/Todos"
-    },
+        templateURL: "/Templates/Todos"
+    }
     
 ];

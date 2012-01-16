@@ -13,7 +13,7 @@
     <hr />
     <label>Server Response</label>
     <pre class="brush: xml;">
-        <scriptt>alert("The request returned a script tag which was executed.")</scriptt>
+        <script-temp>alert("The request returned a script tag which was executed.")</script-temp>
     </pre>
     <p>
         <a href="/Scripts/InlineScript">Make request with inline script</a>
@@ -35,14 +35,14 @@
     <hr />
     <label>Server Response</label>
     <pre class="brush: xml;">
-        <div id="div-with-load" data-update="replace" data-load="Dependency.js">
+        <div id="div-with-load" data-update="replace" data-load-temp="Dependency.js">
             This div was just loaded and a dependent script was run.
         </div>
 
         <!-- Inline script ran after dependency is loaded -->
-        <scriptt>
+        <script-temp>
             dependentFunction();
-        </scriptt>    
+        </script-temp>    
     </pre>
     <p>
         <a href="/Scripts/Load">Update with dependency</a>
@@ -57,13 +57,13 @@
     <!--Callbacks-->
     <h2>Callbacks</h2>
     <p>
-        Once an update occurs, a callback can also be executed via the data-callback attribute.  
-        The call back can be a global function or namespaced.  Also note that the context (this keyword) is
+        Once an update occurs, a callback can also be executed via the <em>data-callback</em> attribute.  
+        The call back can be a global function or namespaced.  Also note that the context (<em>this</em> keyword) is
         a jQuery object representing the HTML update.
     </p>
     <label>Server Response</label>
     <pre class="brush: xml;">
-        <div id="callback-div" data-update="replace" data-load="Callback.js" data-callback="CallbackController.init">
+        <div id="callback-div" data-update="replace" data-load-temp="Callback.js" data-callback-temp="CallbackController.init">
             This div was just loaded and a callback was ran.  
         </div>
     </pre>
@@ -87,6 +87,61 @@
         This div should be replaced and then a callback is run
     </div>
 
-    <hr />
+    <hr class="line"/>
+
+    <!--Sender Callbacks-->    
+    <h2>Sender Callbacks</h2>
+    <p>
+        Callbacks can be defined on the sender also. The sender is  the link, form, or other ajaxified element that
+        initiates the request.
+    </p>
+    <p>
+        In the example below, when the form is submitted, the data is posted to the server and a JSON response is returned.
+        When the response is received, the function <em>Todos.saved</em> is run as indicated by the attribute <em>data-success</em>.
+        It's important to note that the arguments passed to a success event or always the same.
+        <ul>
+            <li><em>result</em> - The resulting HTML or JSON object response.</li>
+            <li><em>metadata</em> - The metadata from the route and sender.</li>
+            <li><em>sender</em> - The link, form or other element that initiated the request.</li>
+        </ul>
+    </p>
+    <hr/>
+    <label>HTML Form</label>
+    <pre class="brush: xml;">
+        <ul id="todo-list"></ul>
+
+        <form method="post" action="/Todos/Save" data-load-temp="Todos.js" data-success="Todos.saved">
+            <input type="text" name="Title"/>
+            <button type="submit">Save</button>
+        </form>
+    </pre>
+    <label>JSON Response</label>
+    <pre class="brush: js;">
+        {"Succeeded":true}
+    </pre>
+    <label>Todo.js</label>
+    <pre class="brush: js;">
+        var Todos = {
+
+            saved: function (result, metadata, sender) {
+                if (result.Succeeded) {
+                    alert("Todo was saved!", "success");
+                    var textbox = sender.find("[name=Title]");
+                    var list = $("#todo-list");
+                    list.append("<li>" + textbox.val() + "</li>");
+                    textbox.val("");
+                }
+            }
+
+        };
+    </pre>
+    
+    <div class="orange-div">
+        <ul id="todo-list"></ul>
+    </div>
+    <form method="post" action="/Todos/Save" class="box col7" data-success="Todos.saved">
+        <input type="text" name="Title" value="First Todo" data-focus="false"/>
+        <button type="submit">Save</button>
+    </form>
 
 </div>

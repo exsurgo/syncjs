@@ -1,14 +1,10 @@
-﻿ using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Web.Controllers
 {
     public class TodosController : Controller
     {
-        //GET:  /Todo/List
+        //GET:  /Todos/List
         public ActionResult List()
         {
             var todos = new[]
@@ -20,5 +16,10 @@ namespace Web.Controllers
             return Json(todos, JsonRequestBehavior.AllowGet);
         }
 
+        //POST: /Todos/Save
+        public ActionResult Save()
+        {
+            return Json(new { Succeeded = true }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

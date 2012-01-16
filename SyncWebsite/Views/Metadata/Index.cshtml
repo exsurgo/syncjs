@@ -1,0 +1,117 @@
+﻿
+<div data-update="content" data-title="Routing">
+
+    <p>
+        Sync JS is an extremely flexible, metadata-driven framework.  This metadata drives the behavior of an application and allows developers to do more
+        with less code.  You can provide metadata in following five ways, respectively.
+        <ul>
+            <li><b>Global</b> - Default metadata added to the config.</li>
+            <li><b>Routing</b> - You can define metadata based on the requested URL.</li>
+            <li><b>Updates</b> - HTML5 metadata defined elements being updated.</li>
+            <li><b>Senders</b> - HTML5 metadata defined on elements initiating ajax requests (links, forms, etc.)</li>
+            <li><b>Manual</b> - You can alter metadata manually in events.</li>
+        </ul>
+    </p>
+
+    <hr class="line" />
+
+    <h2>Global Metadata</h2>
+    <p>
+        You can provide global metadata using the <em>Sync.config</em> property.  In the example below, the <em>update</em> metadata value
+        is set to <em>content</em> on a global level.  This means the default update type will be a content update if no other value 
+        is provided.  The global can be overridden in multiple locations however.
+    </p>
+    <pre class="brush: js;">
+        Sync.init({
+            ...
+            metadata: { update: "content" },
+            ...
+    </pre>
+
+    <hr class="line" />
+
+    <h2>Routing Metadata</h2>
+    <p>
+        The routing feature lets you provide metadata associated a requested URL.  Routes are defined in the <em>Sync.Routes.js</em> file,
+        or can be added to the <em>Sync.routes</em> property.  Also, multiple routes can be associated with single URL.
+    </p>
+    <p>
+        In the example below, 2 routes are defined.  The first matches to any URL starting with <em>"/Todos"</em>, and instructs the system
+        to load the script <em>Todos.js</em>.   The second route matches to <em>"/Todos/List"</em> and defines the template to use 
+        with <em>templateId</em>, the templates location with <em>templateURL</em>, and the function to run after the update is completed
+        with <em>updated</em>.
+    </p>
+    <label>Sync.Routes.js</label>
+    <pre class="brush: js;">
+        //Provides metadata associated with a URL
+        Sync.routes = [
+    
+            //All todo routes
+            {
+                route: /^\/Todos\/*/i,
+                load: "Todo.js"
+            },
+
+            //Todo list
+            {
+                route: /^\/Todos\/List$/i,
+                templateId: "todo-list",
+                templateURL: "/Templates/Todos/List",
+                updated: "Todo.list"
+            }
+    
+        ];
+    </pre>
+    
+    <hr class="line" />
+
+    <h2>Update Metadata</h2>
+    <p>
+        Generally, metadata would be defined on the updates themselves using HTML5 <em>data-</em> attributes.  Going back to the hello world
+        example, the HTML update below defines <em>"content"</em> for the <em>update</em> value, and <em>"Hello World!"</em> for the 
+        <em>title</em> value.
+    </p>
+    <label>Server Response with HTML5 metadata</label>
+    <pre class="brush: xml;">
+        <div data-update="content" data-title="Hello World!">
+            Hello World!
+        </div>
+    </pre>
+
+    <hr class="line" />
+
+    <h2>Sender Metadata</h2>
+    <p>
+        Metadata can also be defined on the sender object, which is usually the ajaxified link or form that initiates the request.
+        The sample below sets the <em>update</em> value to <em>window</em>, which tells the framework to show the todo list in a window
+        rather than the main content area.
+    </p>
+    <pre class="brush: xml;">
+        <a data-update="window" href-temp="/Main/HelloWorld">View Todos</a>
+    </pre>
+
+    <hr class="line" />
+
+    <h2>Manually Provided Metadata</h2>
+    <p>
+        Lastly, you can provide metadata values manually in the <em>events</em>.  In a slightly modified hello world, a <em>success</em> 
+        callback is defined on the update.  The callback modifies <em>update</em> to <em>window</em>.
+    </p>
+    <pre class="brush: xml;">
+        <div data-update="content" data-title="Hello World!" data-success="Main.success">
+            Hello World!
+        </div>
+    </pre>
+    <pre class="brush: js;">
+        var Main = {
+            
+            showInWindow: true,
+
+            success: function (result, metadata) {
+                if (showInWindow) metadata.update = "window"; 
+            }
+        
+        };
+    </pre>
+
+</div>

@@ -11,37 +11,37 @@ Sync.init({
     },
 
     //A request is being made
-    request: function (url, postData, sender) {
+    request: function (e) {
 
     },
 
     //A request was successful
-    success: function (result, metadata, xhr) {
+    success: function (e) {
 
     },
 
     //A request resulted error
-    error: function (message, xhr) {
+    error: function (e) {
 
     },
 
     //An element is about to be updated in the DOM
-    updating: function (element, metadata) {
+    updating: function (e) {
 
     },
 
     //An element was just updated in the DOM
-    updated: function (element, metadata) {
+    updated: function (e) {
 
     },
 
     //The result was successful and all updates have been made
-    complete: function (metadata) {
+    complete: function (e) {
 
     },
 
     //Initialize HTML after page load or elements update
-    init: function (element, metadata) {
+    init: function (e) {
 
     }
 

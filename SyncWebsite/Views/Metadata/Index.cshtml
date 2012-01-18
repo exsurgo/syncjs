@@ -12,6 +12,11 @@
             <li><b>Manual</b> - You can alter metadata manually in events.</li>
         </ul>
     </p>
+    <hr/>
+
+    <div class="center">
+        <img src="/Images/Metadata.jpg"/>
+    </div>
 
     <hr class="line" />
 
@@ -107,8 +112,8 @@
             
             showInWindow: true,
 
-            success: function (result, metadata) {
-                if (showInWindow) metadata.update = "window"; 
+            success: function (e) {
+                if (showInWindow) e.metadata.update = "window"; 
             }
         
         };

@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.64
+*   Sync JS - v 0.9.1.65
 *   This file contains the core functionality
 *   Dependencies: jQuery 1.5+, HashChange plugin 1.3+ (included)
 */
@@ -91,8 +91,9 @@
         events.ready();
 
         //Attach events to body
-        initHTML("body");
-        events.init("body");
+        var body = $("body");
+        initHTML(body);
+        events.init.call(body);
 
     });
 
@@ -126,22 +127,22 @@
         var senderData = sender.data() || {};
         //Override in order: sender -> route -> global
         var metadata = $.extend({}, config.metadata, routeData, senderData);
-		
+
         //Create params object
-		var params = { 
-			url: url,
-			postData: postData,			
-			isPost: postData != undefined,			
-			sender: sender,			
-			metadata: metadata,
-			routeData: routeData,
-			senderData: senderData
-		};
-		
-		//Request event
-        events.request.apply(sender, params);
-		if (metadata.request) callFunction(metadata.request, sender, params);
-		
+        var params = {
+            url: url,
+            postData: postData,
+            isPost: postData != undefined,
+            sender: sender,
+            metadata: metadata,
+            routeData: routeData,
+            senderData: senderData
+        };
+
+        //Request event
+        events.request.call(sender, params);
+        if (metadata.request) callFunction(metadata.request, sender, params);
+
         //Confirm request
         if (!confirmAction(sender)) return false;
 
@@ -166,20 +167,20 @@
 
             //Request was successful
             success: function (result, status, xhr) {
-                
-				//Get return type (HTML, JSON, etc)
+
+                //Get return type (HTML, JSON, etc)
                 var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
-				
-				//Success event
-				params = $.extend(params, {
-					result: result,
-					status: status,
-					xhr: xhr,
-					contentType: contentType
-				});
-				events.success.apply(result, params);
-				if (metadata.success) callFunction(metadata.success, result, params);
-				
+
+                //Success event
+                params = $.extend(params, {
+                    result: result,
+                    status: status,
+                    xhr: xhr,
+                    contentType: contentType
+                });
+                events.success.call(result, params);
+                if (metadata.success) callFunction(metadata.success, result, params);
+
                 //Close window on post
                 if (method == "POST" && config.closeWindowOnPost) sync.window.close(sender);
 
@@ -204,8 +205,8 @@
                 });
 
                 //Complete event
-                events.complete.apply(result, params);
-				if (metadata.complete) callFunction(metadata.complete, result, params);
+                events.complete.call(result, params);
+                if (metadata.complete) callFunction(metadata.complete, result, params);
 
             },
 
@@ -218,20 +219,22 @@
                 //Hide progress
                 sync.loading.hide();
 
-				//Params
-				params = $.extend(params, {
-					error: error,
-					status: status,
-					xhr: xhr
-				});
-				
+                //Params
+                params = $.extend(params, {
+                    error: error,
+                    status: status,
+                    xhr: xhr
+                });
+
                 //Error event
-				events.error.apply(error, params);
-				if (metadata.error) callFunction(metadata.error, error, params);
+                events.error.call(error, params);
+                if (metadata.error) callFunction(metadata.error, error, params);
             }
 
         });
 
+        //Return parameters for return value
+        return params;
     };
 
     //Redirect
@@ -312,10 +315,10 @@
     //Handle HTML response
     function handleHTML(params) {
 
-		//Locals
-		var result = params.result,
+        //Locals
+        var result = params.result,
             scripts = [],
-	
+
         //Load script tags 
         scripts = [];
         $(result).filter("script[src]").each(function () {
@@ -333,7 +336,7 @@
         $(result).filter("[data-update]:not([data-template])").each(function () {
             updateElement(this, params);
         });
-		
+
         //Run inline scripts
         $(result).filter("script:not([src])").each(function () {
             $.globalEval($(this).html());
@@ -342,157 +345,162 @@
 
     //Update an html element in the DOM
     function updateElement(element, params) {
-		
-		//Ensure element has id
-        id = element.attr("id");
+
+        //Convert to jQuery object
+        element = $(element);
+
+        //Ensure element has id
+        var id = element.attr("id");
         if (id == "" || id == undefined) {
             id = ("el-" + Math.random()).replace(".", "");
             element.attr("id", id);
         }
-	
-		//Get metadata from update
-		var updateData = element.data();
-		updateData.update = updateData.update.toLowerCase();
-		
-		//Combine metadata
-		//Override in order: sender -> update -> route -> global
-		var metadata = $.extend({}, config.metadata, routeData, updateData, senderData);	
-		
-		//Event params - Use a new object for updating/updated events
-		var updateParams = $.extend({}, params, {
-			metadata: metadata,
-			updateData: dataData,
-			updateId: id,
-			element: element
-		});
-		
-		//Updating events
-		events.updating.apply(element, updateParams);
-		if (metadata.updating) callFunction(metadata.updating, element, updateParams);
-		
-		//Hide update
-		element.hide();	
-        
-		//Match update type by lowercase
-		metadata.update = metadata.update.toLowerCase();
+
+        //Get metadata from update
+        var updateData = element.data();
+
+        //Combine metadata
+        //Override in order: sender -> update -> route -> global
+        var metadata = $.extend({}, config.metadata, params.routeData, updateData, params.senderData);
+
+        //Event params - Use a new object for updating/updated events
+        var updateParams = $.extend({}, params, {
+            metadata: metadata,
+            updateData: updateData,
+            updateId: id,
+            element: element
+        });
+
+        //Updating events
+        events.updating.call(element, updateParams);
+        if (metadata.updating) callFunction(metadata.updating, element, updateParams);
+
+        //Hide update
+        element.hide();
+
+        //Match update type by lowercase
+        metadata.update = metadata.update.toLowerCase();
 
         //Check custom updates
+        var isUpdated = false;
         for (var updater in sync.updaters) {
             if (updater.toLowerCase() == metadata.update) {
                 //Run custom updater
-                sync.updaters[updater](element, metadata, params.sender, url);
+                sync.updaters[updater](element, metadata, params.sender, params.url);
                 //Initialize the view
                 initHTML(element);
-                return;
+                isUpdated = true;
             }
         }
 
         //Check standard updates
-        //Content, Window, Replace, Insert, Append, Prepend, After, Before
-        switch (metadata.update) {
+        //content, window, replace, insert, append, prepend, after, before
+        if (!isUpdated) {
+            switch (metadata.update) {
 
-            //Content                                                                                                                               
-            /*  
-            *   title: {string} 
-            *   address: {string} 
-            */ 
-            case "content":
-                //Address
-                var url = params.url;
-				if (metadata.address && metadata.address != "") url = metadata.address;
-                if (url.charAt(0) == "/") url = url.substr(1);
-                currentUrl = url;
-                if (window.location.hash.substr(1) != url) {
-                    if (url != "/") {
-                        window.location.hash = url;
+                //Content                                                                                                                                    
+                /*  
+                *   title: {string} 
+                *   address: {string} 
+                */ 
+                case "content":
+                    //Address
+                    var url = params.url;
+                    if (metadata.address && metadata.address != "") url = metadata.address;
+                    if (url.charAt(0) == "/") url = url.substr(1);
+                    currentUrl = url;
+                    if (window.location.hash.substr(1) != url) {
+                        if (url != "/") {
+                            window.location.hash = url;
+                        }
+                        else window.location.hash = "";
                     }
-                    else window.location.hash = "";
-                }
-                //Page Title
-                if (metadata.title) document.title = config.pageTitlePrefix + metadata.title;
-                //Content
-                $(config.contentSelector).empty().append(element);
-                //Scroll to top by default
-                if (!metadata.scroll) $(window).scrollTop(0);
-                break;
+                    //Page Title
+                    if (metadata.title) document.title = config.pageTitlePrefix + metadata.title;
+                    //Content
+                    $(config.contentSelector).empty().append(element);
+                    //Scroll to top by default
+                    if (!metadata.scroll) $(window).scrollTop(0);
+                    break;
 
-            //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-            case "window":
-                sync.window.create(id, element, metadata);
-                break;
+                //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                case "window":
+                    sync.window.create(id, element, metadata);
+                    break;
 
-            //Replace                                                                                                                                                                                                                                                                                                                                                                                                                     
-            case "replace":
-                $("#" + id).replaceWith(element);
-                break;
+                //Replace                                                                                                                                                                                                                                                                                                                                                                                                                          
+                case "replace":
+                    $("#" + id).replaceWith(element);
+                    break;
 
-            //Insert                                                                                                                                                                                                                                                                                                                                                                                                                     
-            /*
-            *   target: {selector}
-            */ 
-            case "insert":
-                var target = $(metadata.target);
-                target.html(element);
-                break;
+                //Insert                                                                                                                                                                                                                                                                                                                                                                                                                          
+                /*
+                *   target: {selector}
+                */ 
+                case "insert":
+                    var target = $(metadata.target);
+                    target.html(element);
+                    break;
 
-            //Prepend                                                                                                                                                                                                                                                                                                            
-            /*
-            *   target: {selector}
-            */ 
-            case "prepend":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(metadata.target).prepend(element);
-                break;
+                //Prepend                                                                                                                                                                                                                                                                                                                 
+                /*
+                *   target: {selector}
+                */ 
+                case "prepend":
+                    var existing = $("#" + id);
+                    if (existing.length) existing.replaceWith(element);
+                    else $(metadata.target).prepend(element);
+                    break;
 
-            //Append                                                                                                                                                                                                                                                                                                             
-            /*
-            *   target: {selector}
-            */ 
-            case "append":
-                var existing = $("#" + id);
-                if (existing.length) existing.replaceWith(element);
-                else $(metadata.target).append(element);
-                break;
+                //Append                                                                                                                                                                                                                                                                                                                  
+                /*
+                *   target: {selector}
+                */ 
+                case "append":
+                    var existing = $("#" + id);
+                    if (existing.length) existing.replaceWith(element);
+                    else $(metadata.target).append(element);
+                    break;
 
-            //After                                                                                                                                                                                                                                                                                                                                                                                                                      
-            /*
-            *   target: {selector}
-            */ 
-            case "after":
-                var target = $(metadata.target);
-                target.after(element);
-                break;
+                //After                                                                                                                                                                                                                                                                                                                                                                                                                           
+                /*
+                *   target: {selector}
+                */ 
+                case "after":
+                    var target = $(metadata.target);
+                    target.after(element);
+                    break;
 
-            //Before                                                                                                                                                                                                                                                                                                                                                                                                                      
-            /*
-            *   target: {selector}
-            */ 
-            case "before":
-                var target = $(metadata.target);
-                target.before(element);
-                break;
+                //Before                                                                                                                                                                                                                                                                                                                                                                                                                           
+                /*
+                *   target: {selector}
+                */ 
+                case "before":
+                    var target = $(metadata.target);
+                    target.before(element);
+                    break;
+            }
         }
 
-		//Updated events
-		events.updated.apply(element, updateParams);
-		if (metadata.updated) callFunction(metadata.updated, element, updateParams);
+        //Updated events
+        events.updated.call(element, updateParams);
+        if (metadata.updated) callFunction(metadata.updated, element, updateParams);
 
-		//Metadata actions
-		if (metadata.hide) $(metadata.hide).hide();
-		if (metadata.show) $(metadata.show).show();
-		if (metadata.empty) $(metadata.empty).empty();
-		if (metadata.remove) $(metadata.remove).remove();
+        //Metadata actions
+        if (metadata.hide) $(metadata.hide).hide();
+        if (metadata.show) $(metadata.show).show();
+        if (metadata.empty) $(metadata.empty).empty();
+        if (metadata.remove) $(metadata.remove).remove();
 
-		//Show update
-		element.show();
-		
+        //Show update
+        element.show();
+
         //Initialize the view
         initHTML(element);
-        
-		//Init event
-		events.init.apply(element, updateParams);
-		if (metadata.init) callFunction(metadata.init, element, updateParams);
+
+        //Init event
+        events.init.call(element, updateParams);
+        if (metadata.init) callFunction(metadata.init, element, updateParams);
     }
 
     //Initialize any events or prerequisites 
@@ -720,7 +728,7 @@
                 obj = obj[parts[i].trim()];
             }
             //Run method, use context for "this" value
-            obj.apply(context, args);
+            obj.call(context, args);
         }
     }
 

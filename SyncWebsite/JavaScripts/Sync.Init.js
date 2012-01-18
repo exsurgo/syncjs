@@ -9,7 +9,7 @@ Sync.init({
     ready: function () {
 
         //Override default alert
-        window.alert = function alert(text, type) {
+        window.alert = function (text, type) {
             if (text) {
                 var duration = text.length * 120;
                 $.jGrowl(text, {
@@ -70,7 +70,7 @@ Sync.init({
 
     },
 
-    //Initialize HTML after page load or elements update
+    //Initialize HTML after page load or element update
     init: function (e) {   
 
         //Code syntax highlighting
@@ -85,7 +85,7 @@ Sync.init({
         $("code:contains(html-temp)", this).text("html");
         $("code:contains(data-callback-temp)", this).text("data-callback");
         $("code:contains(data-load-temp)", this).text("data-load");
-        $("code:contains(href-temp)", this).text("data-load");
+        $("code:contains(href-temp)", this).text("href");
 
     }
 

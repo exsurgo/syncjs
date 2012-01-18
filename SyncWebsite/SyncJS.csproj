@@ -68,8 +68,11 @@
     <Content Include="Images\CloseButton.gif" />
     <Content Include="Images\DownRight.png" />
     <Content Include="Images\Grad.png" />
+    <Content Include="Images\Icon.png" />
+    <Content Include="Images\Loading.gif" />
     <Content Include="Images\Logo.png" />
     <Content Include="Images\LoadingSmall.gif" />
+    <Content Include="Images\Metadata.jpg" />
     <Content Include="Images\WorkPlex.png" />
     <Content Include="JavaScripts\Amplify.js" />
     <Content Include="JavaScripts\Callback.js" />

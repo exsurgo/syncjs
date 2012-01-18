@@ -52,28 +52,49 @@
             ready: function () { ... },
 
             //A request is being made
-            request: function (url, postData, sender) { ... },
+            request: function (e) { ... },
 
             //A request was successful
-            success: function (result, metadata, xhr) { ... },
+            success: function (e) { ... },
 
             //A request resulted error
-            error: function (message, xhr) { ... },
+            error: function (e) { ... },
 
             //An element is about to be updated in the DOM
-            updating: function (element, metadata) { ... },
+            updating: function (e) { ... },
 
             //An element was just updated in the DOM
-            updated: function (element, metadata) { ... },
+            updated: function (e) { ... },
 
             //The result was successful and all updates have been made
-            complete: function (metadata) { ... },
+            complete: function (e) { ... },
 
             //Initialize HTML after page load or elements update
-            init: function (element, metadata) { ... }
+            init: function (e) { ... }
 
         });
     </pre>
+
+    <hr class="line"/>
+
+    <h2>Event Object (e)</h2>
+    <p>
+        Every event passes a single event object that hold all parameters for the current request.
+    </p>
+    <p>
+        <ul>
+            <li><em>sender</em> - Object that initiated the request, usually a link or a form.</li>
+            <li><em>url</em> - URL for the current request... can be changed during <em>request</em> event.</li>
+            <li><em>metadata</em> - All metadata associated with the request.  <a href="/Metadata">Read More...</a></li>
+            <li><em>routeData</em> - Metadata defined by one or multiple routes.</li>
+            <li><em>senderData</em> - Metadata defined on sender.</li>
+            <li><em>updateData</em> - Metadata defined on an element to be updated.</li>
+            <li><em>element</em> - Element that is being updated in the DOM.</li>
+            <li><em>isPost</em> - Indicates that the request is a post.</li>
+            <li><em>postData</em> - Form data that is being posted.</li>
+            <li><em>result</em> - Body of the response, usually HTML or a JSON object.</li>
+        </ul>
+    </p>
 
 
 </div>

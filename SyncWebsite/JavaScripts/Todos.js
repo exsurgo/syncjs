@@ -1,10 +1,11 @@
 ﻿
 var Todos = {
 
-    saved: function (result, metadata, sender) {
-        if (result && result.Succeeded) {
+    saved: function (e) {
+        //"this" is the JSON result from the server
+        if (this && this.Succeeded) {
             alert("Todo was saved!", "success");
-            var textbox = sender.find("[name=Title]");
+            var textbox = e.sender.find("[name=Title]");
             var list = $("#todo-list");
             list.append("<li>" + textbox.val() + "</li>");
             textbox.val("");

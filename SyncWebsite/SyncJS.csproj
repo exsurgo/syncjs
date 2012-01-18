@@ -61,8 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ComponentDiagram.jpg" />
-    <Content Include="Images\SyncLogo.png" />
-    <Content Include="Images\_Loading.gif" />
     <Content Include="Images\BigCheck.png" />
     <Content Include="Images\Button.gif" />
     <Content Include="Images\ButtonHover.gif" />

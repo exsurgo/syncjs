@@ -17,9 +17,7 @@
 
     //Configuration
     config = {
-
-        //General 
-        metadata: {}, //Default global metadata
+        metadata: { update: "content" }, //Default global metadata
         autoEvents: true, //Automatically hijax every link and form
         autoCorrectLinks: true, //Change standard URL's to ajax (#) URL's
         contentSelector: "[data-content=true]:first", //The main content area where content is rendered
@@ -123,16 +121,27 @@
         sender = $(sender);
 
         //Get metadata from route and sender
-        //Ensure that data object are not undefined
+        //Ensure that data objects are not undefined
         var routeData = getRouteData(url) || {};
         var senderData = sender.data() || {};
-        //Combine global, route and sender metadata in that order
-        //Override values in order: sender -> route -> global
+        //Override in order: sender -> route -> global
         var metadata = $.extend({}, config.metadata, routeData, senderData);
-
-        //On request event
-        events.request(url, sender, postData, metadata);
-
+		
+        //Create params object
+		var params = { 
+			url: url,
+			postData: postData,			
+			isPost: postData != undefined,			
+			sender: sender,			
+			metadata: metadata,
+			routeData: routeData,
+			senderData: senderData
+		};
+		
+		//Request event
+        events.request.apply(sender, params);
+		if (metadata.request) callFunction(metadata.request, sender, params);
+		
         //Confirm request
         if (!confirmAction(sender)) return false;
 
@@ -142,7 +151,7 @@
         //Show loading indicator
         sync.loading.show();
 
-        //Serialize postData
+        //Serialize post data
         if (postData && typeof postData != "string") postData = $.param(postData);
 
         //Begin request
@@ -155,26 +164,30 @@
             data: postData,
             cache: false,
 
-            //Success event
+            //Request was successful
             success: function (result, status, xhr) {
-
-                //Success events
-                var args = [result, metadata, sender, xhr];
-                events.success.apply(window, args);
-                if (senderData.success) callFunction(senderData.success, sender, args);
-                else if (routeData.success) callFunction(routeData.success, window, args);
-
+                
+				//Get return type (HTML, JSON, etc)
+                var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
+				
+				//Success event
+				params = $.extend(params, {
+					result: result,
+					status: status,
+					xhr: xhr,
+					contentType: contentType
+				});
+				events.success.apply(result, params);
+				if (metadata.success) callFunction(metadata.success, result, params);
+				
                 //Close window on post
                 if (method == "POST" && config.closeWindowOnPost) sync.window.close(sender);
 
-                //Get return type (HTML, JSON, etc)
-                var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
-
                 //HTML response
-                if ((/html/i).test(contentType)) handleHTML(result, sender, url);
+                if ((/html/i).test(contentType)) handleHTML(params);
 
                 //JSON Response
-                else if ((/json/i).test(contentType)) handleJSON(result, sender, url);
+                else if ((/json/i).test(contentType)) handleJSON(params);
 
                 //Hide progress
                 sync.loading.hide();
@@ -190,8 +203,9 @@
                     if (!dependent.length) el.remove();
                 });
 
-                //On complete
-                events.complete();
+                //Complete event
+                events.complete.apply(result, params);
+				if (metadata.complete) callFunction(metadata.complete, result, params);
 
             },
 
@@ -204,8 +218,16 @@
                 //Hide progress
                 sync.loading.hide();
 
-                //Call error event
-                events.error(error, xhr);
+				//Params
+				params = $.extend(params, {
+					error: error,
+					status: status,
+					xhr: xhr
+				});
+				
+                //Error event
+				events.error.apply(error, params);
+				if (metadata.error) callFunction(metadata.error, error, params);
             }
 
         });
@@ -288,10 +310,14 @@
     /********* Private Methods *********/
 
     //Handle HTML response
-    function handleHTML(result, sender, url) {
+    function handleHTML(params) {
 
+		//Locals
+		var result = params.result,
+            scripts = [],
+	
         //Load script tags 
-        var scripts = [];
+        scripts = [];
         $(result).filter("script[src]").each(function () {
             //Store src to request later
             scripts.push(this.getAttribute("src"));
@@ -303,62 +329,58 @@
             sync.storage.store(this.getAttribute("data-template"), this.outerHTML);
         });
 
-        //Update HTML elements
+        //Update each HTML element
         $(result).filter("[data-update]:not([data-template])").each(function () {
-
-            //jQuery object of the element
-            var element = $(this);
-
-            //Read metadata
-            var meta = element.data();
-            meta.update = meta.update.toLowerCase();
-
-            //Update actions
-            if (meta.hide) $(meta.hide).hide();
-            if (meta.show) $(meta.show).show();
-            if (meta.empty) $(meta.empty).show();
-            if (meta.remove) $(meta.remove).show();
-
-            //On before update
-            events.updating(element, meta);
-
-            //Hide update
-            element.hide();
-
-            //Update element in the DOM
-            updateElement(element, meta, sender, url);
-
-            //On after update
-            events.updated(element, meta);
-
-            //Show update
-            element.show();
+            updateElement(this, params);
         });
-
+		
         //Run inline scripts
         $(result).filter("script:not([src])").each(function () {
             $.globalEval($(this).html());
         });
     }
 
-    //Update html element in the DOM
-    function updateElement(element, metadata, sender, url) {
-
-        //Ensure id
-        var id = element.attr("id");
+    //Update an html element in the DOM
+    function updateElement(element, params) {
+		
+		//Ensure element has id
+        id = element.attr("id");
         if (id == "" || id == undefined) {
             id = ("el-" + Math.random()).replace(".", "");
             element.attr("id", id);
         }
-
-        //Match update type by lowercase
-        metadata.update = metadata.update.toLowerCase();
+	
+		//Get metadata from update
+		var updateData = element.data();
+		updateData.update = updateData.update.toLowerCase();
+		
+		//Combine metadata
+		//Override in order: sender -> update -> route -> global
+		var metadata = $.extend({}, config.metadata, routeData, updateData, senderData);	
+		
+		//Event params - Use a new object for updating/updated events
+		var updateParams = $.extend({}, params, {
+			metadata: metadata,
+			updateData: dataData,
+			updateId: id,
+			element: element
+		});
+		
+		//Updating events
+		events.updating.apply(element, updateParams);
+		if (metadata.updating) callFunction(metadata.updating, element, updateParams);
+		
+		//Hide update
+		element.hide();	
+        
+		//Match update type by lowercase
+		metadata.update = metadata.update.toLowerCase();
 
         //Check custom updates
         for (var updater in sync.updaters) {
             if (updater.toLowerCase() == metadata.update) {
                 //Run custom updater
-                sync.updaters[updater](element, metadata, sender, url);
+                sync.updaters[updater](element, metadata, params.sender, url);
                 //Initialize the view
                 initHTML(element);
                 return;
@@ -376,7 +398,8 @@
             */ 
             case "content":
                 //Address
-                if (metadata.address && metadata.address != "") url = metadata.address;
+                var url = params.url;
+				if (metadata.address && metadata.address != "") url = metadata.address;
                 if (url.charAt(0) == "/") url = url.substr(1);
                 currentUrl = url;
                 if (window.location.hash.substr(1) != url) {
@@ -451,9 +474,25 @@
                 break;
         }
 
+		//Updated events
+		events.updated.apply(element, updateParams);
+		if (metadata.updated) callFunction(metadata.updated, element, updateParams);
+
+		//Metadata actions
+		if (metadata.hide) $(metadata.hide).hide();
+		if (metadata.show) $(metadata.show).show();
+		if (metadata.empty) $(metadata.empty).empty();
+		if (metadata.remove) $(metadata.remove).remove();
+
+		//Show update
+		element.show();
+		
         //Initialize the view
         initHTML(element);
-        events.init(element, metadata);
+        
+		//Init event
+		events.init.apply(element, updateParams);
+		if (metadata.init) callFunction(metadata.init, element, updateParams);
     }
 
     //Initialize any events or prerequisites 
@@ -598,13 +637,13 @@
     }
 
     //Handle JSON response
-    function handleJSON(result, sender, url) {
+    function handleJSON(params) {
 
         //Check routes to match url with needed template
         $(sync.routes).each(function () {
 
             //If route matches, then request template
-            if (this.route.test(url)) {
+            if (this.route.test(params.url)) {
 
                 //Request templates from URL
                 if (!sync.storage.exists(this.templateId)) {
@@ -623,8 +662,8 @@
 
                 //Render template with data, convert to jquery then output
                 if (sync.storage.exists(this.templateId)) {
-                    var update = $(sync.render(this.templateId, result));
-                    updateElement(update, update.data(), sender, url);
+                    var element = $(sync.render(this.templateId, params.result));
+                    updateElement(element, params);
                 }
             }
 

@@ -76,8 +76,6 @@
     <Content Include="JavaScripts\Amplify.js" />
     <Content Include="JavaScripts\Callback.js" />
     <Content Include="JavaScripts\shBrushRuby.js" />
-    <Content Include="JavaScripts\Sync.Events.js" />
-    <Content Include="JavaScripts\Sync.InitView.js" />
     <Content Include="JavaScripts\Dependency.js" />
     <Content Include="JavaScripts\JSON2.js" />
     <Content Include="JavaScripts\shBrushJScript.js" />

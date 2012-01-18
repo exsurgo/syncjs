@@ -26,14 +26,14 @@ Sync.init({
     },
 
     //A request is being made
-    request: function (url, postData, sender) {
+    request: function (e) {
 
         //Add TinyMCE rich text to post data
-        if (postData) {
-            $(sender).find("[data-richtext]").each(function () {
+        if (e.isPost) {
+            $(e.sender).find("[data-richtext]").each(function () {
                 var textbox = $(this);
                 if (typeof tinyMCE != "undefined") tinyMCE.triggerSave();
-                postData.push({
+                e.postData.push({
                     name: textbox.attr("name"),
                     value: textbox.val()
                 });
@@ -43,12 +43,12 @@ Sync.init({
     },
 
     //A request was successful
-    success: function (result, metadata, xhr) {
+    success: function (e) {
 
     },
 
     //A request resulted error
-    error: function (message, xhr) {
+    error: function (e) {
 
         //Show friendly error message
         alert("An unexpected error has occurred.", "error");
@@ -56,22 +56,22 @@ Sync.init({
     },
 
     //An element is about to be updated in the DOM
-    updating: function (element, metadata) {
+    updating: function (e) {
 
     },
 
     //An element was just updated in the DOM
-    updated: function (element, metadata) {
+    updated: function (e) {
 
     },
 
     //The result was successful and all updates have been made
-    complete: function (metadata) {
+    complete: function (e) {
 
     },
 
     //Initialize HTML after page load or elements update
-    init: function (element, metadata) {
+    init: function (e) {   
 
         //Code syntax highlighting
         SyntaxHighlighter.defaults["toolbar"] = false;
@@ -79,13 +79,13 @@ Sync.init({
 
         //Replace temp fixes
         //Keep scripts from being run and script highlighter from breaking
-        $("code:contains(script-temp)", element).text("script");
-        $("code:contains(body-temp)", element).text("body");
-        $("code:contains(head-temp)", element).text("head");
-        $("code:contains(html-temp)", element).text("html");
-        $("code:contains(data-callback-temp)", element).text("data-callback");
-        $("code:contains(data-load-temp)", element).text("data-load");
-        $("code:contains(href-temp)", element).text("data-load");
+        $("code:contains(script-temp)", this).text("script");
+        $("code:contains(body-temp)", this).text("body");
+        $("code:contains(head-temp)", this).text("head");
+        $("code:contains(html-temp)", this).text("html");
+        $("code:contains(data-callback-temp)", this).text("data-callback");
+        $("code:contains(data-load-temp)", this).text("data-load");
+        $("code:contains(href-temp)", this).text("data-load");
 
     }
 

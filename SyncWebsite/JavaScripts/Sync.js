@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.65
+*   Sync JS - v 0.9.1.67
 *   This file contains the core functionality
 *   Dependencies: jQuery 1.5+, HashChange plugin 1.3+ (included)
 */
@@ -87,13 +87,28 @@
             }
         });
 
-        //Document ready
-        events.ready();
+        //Get metadata from global and route
+        //Ensure that data objects are not undefined
+        var routeData = getRouteData("/") || {};
+        //Override in order: route -> global
+        var metadata = $.extend({}, config.metadata, routeData);
 
-        //Attach events to body
-        var body = $("body");
-        initHTML(body);
-        events.init.call(body);
+        //Document jQuery object
+        var doc = $(document);
+
+        //Create params object
+        var params = {
+            metadata: metadata,
+            routeData: routeData,
+            element: doc
+        };
+
+        //Document ready
+        events.ready(params);
+
+        //Initialize the entire document
+        initHTML(doc);
+        events.init.call(doc, params);
 
     });
 
@@ -398,7 +413,7 @@
         if (!isUpdated) {
             switch (metadata.update) {
 
-                //Content                                                                                                                                    
+                //Content                                                                                                                                       
                 /*  
                 *   title: {string} 
                 *   address: {string} 
@@ -423,17 +438,17 @@
                     if (!metadata.scroll) $(window).scrollTop(0);
                     break;
 
-                //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
                 case "window":
                     sync.window.create(id, element, metadata);
                     break;
 
-                //Replace                                                                                                                                                                                                                                                                                                                                                                                                                          
+                //Replace                                                                                                                                                                                                                                                                                                                                                                                                                             
                 case "replace":
                     $("#" + id).replaceWith(element);
                     break;
 
-                //Insert                                                                                                                                                                                                                                                                                                                                                                                                                          
+                //Insert                                                                                                                                                                                                                                                                                                                                                                                                                             
                 /*
                 *   target: {selector}
                 */ 
@@ -442,7 +457,7 @@
                     target.html(element);
                     break;
 
-                //Prepend                                                                                                                                                                                                                                                                                                                 
+                //Prepend                                                                                                                                                                                                                                                                                                                    
                 /*
                 *   target: {selector}
                 */ 
@@ -452,7 +467,7 @@
                     else $(metadata.target).prepend(element);
                     break;
 
-                //Append                                                                                                                                                                                                                                                                                                                  
+                //Append                                                                                                                                                                                                                                                                                                                     
                 /*
                 *   target: {selector}
                 */ 
@@ -462,7 +477,7 @@
                     else $(metadata.target).append(element);
                     break;
 
-                //After                                                                                                                                                                                                                                                                                                                                                                                                                           
+                //After                                                                                                                                                                                                                                                                                                                                                                                                                              
                 /*
                 *   target: {selector}
                 */ 
@@ -471,7 +486,7 @@
                     target.after(element);
                     break;
 
-                //Before                                                                                                                                                                                                                                                                                                                                                                                                                           
+                //Before                                                                                                                                                                                                                                                                                                                                                                                                                              
                 /*
                 *   target: {selector}
                 */ 
@@ -586,8 +601,8 @@
         });
 
         //Request
-        $("[data-request]", context).click(function () {
-            sync.request($(this).attr("data-request"), this);
+        $("[data-get]", context).click(function () {
+            sync.request($(this).attr("data-get"), null, this);
         });
 
         //Close
@@ -752,4 +767,15 @@
 *   Dual licensed under the MIT and GPL licenses.
 *   http://benalman.com/about/license/
 */
-(function (i, d, a) { var b = "hashchange", g = document, e, f = i.event.special, h = g.documentMode, c = "on" + b in d && (h === a || h > 7); function t(j) { j = j || location.href; return "#" + j.replace(/^[^#]*#?(.*)$/, "$1") } i.fn[b] = function (j) { return j ? this.bind(b, j) : this.trigger(b) }; i.fn[b].delay = 50; f[b] = i.extend(f[b], { setup: function () { if (c) { return false } i(e.start) }, teardown: function () { if (c) { return false } i(e.stop) } }); e = (function () { var o = {}, n, k = t(), p = function (q) { return q }, j = p, m = p; o.start = function () { n || l() }; o.stop = function () { n && clearTimeout(n); n = a }; function l() { var r = t(), q = m(k); if (r !== k) { j(k = r, q); i(d).trigger(b) } else { if (q !== k) { location.href = location.href.replace(/#.*/, "") + q } } n = setTimeout(l, i.fn[b].delay) } i.browser.msie && !c && (function () { var q, r; o.start = function () { if (!q) { r = i.fn[b].src; r = r && r + t(); q = i('<iframe tabindex="-1" title="empty"/>').hide().one("load", function () { r || j(t()); l() }).attr("src", r || "javascript:0").insertAfter("body")[0].contentWindow; g.onpropertychange = function () { try { if (event.propertyName === "title") { q.document.title = g.title } } catch (s) { } } } }; o.stop = p; m = function () { return t(q.location.href) }; j = function (u, v) { var s = q.document, A = i.fn[b].domain; if (u !== v) { s.title = g.title; s.open(); A && s.write('<script>document.domain="' + A + '"<\/script>'); s.close(); q.location.hash = u } } })(); return o })() })(jQuery, this);
+(function (i, d, a) {
+var b = "hashchange", g = document, e, f = i.event.special, h = g.documentMode, c = "on" + b in d && 
+(h === a || h > 7); function t(j) { j = j || location.href; return "#" + j.replace(/^[^#]*#?(.*)$/, "$1") } i.fn[b] = function (j) {
+return j ? this.bind(b, j) : this.trigger(b) }; i.fn[b].delay = 50; f[b] = i.extend(f[b], { setup: function () { if (c) { return false } 
+i(e.start) }, teardown: function () { if (c) { return false } i(e.stop) } }); e = (function () { var o = {}, n, k = t(), p = function (q) {
+return q }, j = p, m = p; o.start = function () { n || l() }; o.stop = function () { n && clearTimeout(n); n = a }; function l() 
+{ var r = t(), q = m(k); if (r !== k) { j(k = r, q); i(d).trigger(b) } else { if (q !== k) { location.href = location.href.replace(/#.*/, "") 
++ q } } n = setTimeout(l, i.fn[b].delay) } i.browser.msie && !c && (function () { var q, r; o.start = function () { if (!q) { r = i.fn[b].src; 
+r = r && r + t(); q = i('<iframe tabindex="-1" title="empty"/>').hide().one("load", function () { r || j(t()); l() }).attr("src", r || "javascript:0")
+.insertAfter("body")[0].contentWindow; g.onpropertychange = function () { try { if (event.propertyName === "title") { q.document.title = g.title } } 
+catch (s) { } } } }; o.stop = p; m = function () { return t(q.location.href) }; j = function (u, v) { var s = q.document, A = i.fn[b].domain; if (u !== v) 
+{ s.title = g.title; s.open(); A && s.write('<script>document.domain="' + A + '"<\/script>'); s.close(); q.location.hash = u } } })(); return o })() }) (jQuery, this);

@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.67
+*   Sync JS - v 0.9.1.68
 *   This file contains the core functionality
 *   Dependencies: jQuery 1.5+, HashChange plugin 1.3+ (included)
 */
@@ -750,7 +750,7 @@
     //Get route metadata
     function getRouteData(url) {
         $(sync.routes).each(function () {
-            if (this.route.test(url)) return this;
+	        if (this.route && this.route.test(url)) return this;
         });
         //Return empty object to prevent undefined error
         return undefined;

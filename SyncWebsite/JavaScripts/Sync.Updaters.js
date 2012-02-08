@@ -14,7 +14,7 @@ Sync.updaters = {
         //Get id
         var id = $(element).attr("id");
         //Get self or first table
-        if (!metadata.target) metadata.target = Sync.config.contentSelector;
+        if (!metadata.target) metadata.target = $(Sync.config.contentSelector).find("table:first");
         var table = $(metadata.target);
         if (table[0].tagName != "TABLE") table = $("table:first");
         //Add tbody

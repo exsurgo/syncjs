@@ -1,6 +1,6 @@
 
 /*
-*   Sync JS - v 0.9.1.69
+*   Sync JS - v 0.9.1.7
 *   This file contains the core functionality
 *   Dependencies: jQuery 1.5+, HashChange plugin 1.3+ (included)
 */
@@ -135,28 +135,25 @@
 
     //Get
     sync.get = function (url) {
-        sync.request({
-            url: url
-        });
+        sync.request(url);
     },
 
     //Post
     sync.post = function (url, data) {
-        sync.request({
-            url: url,
+        sync.request(url, {
             isPost: true,
             postData: data
         });
     },
 
-    //Request
-    sync.request = function (settings) {
+    //Request 
+    sync.request = function (url, options) {
 
         //Locals
-        var url = settings.Url,
-            sender = $(settings.sender),
-            isPost = settings.isPost,
-            postData = settings.postData;
+        options = options || { };
+        var sender = $(options.sender),
+            isPost = options.isPost,
+            postData = options.postData;
 
         //Reload page with hash value
         if (url == "#" || url.charAt(0) == "~") return;
@@ -170,7 +167,7 @@
             metadata = $.extend({}, globalData, routeData, senderData);
 
         //Create event object (e)
-        var e = {
+        var event = {
             url: url,
             postData: postData,
             isPost: postData != undefined,
@@ -182,8 +179,8 @@
         };
 
         //Request event
-        events.request.call(sender, e);
-        if (metadata.request) callFunction(metadata.request, sender, e);
+        events.request.call(sender, event);
+        if (metadata.request) callFunction(metadata.request, sender, event);
 
         //Confirm request
         if (!confirmAction(sender)) return false;
@@ -214,7 +211,7 @@
                 var contentType = (xhr.getResponseHeader("content-type") || "").toLowerCase();
 
                 //Success event
-                e = $.extend(e, {
+                event = $.extend(event, {
                     result: result,
                     status: status,
                     xhr: xhr,
@@ -222,17 +219,17 @@
                     isHTML: (/html/i).test(contentType),
                     isJSON: (/json/i).test(contentType)
                 });
-                events.success.call(result, e);
-                if (metadata.success) callFunction(metadata.success, result, e);
+                events.success.call(result, event);
+                if (metadata.success) callFunction(metadata.success, result, event);
 
                 //Close window on post
-                if (e.isPost && _config.closeWindowOnPost) sync.window.close(sender);
+                if (event.isPost && _config.closeWindowOnPost) sync.window.close(sender);
 
                 //HTML response
-                if (e.isHTML) handleHTML(e);
+                if (event.isHTML) handleHTML(event);
 
                 //JSON Response
-                else if (e.isJSON) handleJSON(e);
+                else if (event.isJSON) handleJSON(event);
 
                 //Hide progress
                 sync.loading.hide();
@@ -249,8 +246,8 @@
                 });
 
                 //Complete event
-                events.complete.call(result, e);
-                if (metadata.complete) callFunction(metadata.complete, result, e);
+                events.complete.call(result, event);
+                if (metadata.complete) callFunction(metadata.complete, result, event);
 
             },
 
@@ -264,19 +261,19 @@
                 sync.loading.hide();
 
                 //Error event
-                e = $.extend(e, {
+                event = $.extend(event, {
                     error: error,
                     status: status,
                     xhr: xhr
                 });
-                events.error.call(error, e);
-                if (metadata.error) callFunction(metadata.error, error, e);
+                events.error.call(error, event);
+                if (metadata.error) callFunction(metadata.error, error, event);
             }
 
         });
 
         //Return parameters for return value
-        return e;
+        return event;
     };
 
     //Redirect
@@ -412,7 +409,7 @@
             updateId: id,
             element: element
         });
-         
+
         //Updating events
         events.updating.call(element, updateE);
         if (metadata.updating) callFunction(metadata.updating, element, updateE);
@@ -440,7 +437,7 @@
         if (!isUpdated) {
             switch (metadata.update) {
 
-                //Content                                                                                                                                                
+                //Content                                                                                                                                                 
                 /*  
                 *   title: {string} 
                 *   address: {string} 
@@ -465,17 +462,17 @@
                     if (!metadata.scroll) $(window).scrollTop(0);
                     break;
 
-                //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+                //Window                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                 case "window":
                     sync.window.create(id, element, metadata);
                     break;
 
-                //Replace                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                //Replace                                                                                                                                                                                                                                                                                                                                                                                                                                       
                 case "replace":
                     $("#" + id).replaceWith(element);
                     break;
 
-                //Insert                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                //Insert                                                                                                                                                                                                                                                                                                                                                                                                                                       
                 /*
                 *   target: {selector}
                 */ 
@@ -484,7 +481,7 @@
                     target.html(element);
                     break;
 
-                //Prepend                                                                                                                                                                                                                                                                                                                             
+                //Prepend                                                                                                                                                                                                                                                                                                                              
                 /*
                 *   target: {selector}
                 */ 
@@ -494,7 +491,7 @@
                     else $(metadata.target).prepend(element);
                     break;
 
-                //Append                                                                                                                                                                                                                                                                                                                              
+                //Append                                                                                                                                                                                                                                                                                                                               
                 /*
                 *   target: {selector}
                 */ 
@@ -504,7 +501,7 @@
                     else $(metadata.target).append(element);
                     break;
 
-                //After                                                                                                                                                                                                                                                                                                                                                                                                                                       
+                //After                                                                                                                                                                                                                                                                                                                                                                                                                                        
                 /*
                 *   target: {selector}
                 */ 
@@ -513,7 +510,7 @@
                     target.after(element);
                     break;
 
-                //Before                                                                                                                                                                                                                                                                                                                                                                                                                                       
+                //Before                                                                                                                                                                                                                                                                                                                                                                                                                                        
                 /*
                 *   target: {selector}
                 */ 
@@ -588,7 +585,7 @@
                 var details = link.attr("data-details");
                 if (details != undefined && $("#" + details).length) url += (url.indexOf("?") != -1 ? "&" : "?") + "UpdateDetails=True";
                 //Get request
-                sync.request(url, null, this);
+                sync.request(url, { sender: this });
                 return false;
             });
         });
@@ -611,12 +608,16 @@
             //Disable form
             toggleSender(form, false);
             //Post request
-            sync.request(form.attr("action"), postData, this);
+            sync.request(form.attr("action"), {
+                isPost: true,
+                postData: postData,
+                sender: this
+            });
             return false;
         });
 
         //Submit button click
-        $(_config.autoEvents ? ":submit([data-ajax=false])" : ":submit[data-ajax=true]", context).unbind("click").click(function (e) {
+        $(_config.autoEvents ? ":submit:not([data-ajax=false])" : ":submit[data-ajax=true]", context).unbind("click").click(function (e) {
             //Prevent default
             e.preventDefault();
             var form = $(this).parents("form:first");
@@ -629,7 +630,7 @@
 
         //Request
         $("[data-get]", context).click(function () {
-            sync.request($(this).attr("data-get"), null, this);
+            sync.request($(this).attr("data-get"), { sender: this });
         });
 
         //Close
@@ -720,7 +721,7 @@
         });
 
     }
-    
+
     //Disable/Enable sender
     function toggleSender(sender, enabled) {
         //Form
@@ -784,7 +785,7 @@
 
     //Create a random id
     function createRandomId() {
-        return Math.random().replace(".", "");
+        return Math.random().toString().replace(".", "");
     }
 
 } (window.Sync = window.Sync || {}));

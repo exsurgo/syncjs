@@ -73,7 +73,7 @@
     <Content Include="Images\Logo.png" />
     <Content Include="Images\LoadingSmall.gif" />
     <Content Include="Images\Metadata.jpg" />
-    <Content Include="Images\WorkPlex.png" />
+    <Content Include="Images\VersaHub.png" />
     <Content Include="JavaScripts\Amplify.js" />
     <Content Include="JavaScripts\Callback.js" />
     <Content Include="JavaScripts\shBrushRuby.js" />
@@ -106,6 +106,7 @@
     <Content Include="JavaScripts\Sync.js" />
     <Content Include="JavaScripts\Sync.Init.js" />
     <Content Include="JavaScripts\Modernizr.js" />
+    <Content Include="SyncJS.Publish.xml" />
     <Content Include="Web.config" />
     <Content Include="Styles\Site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
